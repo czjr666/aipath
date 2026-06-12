@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 import Nav from '../components/Nav.jsx'
 import Footer from '../components/Footer.jsx'
 import { Pill, Dots } from '../components/ui.jsx'
-import NeuralNetViz from '../lessons/viz/NeuralNetViz.jsx'
+import LLMHero from '../lessons/viz/LLMHero.jsx'
 import { stages, lessons } from '../data/lessons.js'
 
 const STATS = [
@@ -70,9 +70,10 @@ export default function Home() {
           <Link className="btn btn-glass" to="/lesson/01-ai-ml-dl">从第 1 课开始学 →</Link>
         </div>
         <div className="hero-viz card">
-          <NeuralNetViz />
+          <LLMHero />
           <div className="viz-caption">
-            ↑ 一个正在“思考”的神经网络 —— 信号逐层向前传播。学完这门课，你会知道它的每一个零件叫什么、为什么这样设计。
+            ↑ 一个正在“思考”的大模型 —— 它每次只做一件事：猜下一个字。亮起的前文是它正在“注意”的字；右侧是它脑中的候选和概率。拧动
+            temperature 试试：<span className="lh-cap-alt">琥珀色</span>的字是它没选最高概率时的发挥，<span className="lh-cap-wild">红色</span>的字就是彻底放飞了。
           </div>
         </div>
         <div className="stats">
