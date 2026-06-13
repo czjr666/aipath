@@ -117,7 +117,9 @@ pre.code .str { color: var(--sage); }
 .toc-head {
   font-size: 11px; font-weight: 700; letter-spacing: 0.08em; color: var(--fg-2);
   padding: 12px 10px 10px; border-bottom: 1px solid var(--hairline);
+  display: flex; align-items: center; justify-content: space-between;
 }
+.toc-close { display: none; }
 .toc-stage { margin-top: 14px; }
 .toc-stage-title { font-size: 12px; font-weight: 700; color: var(--fg-1); padding: 4px 10px 6px; }
 .lesson-toc ul { list-style: none; margin: 0; padding: 0; }
@@ -132,7 +134,44 @@ pre.code .str { color: var(--sage); }
 .toc-no { flex: none; font-size: 11px; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--fg-2); }
 .toc-item:hover .toc-no { color: var(--fg-1); }
 .toc-item.active .toc-no { color: var(--on-accent); }
-@media (max-width: 1339px) { .lesson-toc { display: none; } }
+
+/* 窄屏唤出按钮 / 抽屉遮罩：宽屏隐藏 */
+.toc-fab, .toc-backdrop { display: none; }
+
+/* ---- 窄屏（≤1339px）：侧栏改为右下角按钮 + 滑出抽屉 ---- */
+@media (max-width: 1339px) {
+  .lesson-toc {
+    transform: translateX(-100%);
+    transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+    width: min(300px, 86vw); top: 0; z-index: 90;
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.18);
+  }
+  .lesson-toc.open { transform: translateX(0); }
+  .toc-close {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 30px; height: 30px; margin: -6px -4px -6px 0; padding: 0;
+    border: none; background: none; color: var(--fg-1); cursor: pointer; border-radius: var(--r-sm);
+  }
+  .toc-close:hover { background: var(--bg-inset); color: var(--fg-0); }
+
+  .toc-backdrop {
+    display: block; position: fixed; inset: 0; z-index: 80;
+    background: rgba(0, 0, 0, 0.4);
+    opacity: 0; pointer-events: none; transition: opacity 0.28s ease;
+  }
+  .toc-backdrop.show { opacity: 1; pointer-events: auto; }
+
+  .toc-fab {
+    display: inline-flex; align-items: center; gap: 7px;
+    position: fixed; right: 18px; bottom: 22px; z-index: 70;
+    height: 46px; padding: 0 18px 0 16px; border: none; cursor: pointer;
+    border-radius: var(--r-pill); background: var(--accent); color: var(--on-accent);
+    font-size: 15px; font-weight: 600;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.22);
+    transition: transform 0.18s ease;
+  }
+  .toc-fab:active { transform: scale(0.96); }
+}
 
 /* ---------- 首页 ---------- */
 .hero { padding: 88px 0 64px; text-align: center; }
