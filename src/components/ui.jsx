@@ -2,6 +2,7 @@
 // 设计系统基础原子组件 —— 直接复用 style.css / lesson.css 的类
 // ============================================================
 import { useState } from 'react'
+import { useUI } from '../i18n/LangContext.jsx'
 
 // 语义色药丸：type ∈ sky | terracotta | amber | sage | ink
 export function Pill({ type = 'ink', children }) {
@@ -66,10 +67,11 @@ export function Chips({ options, value, onChange }) {
 // 点击揭晓卡
 export function FlipCard({ q, pill, why }) {
   const [revealed, setRevealed] = useState(false)
+  const t = useUI()
   return (
     <button className={`flip-card${revealed ? ' revealed' : ''}`} onClick={() => setRevealed(true)}>
       <div className="fc-q">{q}</div>
-      <div className="fc-tap">▸ 点击揭晓</div>
+      <div className="fc-tap">{t.ui.tapReveal}</div>
       <div className="fc-a">
         <Pill type={pill.type}>{pill.text}</Pill>
         <div className="why">{why}</div>
@@ -98,11 +100,12 @@ export function SliderRow({ label, min, max, step, value, onChange, format = (v)
 
 // 练习项（可展开答案）
 export function QuizItem({ q, children }) {
+  const t = useUI()
   return (
     <div className="quiz-item">
       <div className="q">{q}</div>
       <details>
-        <summary>查看答案</summary>
+        <summary>{t.ui.viewAnswer}</summary>
         <div className="ans">{children}</div>
       </details>
     </div>

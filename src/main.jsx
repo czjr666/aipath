@@ -2,6 +2,7 @@ import React from 'react'
 import { createRoot } from 'react-dom/client'
 import { HashRouter } from 'react-router-dom'
 import App from './App.jsx'
+import { LangProvider } from './i18n/LangContext.jsx'
 
 // 部署新版本后，旧页面懒加载已被替换的课程分包会 404，自动刷新拿到新版本
 window.addEventListener('vite:preloadError', (event) => {
@@ -16,8 +17,10 @@ import './styles/app.css'
 
 createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <HashRouter>
-      <App />
-    </HashRouter>
+    <LangProvider>
+      <HashRouter>
+        <App />
+      </HashRouter>
+    </LangProvider>
   </React.StrictMode>,
 )

@@ -1,4 +1,4 @@
-import { lazy, Suspense } from 'react'
+import { lazy, Suspense, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import Nav from '../components/Nav.jsx'
 import LessonNav from '../components/LessonNav.jsx'
@@ -6,6 +6,9 @@ import Footer from '../components/Footer.jsx'
 import Pager from '../components/Pager.jsx'
 import { Pill, Dots } from '../components/ui.jsx'
 import { stageOf } from '../data/lessons.js'
+import { useLang, useUI } from '../i18n/LangContext.jsx'
+import { META } from '../i18n/strings.js'
+import { pick } from '../i18n/pick.js'
 
 // 已迁移课程按需加载：three.js / recharts 等重依赖只在进入对应课时才下载
 const REGISTRY = {
@@ -42,15 +45,14 @@ const REGISTRY = {
 }
 
 // 尚未迁移课程的占位内容
-function Placeholder({ lesson }) {
+function Placeholder({ lesson, t }) {
   return (
     <div className="card card-pad" style={{ marginTop: 32 }}>
       <p className="lead" style={{ marginBottom: 8 }}>
-        本课正在从原静态页面迁移到 React 架构中。
+        {t.lesson.placeholderLead}
       </p>
       <p className="footnote">
-        原课程内容与交互演示完整保存在 <code>legacy/lessons/{lesson.slug}.html</code>，
-        迁移后将拥有与 L01 / L04 相同的组件化交互体验。
+        {t.lesson.placeholderNotePre}<code>legacy/lessons/{lesson.slug}.html</code>{t.lesson.placeholderNoteSuf}
       </p>
     </div>
   )
@@ -59,6 +61,16 @@ function Placeholder({ lesson }) {
 export default function LessonPage({ lesson }) {
   const Body = REGISTRY[lesson.slug]
   const stage = stageOf(lesson)
+  const { lang } = useLang()
+  const t = useUI()
+  const title = pick(lesson.title, lang)
+
+  // 课程页标题带课名：「<课题> | AI Path」，随语言切换更新（在 LangProvider 的全站 title 之后覆写）
+  useEffect(() => {
+    const base = (META[lang] || META.zh).title.split(' · ')[0] // "AI Path"
+    document.title = `${title} | ${base}`
+    return () => { document.title = (META[lang] || META.zh).title }
+  }, [lang, title])
 
   return (
     <>
@@ -67,27 +79,33 @@ export default function LessonPage({ lesson }) {
       <main className="container-narrow">
         <header className="lesson-hero">
           <div className="crumb">
-            <Link to="/">课程</Link> / <span>{stage.num} · {stage.title.split(' · ')[0]}</span> /{' '}
-            <span>第 {lesson.id} 课</span>
+            <Link to="/">{t.lesson.crumbHome}</Link> /{' '}
+            <span>{pick(stage.num, lang)} · {pick(stage.title, lang).split(' · ')[0]}</span> /{' '}
+            <span>{t.lesson.lessonN(lesson.id)}</span>
           </div>
-          <h1>{lesson.title}</h1>
-          <p className="subhead">{lesson.desc}</p>
+          <h1>{title}</h1>
+          <p className="subhead">{pick(lesson.desc, lang)}</p>
           <div className="meta">
-            <Pill type="ink">{lesson.level}</Pill>
+            <Pill type="ink">{pick(lesson.level, lang)}</Pill>
             <Dots n={lesson.dots} />
-            {lesson.tags.map((t, i) => (
-              <Pill key={i} type={t.type}>{t.text}</Pill>
+            {lesson.tags.map((tag, i) => (
+              <Pill key={i} type={tag.type}>{pick(tag.text, lang)}</Pill>
             ))}
-            <span className="footnote">约 20 分钟</span>
+            <span className="footnote">{t.lesson.minutes}</span>
           </div>
         </header>
 
+        {/* 课程正文暂仅中文：英文界面下提示一句，正文回退中文 */}
+        {Body && lang === 'en' && (
+          <p className="footnote" style={{ marginTop: 24 }}>{t.lesson.enBodyNotice}</p>
+        )}
+
         {Body ? (
-          <Suspense fallback={<div className="footnote" style={{ marginTop: 32 }}>加载中…</div>}>
+          <Suspense fallback={<div className="footnote" style={{ marginTop: 32 }}>{t.lesson.loading}</div>}>
             <Body />
           </Suspense>
         ) : (
-          <Placeholder lesson={lesson} />
+          <Placeholder lesson={lesson} t={t} />
         )}
 
         <Pager lesson={lesson} />
