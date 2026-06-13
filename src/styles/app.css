@@ -163,7 +163,7 @@ pre.code .str { color: var(--sage); }
 
   .toc-fab {
     display: inline-flex; align-items: center; gap: 7px;
-    position: fixed; right: 18px; bottom: 22px; z-index: 70;
+    position: fixed; right: 24px; bottom: 22px; z-index: 70;
     height: 46px; padding: 0 18px 0 16px; border: none; cursor: pointer;
     border-radius: var(--r-pill); background: var(--accent); color: var(--on-accent);
     font-size: 15px; font-weight: 600;
@@ -173,14 +173,14 @@ pre.code .str { color: var(--sage); }
   .toc-fab:active { transform: scale(0.96); }
 }
 
-/* 暗色模式：FAB 用略亮的抬升面 + 浅色边框 + 深色"护城河"环 + 投影，
-   即使叠在同样深色的内容卡上也能清晰浮起，不糊成一团。 */
+/* 暗色模式：FAB 用略亮的抬升面 + 浅色边框 + 柔和投影，
+   靠浅色描边与内容卡区分，不用硬边"护城河"环（贴边时会被裁成硬块）。 */
 @media (prefers-color-scheme: dark) {
   .toc-fab {
     background: #2C2C30;
     color: var(--fg-0);
-    border: 1px solid rgba(255, 255, 255, 0.22);
-    box-shadow: 0 0 0 4px rgba(15, 15, 15, 0.55), 0 10px 28px rgba(0, 0, 0, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.20);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.55);
   }
 }
 
