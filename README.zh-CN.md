@@ -2,6 +2,18 @@
 
 [English](./README.md) · **中文**
 
+<p align="center">
+  <a href="https://aipath.buynao.com">
+    <img src="media/hero-zh.gif" alt="一个正在「思考」的大模型——每次只猜下一个字，拧动温度，右侧 top-5 候选概率实时重塑" width="760">
+  </a>
+</p>
+
+<p align="center">
+  <b>▶ 在线访问 — <a href="https://aipath.buynao.com">aipath.buynao.com</a></b> &nbsp;·&nbsp; 免注册，每个概念都能上手玩
+</p>
+
+<p align="center"><sub>↑ 首屏交互（第 15 课 · 下一个字的游戏）：大模型每次只猜下一个字，拧动 temperature，看它脑中的 top-5 候选如何从「严谨」重塑到「放飞」。</sub></p>
+
 > 为中文学习者设计的零基础 AI 入门课 —— **6 个阶段、30 课**，不堆公式、不灌术语，用可视化与交互演示把 AI 的核心原理装进直觉，最后亲手写代码构建一个真正能跑的 AI 应用。
 
 从「神经网络是什么」到「亲手搭出一个 RAG 知识库」，这门课负责送你走完从 **AI 新闻围观者** 到 **AI 应用构建者** 的全程。每课约 20 分钟，零基础友好，几乎不碰数学。

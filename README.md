@@ -2,6 +2,18 @@
 
 **English** · [中文](./README.zh-CN.md)
 
+<p align="center">
+  <a href="https://aipath.buynao.com">
+    <img src="media/hero-en.gif" alt="An LLM thinking one token at a time — drag the temperature and its top-5 candidates reshape" width="760">
+  </a>
+</p>
+
+<p align="center">
+  <b>▶ Live site — <a href="https://aipath.buynao.com">aipath.buynao.com</a></b> &nbsp;·&nbsp; no signup, every concept is playable
+</p>
+
+<p align="center"><sub>↑ The homepage hero (Lesson 15 · the next-token game): an LLM guesses one token at a time — turn the temperature and watch its top-5 candidates reshape, from focused to “wild.”</sub></p>
+
 > A from-scratch AI course designed for absolute beginners — **6 stages, 30 lessons**. No piles of formulas, no jargon dumps. It packs the core principles of AI into intuition through visualizations and interactive demos, then has you write real code to build an AI app that actually runs.
 
 From "what is a neural network" to "building a RAG knowledge base with your own hands," this course takes you the whole way from **AI-news bystander** to **AI-app builder**. Each lesson is about 20 minutes, beginner-friendly, and barely touches math.
