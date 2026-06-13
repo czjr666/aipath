@@ -225,7 +225,7 @@ const C = {
       step: '▸ Step once',
       playDone: '✓ Done', playPause: '⏸ Pause', playStart: '▶ Auto-spin',
       reset: '↺ Reset',
-      errLabel: 'Error: wrong out of 1,000 test emails',
+      errLabel: 'Out of 1,000 test emails',
       errUnit: (errN) => <>{errN} wrong</>,
     },
 

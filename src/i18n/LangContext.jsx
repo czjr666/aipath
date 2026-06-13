@@ -9,7 +9,7 @@ const LangContext = createContext(null)
 const STORAGE_KEY = 'aipath-lang'
 const SUPPORTED = ['zh', 'en']
 
-// 初始语言：localStorage 优先；否则按浏览器语言（en-* → en，其余默认 zh）。
+// 初始语言：localStorage 优先；否则按浏览器语言（zh-* → zh，其余默认 en）。
 function detectInitial() {
   try {
     const saved = localStorage.getItem(STORAGE_KEY)
@@ -17,8 +17,8 @@ function detectInitial() {
   } catch {
     /* localStorage 不可用（隐私模式等）时静默回退 */
   }
-  const nav = (typeof navigator !== 'undefined' && navigator.language || 'zh').toLowerCase()
-  return nav.startsWith('en') ? 'en' : 'zh'
+  const nav = (typeof navigator !== 'undefined' && navigator.language || 'en').toLowerCase()
+  return nav.startsWith('zh') ? 'zh' : 'en'
 }
 
 export function LangProvider({ children }) {

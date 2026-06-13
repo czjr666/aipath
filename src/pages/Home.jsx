@@ -59,7 +59,14 @@ export default function Home() {
         </h1>
         <p className="subhead">{h.subhead}</p>
         <div className="hero-cta">
-          <a className="btn btn-primary" href="#path">
+          <a
+            className="btn btn-primary"
+            href="#path"
+            onClick={(e) => {
+              e.preventDefault()
+              document.getElementById('path')?.scrollIntoView({ behavior: 'smooth' })
+            }}
+          >
             {h.ctaPath}
           </a>
           <Link className="btn btn-glass" to="/lesson/01-ai-ml-dl">
