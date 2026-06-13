@@ -1,14 +1,51 @@
 // ============================================================
 // 梯度下降 3D 演示控制器（three.js，框架无关）
 // 由 React 组件在 useEffect 中创建，通过回调把状态/损失历史回传给 UI。
-//   createGradientDescent(container, { getLR, onStatus, onHistory, onPlaying })
-//   → { step, togglePlay, reset, dispose }
+//   createGradientDescent(container, { getLR, onStatus, onHistory, onPlaying, lang })
+//   → { step, togglePlay, reset, setLang, dispose }
 // onStatus(html)      状态文案（含简单 HTML）
 // onHistory(points)   损失历史 [{ step, loss }]，交给 Recharts 绘制
 // onPlaying(bool)     播放/暂停状态，用于按钮文案
+// lang                'zh' | 'en'，默认 'zh'，可通过 setLang 实时切换
 // ============================================================
 import * as THREE from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
+
+// ----- 双语状态文案（仅用户可见文本，含动态数值的用函数/模板）-----
+const STR = {
+  zh: {
+    arrivedBottom: (L, steps) =>
+      '<span class="ok">✓ 到达最深的谷底！</span>脚下几乎全平（梯度 ≈ 0），损失停在 <span class="num">' +
+      L.toFixed(2) + '</span>，共走 <span class="num">' + steps + '</span> 步。',
+    localMin: (L) =>
+      '<span class="ok">✓ 停进了一个坑底</span>（损失 <span class="num">' +
+      L.toFixed(2) + '</span>）。旋转地形看看 —— 远处还有更深的谷。这就是<b>局部最优</b>。',
+    saddle: '⏸ 停在了一处平地（鞍点或山顶附近），梯度 ≈ 0 也会卡住。换个起点再试。',
+    diverge: '<span class="warn">✗ 学习率太大，小球被甩出了山谷！</span>调小学习率，点「重新随机起点」再来。',
+    stepInfo: (steps, L) =>
+      '第 <span class="num">' + steps + '</span> 步 · 当前损失 <span class="num">' + L.toFixed(3) + '</span>',
+    tooManySteps: '走了 <span class="num">500</span> 步还没停 —— 学习率太小会磨蹭很久，调大一点试试？',
+    newStart: (L) =>
+      '新起点就绪（损失 <span class="num">' + L.toFixed(2) + '</span>）。点「自动播放」开始下山。',
+    finished: '这一程已结束 —— 点「重新随机起点」再来一次。',
+  },
+  en: {
+    arrivedBottom: (L, steps) =>
+      '<span class="ok">✓ Reached the deepest valley floor!</span> It’s almost flat underfoot (gradient ≈ 0); the loss settled at <span class="num">' +
+      L.toFixed(2) + '</span>, after <span class="num">' + steps + '</span> steps.',
+    localMin: (L) =>
+      '<span class="ok">✓ Settled into a pit</span> (loss <span class="num">' +
+      L.toFixed(2) + '</span>). Rotate the terrain — there’s a deeper valley off in the distance. This is a <b>local minimum</b>.',
+    saddle: '⏸ Stopped on a flat patch (near a saddle point or a peak); a gradient ≈ 0 stalls it too. Pick a new start and try again.',
+    diverge: '<span class="warn">✗ The learning rate is too large — the ball got flung out of the valley!</span> Lower the learning rate and click "Re-randomize start" to retry.',
+    stepInfo: (steps, L) =>
+      'Step <span class="num">' + steps + '</span> · current loss <span class="num">' + L.toFixed(3) + '</span>',
+    tooManySteps: 'Took <span class="num">500</span> steps and still hasn’t stopped — too small a learning rate dawdles for ages; try turning it up?',
+    newStart: (L) =>
+      'New start ready (loss <span class="num">' + L.toFixed(2) + '</span>). Click "Auto-play" to start descending.',
+    finished: 'This run is over — click "Re-randomize start" to go again.',
+  },
+}
 
 // 损失地形：两三个高斯峰谷叠加 + 缓碗
 const G = (x, z, cx, cz, s) => Math.exp(-((x - cx) ** 2 + (z - cz) ** 2) / s)
@@ -31,8 +68,20 @@ function grad(x, z) {
 
 export function createGradientDescent(container, opts) {
   const { getLR, onStatus, onHistory, onPlaying } = opts
+  let lang = opts.lang || 'zh'
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
   const cssVar = (n) => getComputedStyle(document.documentElement).getPropertyValue(n).trim()
+
+  // 当前状态文案的「生成器」：接收 STR[lang]，返回 HTML 字符串。
+  // 切换语言时重跑它即可用新语言刷新文字，而不触碰任何 3D / 动画状态。
+  let statusFn = () => ''
+  function emitStatus() {
+    onStatus(statusFn(STR[lang]))
+  }
+  function setStatus(fn) {
+    statusFn = fn
+    emitStatus()
+  }
 
   const YS = 0.55
   const LMIN = 0.1
@@ -155,23 +204,17 @@ export function createGradientDescent(container, opts) {
     setPlaying(false)
     const L = lossFn(px, pz)
     if (L < 0.8) {
-      onStatus(
-        '<span class="ok">✓ 到达最深的谷底！</span>脚下几乎全平（梯度 ≈ 0），损失停在 <span class="num">' +
-          L.toFixed(2) + '</span>，共走 <span class="num">' + steps + '</span> 步。',
-      )
+      setStatus((s) => s.arrivedBottom(L, steps))
     } else if (L < 1.6) {
-      onStatus(
-        '<span class="ok">✓ 停进了一个坑底</span>（损失 <span class="num">' +
-          L.toFixed(2) + '</span>）。旋转地形看看 —— 远处还有更深的谷。这就是<b>局部最优</b>。',
-      )
+      setStatus((s) => s.localMin(L))
     } else {
-      onStatus('⏸ 停在了一处平地（鞍点或山顶附近），梯度 ≈ 0 也会卡住。换个起点再试。')
+      setStatus((s) => s.saddle)
     }
   }
   function diverge() {
     done = true
     setPlaying(false)
-    onStatus('<span class="warn">✗ 学习率太大，小球被甩出了山谷！</span>调小学习率，点「重新随机起点」再来。')
+    setStatus((s) => s.diverge)
   }
   function doStep() {
     if (done) return
@@ -192,10 +235,10 @@ export function createGradientDescent(container, opts) {
     if (!isFinite(L) || Math.abs(px) > 3.6 || Math.abs(pz) > 3.6) {
       diverge()
     } else {
-      onStatus('第 <span class="num">' + steps + '</span> 步 · 当前损失 <span class="num">' + L.toFixed(3) + '</span>')
+      setStatus((s) => s.stepInfo(steps, L))
       if (steps >= 500) {
         setPlaying(false)
-        onStatus('走了 <span class="num">500</span> 步还没停 —— 学习率太小会磨蹭很久，调大一点试试？')
+        setStatus((s) => s.tooManySteps)
       }
     }
     emitHistory()
@@ -215,7 +258,8 @@ export function createGradientDescent(container, opts) {
     placeBall()
     pushTrail()
     emitHistory()
-    onStatus('新起点就绪（损失 <span class="num">' + hist[0].toFixed(2) + '</span>）。点「自动播放」开始下山。')
+    const L0 = hist[0]
+    setStatus((s) => s.newStart(L0))
     if (reduceMotion) render()
   }
 
@@ -263,7 +307,7 @@ export function createGradientDescent(container, opts) {
     },
     togglePlay() {
       if (done) {
-        onStatus('这一程已结束 —— 点「重新随机起点」再来一次。')
+        setStatus((s) => s.finished)
         return
       }
       if (reduceMotion) {
@@ -275,6 +319,13 @@ export function createGradientDescent(container, opts) {
       setPlaying(!playing)
     },
     reset: randomStart,
+    // 切换语言：仅更新内部 lang 并用新语言重推当前状态文案，
+    // 绝不重建场景、不重置小球/动画状态。
+    setLang(next) {
+      if (next !== 'zh' && next !== 'en') return
+      lang = next
+      emitStatus()
+    },
     dispose() {
       renderer.setAnimationLoop(null)
       ro.disconnect()

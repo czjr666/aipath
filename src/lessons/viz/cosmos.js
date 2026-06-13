@@ -1,11 +1,25 @@
 // ============================================================
 // 词向量星空控制器（three.js，框架无关）
-//   createCosmos(host) → { select(key), startAnalogy(), dispose() }
+//   createCosmos(host, { lang }) → { select(key), startAnalogy(), setLang(next), dispose() }
 // React 负责胶囊与文案；控制器负责 3D 场景、群落高亮、关系箭头与类比动画。
 // 36 个中文词、6 个语义簇，坐标为教学手工摆放。
+// 双语：内部以中文词作稳定 id（byName / 箭头 / 类比查找均用它），仅显示标签按 lang 取对应词；
+//       切换语言只重画标签纹理，绝不重建 3D 场景、不重置相机/动画。
 // ============================================================
 import * as THREE from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
+
+// 词向量示例词的英文对应：坐标/向量/群落全不变，仅英文模式下把展示标签换成对应英文词，
+// 以保证「king − man + woman ≈ queen」「China → Beijing」等演示意义在英文下同样成立。
+const EN_WORD = {
+  猫: 'cat', 狗: 'dog', 老虎: 'tiger', 兔子: 'rabbit', 大象: 'elephant', 熊猫: 'panda',
+  米饭: 'rice', 面条: 'noodles', 饺子: 'dumpling', 披萨: 'pizza', 汉堡: 'burger', 寿司: 'sushi',
+  开心: 'happy', 悲伤: 'sad', 愤怒: 'angry', 平静: 'calm', 惊讶: 'surprised', 害怕: 'afraid',
+  医生: 'doctor', 教师: 'teacher', 工程师: 'engineer', 厨师: 'chef', 警察: 'police', 律师: 'lawyer',
+  国王: 'king', 女王: 'queen', 男人: 'man', 女人: 'woman', 王子: 'prince', 公主: 'princess',
+  中国: 'China', 北京: 'Beijing', 日本: 'Japan', 东京: 'Tokyo', 法国: 'France', 巴黎: 'Paris',
+}
+const labelOf = (t, lang) => (lang === 'en' ? (EN_WORD[t] || t) : t)
 
 const GROUP_COLOR = { animal: '--sage', food: '--amber', emotion: '--terracotta', job: '--sky', royal: '--fg-0', capital: '--fg-0' }
 const WORDS = [
@@ -33,7 +47,8 @@ const MATCH = {
   relation: (it) => it.g === 'royal' || it.g === 'capital',
 }
 
-export function createCosmos(host) {
+export function createCosmos(host, opts = {}) {
+  let lang = opts.lang || 'zh'
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches
   const css = (n) => getComputedStyle(document.documentElement).getPropertyValue(n).trim()
   const cssColor = (n) => new THREE.Color(css(n).replace(/rgba\(([^,]+),([^,]+),([^,]+),[^)]+\)/, 'rgb($1,$2,$3)'))
@@ -91,10 +106,11 @@ export function createCosmos(host) {
     const dot = new THREE.Sprite(new THREE.SpriteMaterial({ map: dotTex, color: cssColor(GROUP_COLOR[g]), transparent: true, depthWrite: false }))
     dot.position.set(x, y, z)
     dot.scale.setScalar(0.85)
-    const lbl = new THREE.Sprite(new THREE.SpriteMaterial({ map: labelTexture(t, css('--fg-0')), transparent: true, depthWrite: false }))
+    const lbl = new THREE.Sprite(new THREE.SpriteMaterial({ map: labelTexture(labelOf(t, lang), css('--fg-0')), transparent: true, depthWrite: false }))
     lbl.position.set(x, y + 0.8, z)
     const H = 1.05
     lbl.scale.set((lbl.material.map.image.width / lbl.material.map.image.height) * H, H, 1)
+    lbl._H = H
     scene.add(dot, lbl)
     const item = { t, g, dot, lbl, pos: new THREE.Vector3(x, y, z) }
     items.push(item); byName[t] = item
@@ -199,15 +215,24 @@ export function createCosmos(host) {
     }
   }
 
-  const mq = matchMedia('(prefers-color-scheme: dark)')
-  const onScheme = () => {
+  // 重画所有标签纹理（用于主题或语言切换）：只换纹理与尺寸，不动几何/位置/相机/动画。
+  function refreshLabels() {
     const fg = css('--fg-0')
     items.forEach((it) => {
-      it.dot.material.color.copy(cssColor(GROUP_COLOR[it.g]))
       it.lbl.material.map.dispose()
-      it.lbl.material.map = labelTexture(it.t, fg)
+      it.lbl.material.map = labelTexture(labelOf(it.t, lang), fg)
       it.lbl.material.needsUpdate = true
+      const H = it.lbl._H
+      it.lbl.scale.set((it.lbl.material.map.image.width / it.lbl.material.map.image.height) * H, H, 1)
     })
+  }
+
+  const mq = matchMedia('(prefers-color-scheme: dark)')
+  const onScheme = () => {
+    items.forEach((it) => {
+      it.dot.material.color.copy(cssColor(GROUP_COLOR[it.g]))
+    })
+    refreshLabels()
     starMat.color.copy(cssColor('--fg-2'))
     select(currentKey)
   }
@@ -235,6 +260,13 @@ export function createCosmos(host) {
   return {
     select,
     startAnalogy,
+    // 切换语言：仅重画标签纹理为对应语言的词，绝不重建 3D 场景、不重置相机/动画。
+    setLang(next) {
+      if (next !== 'zh' && next !== 'en') return
+      if (next === lang) return
+      lang = next
+      refreshLabels()
+    },
     dispose() {
       renderer.setAnimationLoop(null)
       ro.disconnect()

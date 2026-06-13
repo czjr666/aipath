@@ -1,10 +1,47 @@
 // ============================================================
 // 扩散模型 canvas 控制器（框架无关）
-//   createDenoise(canvas, { onUpdate(step, caption, phase) })
-//   createCfg(canvas, { onTier(title, desc) })
+//   createDenoise(canvas, { onUpdate(step, caption, phase), lang })
+//   createCfg(canvas, { onTier(title, desc), lang })
 // 颜色取自设计 token，随深浅色重画。原理示意，非真实模型。
+// lang 'zh' | 'en'，默认 'zh'，可通过 setLang 实时切换（仅换文案，不重置动画）
 // ============================================================
 const cssVar = (n) => getComputedStyle(document.documentElement).getPropertyValue(n).trim()
+
+// ----- 双语状态文案（仅用户可见文本，含动态数值的用函数/模板）-----
+const STR = {
+  zh: {
+    caption: (step, max, pct) => '步数 ' + step + ' / ' + max + ' · 噪声残留 ' + pct + '%',
+    phase: {
+      noise: '🌫️ 纯噪声：这就是生成的起点 —— 一张随机雪花，画“藏”在里面。',
+      blocks: '🎨 前几步先定大色块：去噪器在决定整体色调和布局往哪边走。',
+      shape: '🖼️ 轮廓浮现：构图和色块已定，细节还糊着 —— 中段步骤负责成形。',
+      detail: '🔍 细节冲刺：最后几步锐化边缘和纹理，画面越来越清晰。',
+      done: '✅ 去噪完成。这幅画不存在于任何素材库 —— 它是从噪声里被一步步“擦”出来的。',
+    },
+    tiers: [
+      { title: '🙉 几乎不听导航', desc: '引导太弱：模型自由发挥，画面发灰、模糊，常常跑题 ——「落日」可能根本不出现。' },
+      { title: '✅ 贴题又自然', desc: '常用档位：既听文字的话，又保住画面的自然质感。多数产品的默认值就在这一带。' },
+      { title: '📢 越来越听话', desc: '更贴题了，但代价开始显现：颜色变艳、对比变冲，画面有点“用力过猛”。' },
+      { title: '🍭 过饱和警告', desc: '导航音量开到最大：颜色过饱和、画面发“塑料”—— 司机被吼得紧张，反而开不好车。' },
+    ],
+  },
+  en: {
+    caption: (step, max, pct) => 'Step ' + step + ' / ' + max + ' · noise remaining ' + pct + '%',
+    phase: {
+      noise: '🌫️ Pure noise: this is the starting point of generation — a random snowstorm, with the image "hidden" inside.',
+      blocks: '🎨 The first steps lay down large color blocks: the denoiser decides which way the overall palette and layout should go.',
+      shape: '🖼️ The outline emerges: composition and color blocks are set, the details still blurry — the middle steps handle the shaping.',
+      detail: '🔍 Detail sprint: the last few steps sharpen edges and textures, and the image grows clearer.',
+      done: '✅ Denoising complete. This image exists in no stock library — it was "erased" out of noise, one step at a time.',
+    },
+    tiers: [
+      { title: '🙉 Barely follows the navigation', desc: 'Guidance too weak: the model improvises, the image turns gray and blurry, often off-topic — the "sunset" may not even appear.' },
+      { title: '✅ On-topic and natural', desc: 'The common setting: it follows the text while keeping the image\'s natural texture. Most products default into this range.' },
+      { title: '📢 More and more obedient', desc: 'More on-topic, but the cost starts to show: colors grow vivid, contrast turns harsh, the image gets a bit "overcooked."' },
+      { title: '🍭 Oversaturation warning', desc: 'Navigation volume cranked to max: oversaturated colors, a "plastic" look — the driver is so frazzled by the shouting they can\'t drive well.' },
+    ],
+  },
+}
 
 const PATTERNS = {
   rings(g, S) {
@@ -42,7 +79,9 @@ function mulberry32(a) {
   }
 }
 
-export function createDenoise(canvas, { onUpdate }) {
+export function createDenoise(canvas, opts) {
+  const { onUpdate } = opts
+  let lang = opts.lang || 'zh'
   const ctx = canvas.getContext('2d')
   const S = canvas.width
   const MAX = 50
@@ -65,11 +104,12 @@ export function createDenoise(canvas, { onUpdate }) {
   }
 
   function phaseText(p) {
-    if (p === 0) return '🌫️ 纯噪声：这就是生成的起点 —— 一张随机雪花，画“藏”在里面。'
-    if (p < 0.35) return '🎨 前几步先定大色块：去噪器在决定整体色调和布局往哪边走。'
-    if (p < 0.75) return '🖼️ 轮廓浮现：构图和色块已定，细节还糊着 —— 中段步骤负责成形。'
-    if (p < 1) return '🔍 细节冲刺：最后几步锐化边缘和纹理，画面越来越清晰。'
-    return '✅ 去噪完成。这幅画不存在于任何素材库 —— 它是从噪声里被一步步“擦”出来的。'
+    const ph = STR[lang].phase
+    if (p === 0) return ph.noise
+    if (p < 0.35) return ph.blocks
+    if (p < 0.75) return ph.shape
+    if (p < 1) return ph.detail
+    return ph.done
   }
 
   function render(step) {
@@ -89,7 +129,7 @@ export function createDenoise(canvas, { onUpdate }) {
       d[i + 3] = 255
     }
     ctx.putImageData(img, 0, 0)
-    onUpdate(step, '步数 ' + step + ' / ' + MAX + ' · 噪声残留 ' + Math.round((1 - w) * 100) + '%', phaseText(p))
+    onUpdate(step, STR[lang].caption(step, MAX, Math.round((1 - w) * 100)), phaseText(p))
   }
 
   let raf = null
@@ -120,18 +160,21 @@ export function createDenoise(canvas, { onUpdate }) {
       raf = requestAnimationFrame(frame)
     },
     isPlaying() { return !!raf },
+    // 切换语言：仅更新 lang 并用新语言重渲文案，不重建 canvas、不重置去噪动画状态。
+    setLang(next) {
+      if (next !== 'zh' && next !== 'en') return
+      lang = next
+      render(curStep)
+    },
     dispose() { stopPlay(); mq.removeEventListener('change', onScheme) },
   }
 }
 
-const CFG_TIERS = [
-  { max: 4, title: '🙉 几乎不听导航', desc: '引导太弱：模型自由发挥，画面发灰、模糊，常常跑题 ——「落日」可能根本不出现。' },
-  { max: 9, title: '✅ 贴题又自然', desc: '常用档位：既听文字的话，又保住画面的自然质感。多数产品的默认值就在这一带。' },
-  { max: 14, title: '📢 越来越听话', desc: '更贴题了，但代价开始显现：颜色变艳、对比变冲，画面有点“用力过猛”。' },
-  { max: 20, title: '🍭 过饱和警告', desc: '导航音量开到最大：颜色过饱和、画面发“塑料”—— 司机被吼得紧张，反而开不好车。' },
-]
+const CFG_TIERS = [{ max: 4 }, { max: 9 }, { max: 14 }, { max: 20 }]
 
-export function createCfg(canvas, { onTier }) {
+export function createCfg(canvas, opts) {
+  const { onTier } = opts
+  let lang = opts.lang || 'zh'
   const ctx = canvas.getContext('2d')
   const S = canvas.width
   const base = document.createElement('canvas'); base.width = base.height = S
@@ -150,7 +193,9 @@ export function createCfg(canvas, { onTier }) {
       ctx.filter = 'saturate(' + (1 + k2 * 1.6).toFixed(2) + ') contrast(' + (1 + k2 * 0.4).toFixed(2) + ')'
       ctx.drawImage(base, 0, 0); ctx.filter = 'none'
     }
-    const tier = CFG_TIERS.find((t) => cfg <= t.max) || CFG_TIERS[CFG_TIERS.length - 1]
+    const idx = CFG_TIERS.findIndex((t) => cfg <= t.max)
+    const i = idx === -1 ? CFG_TIERS.length - 1 : idx
+    const tier = STR[lang].tiers[i]
     onTier(tier.title, tier.desc)
   }
 
@@ -161,6 +206,12 @@ export function createCfg(canvas, { onTier }) {
   rebuild(); render(7)
   return {
     setCfg(cfg) { render(cfg) },
+    // 切换语言：仅更新 lang 并用新语言重渲文案，不重建 canvas、不重置 CFG 状态。
+    setLang(next) {
+      if (next !== 'zh' && next !== 'en') return
+      lang = next
+      render(curCfg)
+    },
     dispose() { mq.removeEventListener('change', onScheme) },
   }
 }
