@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- 站内已内置中英文切换；禁用浏览器网页翻译，避免其改写文本节点后 React 协调时
+       removeChild 报错（在内容最密的 L30 切换时尤为明显，会整页白屏）。 -->
+  <meta name="google" content="notranslate" />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <title>AI 通识 · 为中文学习者设计的 AI 入门课</title>
   <meta name="description" content="零基础 AI 课程：用可视化与交互演示讲透 AI 核心原理，6 个阶段 30 课，从神经网络直觉到亲手构建 AI 应用，专为中文学习者设计。" />

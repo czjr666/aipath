@@ -49,6 +49,8 @@ export const UI = {
       placeholderNotePre: '原课程内容与交互演示完整保存在 ',
       placeholderNoteSuf: '，迁移后将拥有与 L01 / L04 相同的组件化交互体验。',
       enBodyNotice: '本课正文的英文版仍在路上，暂时显示中文内容。',
+      bodyError: '本课内容加载时出了点问题。如果你开启了浏览器的网页翻译，请将本站设为「不翻译」后重试 —— 本站已内置中英文切换。',
+      reload: '重新载入本课',
     },
     ui: { tapReveal: '▸ 点击揭晓', viewAnswer: '查看答案' },
     home: {
@@ -133,6 +135,8 @@ export const UI = {
       placeholderNotePre: 'The original content and interactive demos are preserved in ',
       placeholderNoteSuf: ', and will gain the same component-based interactivity as L01 / L04 after migration.',
       enBodyNotice: 'The English version of this lesson is on the way — showing the Chinese text for now.',
+      bodyError: 'Something went wrong while loading this lesson. If your browser is auto-translating the page, set this site to “Don’t translate” and try again — a built-in language switch is already provided.',
+      reload: 'Reload this lesson',
     },
     ui: { tapReveal: '▸ Tap to reveal', viewAnswer: 'Show answer' },
     home: {

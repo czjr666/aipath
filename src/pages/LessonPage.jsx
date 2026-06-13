@@ -4,6 +4,7 @@ import Nav from '../components/Nav.jsx'
 import LessonNav from '../components/LessonNav.jsx'
 import Footer from '../components/Footer.jsx'
 import Pager from '../components/Pager.jsx'
+import LessonErrorBoundary from '../components/LessonErrorBoundary.jsx'
 import { Pill, Dots } from '../components/ui.jsx'
 import { stageOf } from '../data/lessons.js'
 import { useLang, useUI } from '../i18n/LangContext.jsx'
@@ -101,9 +102,19 @@ export default function LessonPage({ lesson }) {
         )}
 
         {Body ? (
-          <Suspense key={lesson.slug} fallback={<div className="footnote" style={{ marginTop: 32 }}>{t.lesson.loading}</div>}>
-            <Body />
-          </Suspense>
+          <LessonErrorBoundary
+            resetKey={lesson.slug}
+            fallback={
+              <div className="card card-pad" style={{ marginTop: 32 }}>
+                <p className="lead" style={{ marginBottom: 12 }}>{t.lesson.bodyError}</p>
+                <button className="btn" onClick={() => window.location.reload()}>{t.lesson.reload}</button>
+              </div>
+            }
+          >
+            <Suspense key={lesson.slug} fallback={<div className="footnote" style={{ marginTop: 32 }}>{t.lesson.loading}</div>}>
+              <Body />
+            </Suspense>
+          </LessonErrorBoundary>
         ) : (
           <Placeholder lesson={lesson} t={t} />
         )}
