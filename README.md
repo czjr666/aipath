@@ -1,4 +1,4 @@
-# AI Path · AI Literacy
+# AI 通识 · AI Literacy
 
 **English** · [中文](./README.zh-CN.md)
 

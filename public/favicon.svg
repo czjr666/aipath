@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <!-- AI Path 站点图标：墨色圆角方块上的「AI」+ 琥珀色打字光标（呼应首页 LLM hero） -->
+  <!-- AI 通识 站点图标：墨色圆角方块上的「AI」+ 琥珀色打字光标（呼应首页 LLM hero） -->
   <style>
     .bg { fill: #1A1410; }
     .fg { stroke: #FAF6EC; }

@@ -3,7 +3,7 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "description": "拓智 · AI Path — 为中文学习者设计的 AI 入门课（React 架构）",
+  "description": "Interactive AI General Education Course — 30 Lessons, Zero Math",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
