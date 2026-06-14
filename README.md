@@ -1,4 +1,4 @@
-# AI 通识 · AI Literacy
+# AI 通识课 · AI Essentials
 
 **English** · [中文](./README.zh-CN.md)
 

@@ -1,5 +1,5 @@
 // ============================================================
-// AI 通识 · i18n 文案字典（中英双语）
+// AI 通识课 · i18n 文案字典（中英双语）
 // 纯数据，无 React 依赖 —— 供 LangContext 的 useUI() 与副作用消费。
 // 课程正文（L01~L30）暂不在此，本字典只覆盖 UI 框架与首页文案。
 // ============================================================
@@ -8,12 +8,14 @@
 export const META = {
   zh: {
     lang: "zh-CN",
-    title: "AI 通识 · 为中文学习者设计的 AI 入门课",
+    brand: "AI 通识课",
+    title: "AI 通识课 · 为中文学习者设计的 AI 入门课",
     description:
       "零基础 AI 课程：用可视化与交互演示讲透 AI 核心原理，6 个阶段 30 课，从神经网络直觉到亲手构建 AI 应用，专为中文学习者设计。",
   },
   en: {
     lang: "en",
+    brand: "AI Essentials",
     title: "Interactive AI General Education Course — 30 Lessons, Zero Math",
     description:
       "A from-zero AI course: core principles explained through visuals and interactive demos. 6 stages, 30 lessons — from neural-network intuition to building your own AI apps.",
@@ -32,7 +34,7 @@ export const UI = {
       menu: "菜单",
     },
     footer: {
-      tagline: "AI 通识 · 为中文学习者设计的 AI 入门课",
+      tagline: "AI 通识课 · 为中文学习者设计的 AI 入门课",
       updating: "持续更新中",
     },
     pager: {
@@ -129,7 +131,7 @@ export const UI = {
       menu: "Menu",
     },
     footer: {
-      tagline: "AI Path · AI Literacy — A Visual Intro to AI for Beginners",
+      tagline: "AI Essentials · A Visual Intro to AI for Beginners",
       updating: "Continuously updated",
     },
     pager: {
