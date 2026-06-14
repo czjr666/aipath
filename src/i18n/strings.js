@@ -12,6 +12,8 @@ export const META = {
     title: "AI 通识课 · 为中文学习者设计的 AI 入门课",
     description:
       "零基础 AI 课程：用可视化与交互演示讲透 AI 核心原理，6 个阶段 30 课，从神经网络直觉到亲手构建 AI 应用，专为中文学习者设计。",
+    ogImage: "https://aipath.buynao.com/og-image.png",
+    ogLocale: "zh_CN",
   },
   en: {
     lang: "en",
@@ -19,6 +21,8 @@ export const META = {
     title: "Interactive AI General Education Course — 30 Lessons, Zero Math",
     description:
       "A from-zero AI course: core principles explained through visuals and interactive demos. 6 stages, 30 lessons — from neural-network intuition to building your own AI apps.",
+    ogImage: "https://aipath.buynao.com/og-image-en.png",
+    ogLocale: "en_US",
   },
 };
 

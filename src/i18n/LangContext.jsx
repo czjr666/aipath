@@ -54,6 +54,17 @@ export function LangProvider({ children }) {
     document.title = meta.title
     const desc = document.querySelector('meta[name="description"]')
     if (desc) desc.setAttribute('content', meta.description)
+    // 社交分享图随语言切换：og-image(中) / og-image-en(英)
+    const setMeta = (sel, val) => {
+      const el = document.querySelector(sel)
+      if (el && val) el.setAttribute('content', val)
+    }
+    setMeta('meta[property="og:image"]', meta.ogImage)
+    setMeta('meta[name="twitter:image"]', meta.ogImage)
+    setMeta('meta[property="og:image:alt"]', meta.title)
+    setMeta('meta[property="og:title"]', meta.title)
+    setMeta('meta[name="twitter:title"]', meta.title)
+    setMeta('meta[property="og:locale"]', meta.ogLocale)
   }, [lang])
 
   return (
