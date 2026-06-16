@@ -40,6 +40,7 @@ export const UI = {
     footer: {
       tagline: "AI 通识课 · 为中文学习者设计的 AI 入门课",
       updating: "持续更新中",
+      follow: "在 X 上关注作者",
     },
     pager: {
       prevDir: "← 上一课",
@@ -137,6 +138,7 @@ export const UI = {
     footer: {
       tagline: "AI Essentials · A Visual Intro to AI for Beginners",
       updating: "Continuously updated",
+      follow: "Follow on X",
     },
     pager: {
       prevDir: "← Previous",

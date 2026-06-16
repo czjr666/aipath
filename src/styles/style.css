@@ -231,3 +231,11 @@ footer {
   color: var(--fg-2); font-size: 13px;
 }
 footer .container { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+footer .footer-right { display: inline-flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+footer .x-link {
+  display: inline-flex; align-items: center; gap: 6px;
+  color: var(--fg-2); text-decoration: none;
+  transition: color .15s ease;
+}
+footer .x-link:hover { color: var(--fg-0); }
+footer .x-link svg { display: block; }
