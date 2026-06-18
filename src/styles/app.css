@@ -334,6 +334,9 @@ a.lesson:hover { background: var(--glass); }
 
 /* ---------- L02：训练循环 + 猜下一个词 ---------- */
 .demo-body.single { grid-template-columns: 1fr; }
+#rule-flow-svg { width: 100%; height: auto; display: block; }
+#rule-flow-svg text { user-select: none; }
+.rule-flow-card { padding: 16px 18px; overflow: hidden; }
 #loop-svg .ln { cursor: pointer; }
 #loop-svg .ln text { pointer-events: none; }
 #loop-svg .ln.dim { opacity: 0.35; }

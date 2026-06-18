@@ -12,11 +12,11 @@ const C = {
     // 交互一：可转动的学习循环
     // ============================================================
     steps: [
-      { title: '① 喂数据', sub: '原料进场 · 只在开局发生一次', desc: '把 10 万封邮件连同人工标好的“垃圾 / 正常”一起交给模型。此刻它的参数还是随机数，对垃圾邮件一无所知 —— 1000 封试卷大约要错 493 封。' },
-      { title: '② 模型预测', sub: '用当前参数，硬着头皮猜', desc: '对每封邮件给出判断：“是垃圾邮件吗？”参数有多离谱，猜得就有多离谱 —— 开局基本等于抛硬币。' },
+      { title: '① 喂数据', sub: '输入训练数据 · 训练开始时准备好', desc: '把 10 万封邮件连同人工标好的“垃圾 / 正常”一起交给模型。此刻它的参数还是随机数，对垃圾邮件一无所知 —— 1000 封测试邮件里大约会错 493 封。' },
+      { title: '② 模型预测', sub: '根据当前参数，先做一次判断', desc: '对每封邮件给出判断：“是垃圾邮件吗？”参数有多不准确，猜得就有多不准确 —— 开局基本等于抛硬币。' },
       { title: '③ 与正确答案比对', sub: '量出“错了多少”', desc: '把猜测和人工标注一对，数出错题数：误差就是一个实打实的数字。没有玄学，只有对与错。' },
-      { title: '④ 微调参数', sub: '朝更准的方向，拧一点点', desc: '照着误差，把参数往“下次能少错几封”的方向轻轻拧一下，然后立刻回到第 ② 步再猜一遍。单圈进步小得可怜 —— 但它一秒能转几千圈。' },
-      { title: '✓ 误差足够小：训练完成', sub: '跳出循环 · 规则到手', desc: '误差降到可接受，循环停止。此刻固化在参数里的那套判断方式，就是机器“自己找出的规则”。上线之后它默认不再学习，只负责执行（见小练习第 3 题）。' },
+      { title: '④ 微调参数', sub: '朝更准的方向，调整一点点', desc: '照着误差，把参数往“下次能少错几封”的方向轻轻调一下，然后立刻回到第 ② 步再判断一遍。单次进步很小 —— 但它可以快速重复很多次。' },
+      { title: '✓ 误差足够小：训练完成', sub: '跳出循环 · 得到规则', desc: '误差降到可接受，循环停止。此刻固化在参数里的那套判断方式，就是机器“自己找出的规则”。上线之后它默认不再学习，只负责执行（见小练习第 3 题）。' },
     ],
     rounds: [
       { label: '第 1 圈', err: 471 }, { label: '第 2 圈', err: 455 }, { label: '第 3 圈', err: 440 },
@@ -30,9 +30,9 @@ const C = {
       n0a: '① 数据', n0b: '10 万封已标注邮件',
       n1a: '② 模型预测', n1b: '“这封是垃圾邮件吗？”',
       n2a: '③ 与正确答案比对', n2b: '量出“错了多少” = 误差',
-      n3a: '④ 微调参数', n3b: '朝更准的方向拧一点点',
+      n3a: '④ 微调参数', n3b: '朝更准的方向调整一点点',
       centerDone: '✓ 100 万圈转完', centerStart: '🔁 还没开始转', centerRound: '🔁 ',
-      centerErr: (errN) => <>1000 封试卷 · 错 {errN} 封</>,
+      centerErr: (errN) => <>1000 封测试邮件 · 错 {errN} 封</>,
       exitA: '✓ 误差足够小：训练完成', exitB: '学到的参数 = 它找到的规则',
       chips: [
         { key: 0, label: '① 喂数据' }, { key: 1, label: '② 预测' }, { key: 2, label: '③ 比对' },
@@ -41,7 +41,7 @@ const C = {
       step: '▸ 走一步',
       playDone: '✓ 已转完', playPause: '⏸ 暂停', playStart: '▶ 自动转圈',
       reset: '↺ 重置',
-      errLabel: '误差：1000 封试卷里猜错',
+      errLabel: '误差：1000 封测试邮件里猜错',
       errUnit: (errN) => <>{errN} 封</>,
     },
 
@@ -53,18 +53,18 @@ const C = {
         toks: [{ t: '光', p: 0.78 }, { t: '色', p: 0.1 }, { t: '影', p: 0.06 }, { t: '饼', p: 0.04 }, { t: '鸭', p: 0.02 }] },
       { prompt: '今天天气真＿', note: '✓ 这题没有唯一答案：「好」「不错」「冷」都常见，它学的是一整张概率表。',
         toks: [{ t: '好', p: 0.45 }, { t: '不错', p: 0.24 }, { t: '冷', p: 0.17 }, { t: '差', p: 0.1 }, { t: '香蕉', p: 0.04 }] },
-      { prompt: '猫蹲在＿', note: '✓ 概率里藏着常识：猫不爱下水、也上不了月亮 —— 全是从文本统计里白捡的。',
+      { prompt: '猫蹲在＿', note: '✓ 概率里藏着常识：猫不爱下水、也上不了月亮 —— 这些常识不是人工标注的，而是从大量文本统计中学到的。',
         toks: [{ t: '窗台上', p: 0.41 }, { t: '键盘上', p: 0.27 }, { t: '沙发上', p: 0.22 }, { t: '水里', p: 0.06 }, { t: '月亮上', p: 0.04 }] },
     ],
     stages: [
       { max: 8, data: '0 字', title: '刚出厂 · 纯乱猜', desc: '参数全是随机数，五个候选的概率几乎一样。这时它连“你好”都接不顺 —— 所谓“语言天赋”，一点也没有。' },
-      { max: 50, data: '几亿字', title: '训练中 · 循环疯转', desc: '每道填空题都自带答案：猜 → 对答案 → 微调，同一个循环在海量文本上日夜重复。常见说法的概率被一点点推高，离谱选项被一点点压低。' },
+      { max: 50, data: '几亿字', title: '训练中 · 反复循环', desc: '每道填空题都自带答案：猜 → 对答案 → 微调，同一个循环在海量文本上反复执行。常见说法的概率被一点点推高，离谱选项被一点点压低。' },
       { max: 88, data: '一座图书馆', title: '规律开始沉淀', desc: '语言的套路、常识、甚至整首唐诗，都以“谁更可能接在谁后面”的形式压进参数。没有谁教它语法 —— 统计本身就够了。' },
-      { max: 1e9, data: '整个互联网', title: '训练完成 · 概率笃定', desc: '分布已经非常笃定。但注意：它并没有“理解”月光，只是「光」接在这句诗后面的统计证据压倒性地多 —— 这正是下面误区 ③ 要拆的。' },
+      { max: 1e9, data: '整个互联网', title: '训练完成 · 预测更稳定', desc: '概率分布已经更集中。但注意：它并没有“理解”月光，只是「光」接在这句诗后面的统计证据压倒性地多 —— 这正是下面误区 ③ 要拆的。' },
     ],
     nextTok: {
       demoTitle: '🎛️ 交互演示 · 大模型的练习册：猜下一个词',
-      demoHint: '换一句话 · 拖动“训练量”，看概率怎么被一口一口喂出来',
+      demoHint: '换一句话 · 拖动“训练量”，看候选词概率如何随训练量变化',
       svgAria: '下一个词概率演示',
       task: '模型的任务：猜下一个词是什么（5 个候选）',
       sliderLabel: '训练量',
@@ -82,7 +82,7 @@ const C = {
       { q: '指令微调：人工写好一万条“问题 + 模范回答”喂给大模型', pill: { type: 'sky', text: '监督学习' },
         why: '模范回答就是人标的标准答案 —— 和垃圾邮件那本“练习册”本质相同，只是题目换成了对话。' },
       { q: '游戏 AI 自己跟自己下一亿盘棋：赢了加分，输了扣分', pill: { type: 'terracotta', text: '强化学习' },
-        why: 'AlphaGo 同款配方：试错 + 奖励，在海量对局里摸出拿高分的策略。' },
+        why: '和 AlphaGo 类似：通过试错和奖励，在大量对局中学出高分策略。' },
     ],
 
     goalsTitle: '🎯 你将学会',
@@ -91,10 +91,10 @@ const C = {
       '分清三种学习范式 —— 监督、无监督、强化，看到任何 AI 应用都能立刻归类',
       '亲手转动“猜 → 比对 → 微调”的训练循环，看着误差一圈一圈降下来',
       '看懂 ChatGPT 的配方：把互联网变成万亿道“填空题”，三种范式一条流水线用齐',
-      '拆穿三个流行误解：“自学成精”、“数据越多越好”、“模型理解了任务”',
+      '拆穿三个流行误解：“机器会自己悟出知识”、“数据越多越好”、“模型理解了任务”',
     ],
 
-    conceptTitle: '💡 核心概念：把箭头掉个头',
+    conceptTitle: '💡 核心概念：从人写规则，到机器找规则',
     conceptLead: '想象你是 2002 年的工程师，老板要你写一个垃圾邮件过滤器，你手里只有一种武器：if-else。先看两条技术路线的根本差别 —— 整个 AI 时代，就藏在这两张卡片的箭头方向里。',
     contrastOldTag: '老路 · 传统编程',
     contrastOldBig: <>规则 + 数据 <span className="gap">→</span> 答案</>,
@@ -102,8 +102,22 @@ const C = {
     contrastNewTag: '新路 · 机器学习',
     contrastNewBig: <>数据 + 答案 <span className="gap">→</span> <span className="hl">规则</span></>,
     contrastNewNote: <>人只提供原料：一大堆数据，外加每条数据的正确答案。机器反过来<b>自己找规则</b> —— 它找出来的这套规则，就是我们常说的“模型”。</>,
-    conceptExEn: 'if 含“中奖” → 拦截；if 含“免费” → 拦截；if 标题全是大写 → 拦截……',
-    conceptExZh: <>写到第 500 条规则，骗子把“中奖”改成“中　奖”或“恭喜您獲獎”，全部失效；继续补规则，规则之间又开始互相打架，正常邮件被误杀 —— 这叫<b>规则爆炸</b>，老路的死穴。</>,
+    ruleFlow: {
+      title: '规则爆炸：手写 if 为什么会失控',
+      aria: '规则爆炸流程图：旧规则、骗子变招、继续补规则、规则互相冲突、正常邮件被误杀',
+      rulesTitle: '手写规则',
+      rules: ['if 含“中奖” → 拦截', 'if 含“免费” → 拦截', 'if 标题全大写 → 拦截'],
+      trickTitle: '骗子变招',
+      trick: ['“中奖” → “中　奖”', '“中奖” → “恭喜您獲獎”'],
+      missTitle: '旧规则失效',
+      miss: '绕过拦截',
+      patchTitle: '继续补规则',
+      patch: ['第 500 条', '第 501 条', '第 502 条……'],
+      conflictTitle: '规则互相打架',
+      conflict: ['正常邮件', '被误杀'],
+      finalTitle: '规则爆炸',
+      final: ['规则越补越多', '维护成本越来越高'],
+    },
     conceptOutro: <>机器学习的解法干脆利落：收集 10 万封邮件，人工标好“垃圾 / 正常”，整批喂给算法，让它自己统计出“哪些特征组合最可疑”。它学出的判别规则比 500 条 if-else 细腻得多，而且骗子一变招，再喂一批新邮件重新训练就能跟上。这次掉头的真正威力在于：那些人类<b>会做、却说不清怎么做</b>的事 —— 认猫、听语音、做翻译 —— 第一次变得可解。你写不出“猫”的定义，但你拿得出一百万张猫的照片。</>,
 
     paradigmsTitle: '📖 三种学习范式：答案从哪儿来',
@@ -112,7 +126,7 @@ const C = {
       { label: '范式一 · 答案人来标', en: <>监督学习 <b>Supervised</b></>,
         zh: <>拿“带答案的练习册”刷题：每条数据都配有标准答案。猜“是不是垃圾邮件”这类选择题叫<b>分类</b>，猜“这套房值多少万”这类填数字题叫<b>回归</b>。工业界落地的模型，大半是它。</> },
       { label: '范式二 · 没有答案', en: <>无监督学习 <b>Unsupervised</b></>,
-        zh: <>只给数据、不给答案，让机器自己发现结构。最常见的是<b>聚类</b>：把千万用户按行为自动分成“剁手党”“比价党”“潜水党”—— 分几群、按什么分，事先没人规定。</> },
+        zh: <>只给数据、不给答案，让机器自己发现结构。最常见的是<b>聚类</b>：把千万用户按行为自动分成“高频购买用户”“价格敏感用户”“很少下单用户”—— 分几群、按什么分，事先没人规定。</> },
       { label: '范式三 · 试错 + 奖励', en: <>强化学习 <b>Reinforcement</b></>,
         zh: <>没有练习册，只有一个会打分的环境：做对加分、做错扣分，在海量试错里摸索出拿高分的<b>策略</b>。AlphaGo 的神之一手、打游戏的 AI、学走路的机器人，都靠它。</> },
     ],
@@ -124,28 +138,28 @@ const C = {
     tableHead: ['步骤', '机器在做什么', '放到垃圾邮件里看'],
     tableRows: [
       { be: '① 喂数据', ex1: '给模型看一批样本和对应的正确答案', ex2: '10 万封邮件，每封都标了“垃圾 / 正常”' },
-      { be: '② 模型预测', ex1: '用当前参数硬着头皮先猜一个答案', ex2: '刚开始纯属乱猜，对错大约各一半' },
+      { be: '② 模型预测', ex1: '用当前参数先做一次判断', ex2: '刚开始纯属乱猜，对错大约各一半' },
       { be: '③ 比对答案', ex1: '把猜测和标准答案一比，算出误差', ex2: '“这 1000 封里猜错了 380 封”' },
       { be: '④ 微调参数', ex1: '朝让误差变小的方向，把参数拧一点点', ex2: '调完再猜：错 379 封 —— 进步了一丁点' },
     ],
-    loopSecOutro: <>这个“猜 → 比对 → 微调”的闭环，行话就叫<b>训练（training）</b>。你刚才亲眼看到了：单看一圈进步小得可怜，但它一秒能转成千上万圈 —— “学习”的全部秘密就是<b>笨办法 × 巨大次数</b>。至于第④步“朝哪个方向拧、拧多少”是怎么算出来的，那是深度学习最核心的魔法，留给第 4 课《训练就是下山》专门讲；下一课（第 3 课）先去认识被拧的东西 —— 参数本人。</>,
+    loopSecOutro: <>这个“猜 → 比对 → 微调”的闭环，行话就叫<b>训练（training）</b>。你刚才亲眼看到了：单看一圈进步很小，但它一秒能转成千上万圈 —— 看起来笨的方法，重复足够多次，就会产生明显效果。至于第④步“朝哪个方向调、调多少”是怎么算出来的，那是深度学习最核心的魔法，留给第 4 课《训练就是下山》专门讲；下一课（第 3 课）先去认识被调整的东西 —— 参数。</>,
 
     chatgptTitle: '🤖 同一个循环，喂出 ChatGPT',
-    chatgptLead: '你可能想问：这套“猜 → 比对 → 微调”，跟 ChatGPT 这样的大语言模型（LLM）有什么关系？答案是：关系就是全部 —— 大模型就是这个循环开到极限的产物。变化只有两处：题目换了，规模炸了。',
+    chatgptLead: '你可能想问：这套“猜 → 比对 → 微调”，跟 ChatGPT 这样的大语言模型（LLM）有什么关系？答案是：关系就是全部 —— 大模型就是这个循环开到极大规模后的产物。变化只有两处：题目换了，规模变得极大。',
     chatgptExEn: <>题目：从“这封邮件是垃圾吗”，换成“<span className="hl">猜下一个词</span>”</>,
     chatgptExZh: <>把互联网上的文本遮住一截让模型猜：“床前明月＿”。妙处在于：<b>答案自带</b> —— 下一个词就写在原文里，根本不用人工标注。机器自己出题、自己对答案，行话叫<b>自监督学习</b>，可以理解成“监督学习的免费版”。标注免费，数据规模才能从 10 万封邮件，冲到<b>万亿个词</b>。</>,
-    chatgptMid: <>一个朴素到让人不敢信的事实：ChatGPT 写诗、写代码、答题的全部本事，都是从“猜下一个词”这一道题里长出来的 —— 题目足够简单 + 数据足够海量 + 循环转够多次，仅此而已。拖动下面的滑块，亲手“喂大”一个小模型：</>,
+    chatgptMid: <>一个朴素到让人不敢信的事实：ChatGPT 写诗、写代码、答题的很多能力，都是从“猜下一个词”这一道题里长出来的 —— 题目足够简单、数据足够海量、循环次数足够多，仅此而已。拖动下面的滑块，看看一个小模型怎样随训练量变大而变化：</>,
     chatgptAfter: <>当然，光会接话还成不了 ChatGPT。从“复读机”到“助手”，要闯三关 —— 注意看每张卡片上的范式标签：上一节的三种学法，在这条流水线里<b>全部登场</b>。</>,
     chatgptCards: [
-      { label: '第一关 · 烧掉绝大部分算力', en: <>预训练 <b>Pretraining</b></>,
+      { label: '第一关 · 消耗最多算力', en: <>预训练 <b>Pretraining</b></>,
         pillType: 'sage', pillText: '自监督 ≈ 监督学习的免费版',
         zh: '拿海量互联网文本刷“猜下一个词”，几个月转上万亿圈。出炉时它已装下语言、知识和套路，但只会接话。第 12 课细讲。' },
       { label: '第二关 · 学会“好好答题”', en: <>指令微调 <b>SFT</b></>,
         pillType: 'sky', pillText: '监督学习',
         zh: '人工精心写一批“问题 + 模范回答”喂给它 —— 这回答案真是人标的。它从“只会接话的复读机”，变成“会回答问题的助手”。' },
-      { label: '第三关 · 磨脾气', en: <>人类反馈强化学习 <b>RLHF</b></>,
+      { label: '第三关 · 调整回答偏好', en: <>人类反馈强化学习 <b>RLHF</b></>,
         pillType: 'terracotta', pillText: '强化学习',
-        zh: '让人给它的回答打分：有用、诚实加分，胡说、冒犯扣分。在奖惩里反复试错，把说话方式磨得让人放心。第 13 课细讲。' },
+        zh: '让人给它的回答打分：有用、诚实加分，胡说、冒犯扣分。在奖惩里反复试错，让它更倾向于给出有用、诚实、符合人类偏好的回答。第 13 课细讲。' },
     ],
 
     sortTitle: '🎛️ 动手分一分：这是哪种学法？',
@@ -154,9 +168,9 @@ const C = {
     pitfallsTitle: '⚠️ 常见误区',
     pitfalls: [
       {
-        bad: '机器学习 = 机器像人一样“自学成精”',
+        bad: '机器学习 = 机器会像人一样自己悟出知识',
         good: '它是一个纯数学的优化过程：照着误差信号，机械地把一堆数字微调到位',
-        why: <><b>病因：</b>“学习”这个词太有人味。机器没有好奇心、也不会顿悟，它只是没日没夜地重复“猜 → 比对 → 微调”。ChatGPT 也不例外 —— 它的全部“学习”，就是把“猜下一个词”这道题做了上万亿遍。把它想成“自动调参的统计机器”，你对它能力和短板的预判反而会准得多。</>,
+        why: <><b>病因：</b>“学习”这个词太有人味。机器没有好奇心、也不会顿悟，它只是反复执行“猜 → 比对 → 微调”。ChatGPT 也不例外 —— 它的主要训练过程，就是把“猜下一个词”这道题做了上万亿遍。把它想成一个会自动调整参数的统计系统，你对它能力和短板的预判反而会准得多。</>,
       },
       {
         bad: '数据越多，模型一定越好',
@@ -286,8 +300,22 @@ const C = {
     contrastNewTag: 'New way · machine learning',
     contrastNewBig: <>Data + Answers <span className="gap">→</span> <span className="hl">Rules</span></>,
     contrastNewNote: <>Humans only supply the raw material: a big pile of data, plus the correct answer for each piece. The machine, conversely, <b>finds the rules itself</b> — the set of rules it finds is what we commonly call the “model.”</>,
-    conceptExEn: 'if contains “you won” → block; if contains “free” → block; if subject is all caps → block…',
-    conceptExZh: <>By the 500th rule, scammers change “中奖” (you won) into “中　奖” or “恭喜您獲獎,” and everything breaks; keep patching rules and they start fighting each other, killing legitimate emails — this is the <b>rule explosion</b>, the old way’s fatal flaw.</>,
+    ruleFlow: {
+      title: 'Rule Explosion: why handwritten ifs break down',
+      aria: 'Rule explosion flowchart: handwritten rules, scammers change wording, more patches, rules conflict, legitimate emails are blocked',
+      rulesTitle: 'Handwritten rules',
+      rules: ['if contains “you won” → block', 'if contains “free” → block', 'if subject is all caps → block'],
+      trickTitle: 'Scammers adapt',
+      trick: ['“you won” → “y o u won”', '“you won” → “congrats, prize”'],
+      missTitle: 'Old rules miss it',
+      miss: 'Spam slips through',
+      patchTitle: 'Keep patching',
+      patch: ['rule #500', 'rule #501', 'rule #502…'],
+      conflictTitle: 'Rules conflict',
+      conflict: ['Legitimate email', 'gets blocked'],
+      finalTitle: 'Rule explosion',
+      final: ['More rules,', 'higher maintenance cost'],
+    },
     conceptOutro: <>Machine learning’s solution is clean and decisive: collect 100,000 emails, label them “spam / not spam” by hand, feed the whole batch to the algorithm, and let it figure out on its own “which combinations of features are most suspicious.” The discriminating rules it learns are far more nuanced than 500 if-else statements, and when scammers change tactics, you just feed in a fresh batch of emails and retrain to keep up. The real power of flipping the arrow this time is that things humans <b>can do but can’t explain how</b> — recognizing cats, transcribing speech, translating — become solvable for the first time. You can’t write a definition of “cat,” but you can produce a million photos of cats.</>,
 
     paradigmsTitle: '📖 Three Learning Paradigms: Where the Answer Comes From',
@@ -566,6 +594,80 @@ function NextTokenDemo({ c, sents, stages }) {
   )
 }
 
+function RuleExplosionDiagram({ c }) {
+  return (
+    <div className="card rule-flow-card mt14">
+      <svg id="rule-flow-svg" viewBox="0 0 680 300" role="img" aria-label={c.aria}>
+        <defs>
+          <marker id="rf-arr" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+            <path d="M0,0 L8,4 L0,8 z" fill="var(--fg-2)" />
+          </marker>
+          <marker id="rf-arr-bad" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+            <path d="M0,0 L8,4 L0,8 z" fill="var(--terracotta)" />
+          </marker>
+          <marker id="rf-arr-good" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+            <path d="M0,0 L8,4 L0,8 z" fill="var(--sage)" />
+          </marker>
+        </defs>
+
+        <text x="24" y="34" fontSize="17" fontWeight="800" fill="var(--fg-0)">{c.title}</text>
+
+        <g className="rf-node">
+          <rect x="24" y="62" width="200" height="122" rx="14" fill="var(--sky-bg)" stroke="var(--sky)" strokeWidth="1.5" />
+          <text x="44" y="92" fontSize="14" fontWeight="800" fill="var(--fg-0)">{c.rulesTitle}</text>
+          {c.rules.map((rule, i) => (
+            <text key={rule} x="44" y={120 + i * 24} fontSize="12.5" fill="var(--fg-1)">{rule}</text>
+          ))}
+        </g>
+
+        <g className="rf-node">
+          <rect x="278" y="62" width="172" height="92" rx="14" fill="var(--amber-bg)" stroke="var(--amber)" strokeWidth="1.5" />
+          <text x="300" y="92" fontSize="14" fontWeight="800" fill="var(--fg-0)">{c.trickTitle}</text>
+          {c.trick.map((line, i) => (
+            <text key={line} x="300" y={120 + i * 24} fontSize="12.5" fill="var(--fg-1)">{line}</text>
+          ))}
+        </g>
+
+        <g className="rf-node">
+          <rect x="504" y="62" width="152" height="92" rx="14" fill="var(--terracotta-bg)" stroke="var(--terracotta)" strokeWidth="1.5" />
+          <text x="580" y="98" textAnchor="middle" fontSize="14" fontWeight="800" fill="var(--fg-0)">{c.missTitle}</text>
+          <text x="580" y="124" textAnchor="middle" fontSize="12.5" fill="var(--fg-1)">{c.miss}</text>
+        </g>
+
+        <g className="rf-node">
+          <rect x="278" y="196" width="172" height="82" rx="14" fill="var(--bg-inset)" stroke="var(--hairline-strong)" strokeWidth="1.5" />
+          <text x="300" y="220" fontSize="14" fontWeight="800" fill="var(--fg-0)">{c.patchTitle}</text>
+          {c.patch.map((line, i) => (
+            <text key={line} x="300" y={242 + i * 15} fontSize="12.5" fill="var(--fg-1)">{line}</text>
+          ))}
+        </g>
+
+        <g className="rf-node">
+          <rect x="504" y="196" width="152" height="82" rx="14" fill="var(--terracotta-bg)" stroke="var(--terracotta)" strokeWidth="1.5" />
+          <text x="580" y="222" textAnchor="middle" fontSize="14" fontWeight="800" fill="var(--fg-0)">{c.conflictTitle}</text>
+          {c.conflict.map((line, i) => (
+            <text key={line} x="580" y={246 + i * 17} textAnchor="middle" fontSize="12.5" fill="var(--fg-1)">{line}</text>
+          ))}
+        </g>
+
+        <path d="M224 108 L270 108" fill="none" stroke="var(--fg-2)" strokeWidth="1.6" markerEnd="url(#rf-arr)" />
+        <path d="M450 108 L496 108" fill="none" stroke="var(--fg-2)" strokeWidth="1.6" markerEnd="url(#rf-arr)" />
+        <path d="M580 154 C 580 184, 500 184, 452 216" fill="none" stroke="var(--terracotta)" strokeWidth="1.6" strokeDasharray="5 5" markerEnd="url(#rf-arr-bad)" />
+        <path d="M450 237 L496 237" fill="none" stroke="var(--terracotta)" strokeWidth="1.6" markerEnd="url(#rf-arr-bad)" />
+
+        <g>
+          <rect x="24" y="212" width="200" height="66" rx="14" fill="var(--sage-bg)" stroke="var(--sage)" strokeWidth="1.5" strokeDasharray="5 5" />
+          <text x="124" y="236" textAnchor="middle" fontSize="14" fontWeight="800" fill="var(--fg-0)">{c.finalTitle}</text>
+          {c.final.map((line, i) => (
+            <text key={line} x="124" y={256 + i * 16} textAnchor="middle" fontSize="12.5" fill="var(--fg-1)">{line}</text>
+          ))}
+        </g>
+        <path d="M278 237 C 254 237, 250 245, 232 245" fill="none" stroke="var(--sage)" strokeWidth="1.6" strokeDasharray="5 5" markerEnd="url(#rf-arr-good)" />
+      </svg>
+    </div>
+  )
+}
+
 export default function L02() {
   const { lang } = useLang()
   const c = C[lang] || C.zh
@@ -596,10 +698,7 @@ export default function L02() {
             <p className="note">{c.contrastNewNote}</p>
           </div>
         </div>
-        <div className="example mt14">
-          <div className="en">{c.conceptExEn}</div>
-          <div className="zh">{c.conceptExZh}</div>
-        </div>
+        <RuleExplosionDiagram c={c.ruleFlow} />
         <p className="lead mt14">{c.conceptOutro}</p>
       </Lsec>
 
