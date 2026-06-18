@@ -14,8 +14,8 @@ Review course content for Chinese learner readability, conceptual clarity, and t
 1. Read the target lesson/article with line numbers or stable anchors.
 2. Review Chinese copy first: wording, idiom, tone, concept load, terminology, examples, and flow.
 3. Check source grounding: if the lesson mentions an external paper, standard, named concept, model, historical event, or web resource, add or request an inline note/link so readers can see the course is grounded in real sources.
-4. Check terminology: professional terms must show Chinese plus English on first meaningful use, for example `激活函数（activation function）`, `权重（weight）`, `偏置（bias）`.
-5. Identify diagram opportunities. If a process, branching logic, feedback loop, layered structure, before/after comparison, data pipeline, or cause-effect chain would be clearer visually, produce an Excalidraw flowchart artifact in addition to text feedback.
+4. Check terminology: professional terms must show Chinese plus English on first meaningful use, for example `激活函数（activation function）`, `偏置（bias）`.
+5. Identify diagram opportunities. If a process, branching logic, feedback loop, layered structure, before/after comparison, data pipeline, or cause-effect chain would be clearer visually, produce an React/SVG flowchart artifact in addition to text feedback.
 6. Report findings before summaries. Include exact file/line references when reviewing files.
 7. When asked to modify the content, apply concise edits and verify the build or relevant rendering path.
 
