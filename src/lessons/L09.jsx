@@ -109,7 +109,7 @@ const C = {
     ],
 
     conceptTitle: '💡 核心概念：固定的坐标，装不下流动的语义',
-    conceptLead: '第 8 课给了每个词一个向量坐标，但那个坐标是固定的——像印进字典就不再改动。可「苹果发布了新手机」和「这个苹果真甜」里，分明是两个“苹果”：一家公司、一种水果。一个点装不下两个意思。注意力机制的使命，就是把“字典坐标”升级成“现场坐标”。',
+    conceptLead: '第 8 课给了每个词一个向量坐标，但那个坐标是固定的——像印进字典就不再改动。可「苹果发布了新手机」和「这个苹果真甜」里，分明是两个“苹果”：一家公司、一种水果。一个点装不下两个意思。注意力机制（attention）的使命，就是把“字典坐标”升级成“现场坐标”。',
     concept8Tag: '第 8 课的困境',
     concept8Big: <>「苹果」永远停在<span className="gap">同一个点</span>上</>,
     concept8Note: '静态 embedding 是查字典：一词一坐标，不管上下文。多义词被迫压扁成一个“平均含义”，公司和水果挤在同一个向量里。',
@@ -135,6 +135,15 @@ const C = {
     whyCard2En: <>第 4 棒必须<b>等第 3 棒</b></>,
     whyCard2Zh: <>传话是串行的：后一个词必须等前一个词处理完，几万词的文章就得老老实实传几万棒，GPU 上千个计算单元只能干瞪眼。注意力让<b>所有词同时环顾、同时开工</b> —— 训练速度起飞，模型才堆得起后来的千亿参数（第 15 课）。</>,
     whyOutro: <>一句话总结：注意力不是“锦上添花的小改进”，而是同时解决了<b>记不住</b>和<b>算不快</b>两大瓶颈的换代方案。2017 年那篇论文标题说得直白 ——《Attention Is All You Need》（注意力就是你的全部所需），它催生的架构就是下一课的主角 Transformer。</>,
+    whySourceNote: (
+      <>
+        2017 年那篇提出 Transformer 的奠基论文：Vaswani 等{' '}
+        <a href="https://arxiv.org/abs/1706.03762" target="_blank" rel="noreferrer">
+          Attention Is All You Need
+        </a>
+        。
+      </>
+    ),
 
     qkvTitle: '📚 Q、K、V：到图书馆借一次书',
     qkvLead: '前面的“打分”具体怎么打？工程上，每个词的向量会分别过三道训练学出来的“变身工序”，分裂成三个角色 —— 就像同一个人在图书馆里可以既是提问的读者、又是被检索的藏书。想象你走进一座图书馆：',
@@ -174,7 +183,7 @@ const C = {
     lensSecTitle: '🎛️ 注意力透视镜：点一个词，看它在看谁',
     lensSecLead: '三句话任你拆。点击任意词块，弧线会从它伸向句中所有词（含一条绕回自己的小环）——线越粗越深，注意力权重越大，词下方标出百分比，总和为 100%。建议的玩法：先对比前两句里的「苹果」，再到第三句点「它」，亲眼看刚才那场“图书馆借书”的结果。',
 
-    headSecTitle: '🎭 多头注意力：几十位编辑，各划各的重点',
+    headSecTitle: '🎭 多头注意力（multi-head attention）：几十位编辑，各划各的重点',
     headSecLead: '一次注意力 = 一种“看法”。可语言里值得关注的关系远不止一种：语法上谁搭配谁、指代上谁是谁、语义上谁和谁一伙……一个头忙不过来，于是把向量切成若干份，让多个“头”并行各看各的，比如：',
     headCard1Label: '有的头 · 盯语法搭配',
     headCard1En: '谁修饰谁',
@@ -212,9 +221,9 @@ const C = {
     limitCard2Zh: '每生成一个新词，都要跟全部历史握一轮手 —— 对话越长，每一步越吃力。API 按 token 计费、长对话费用陡涨，根子也在这里。',
     limitCard3Label: '业界的回应',
     limitCard3En: <>一场“省握手”<b>军备竞赛</b></>,
-    limitCard3Zh: '只跟附近的词握手（滑动窗口）、只挑重点词握手（稀疏注意力）、把旧对话压缩成摘要……各种“偷工减料的艺术”层出不穷 —— 全是在平方账单上抠预算。',
+    limitCard3Zh: '只跟附近的词握手（滑动窗口，sliding window）、只挑重点词握手（稀疏注意力，sparse attention）、把旧对话压缩成摘要……各种“偷工减料的艺术”层出不穷 —— 全是在平方账单上抠预算。',
     limitExEn: <>边界提醒：注意力<span className="hl">只负责搬运，不负责消化</span></>,
-    limitExZh: '它做的事是“把相关的信息按比例搬到一起”，搬完之后真正的加工 —— 提炼、变换、记忆 —— 要靠每层后面跟着的另一个部件（前馈网络）完成。注意力是大模型的心脏，但心脏不是全身。零件怎么组装成完整的 Transformer，下一课见。',
+    limitExZh: '它做的事是“把相关的信息按比例搬到一起”，搬完之后真正的加工 —— 提炼、变换、记忆 —— 要靠每层后面跟着的另一个部件（前馈网络，feed-forward network）完成。注意力是大模型的心脏，但心脏不是全身。零件怎么组装成完整的 Transformer，下一课见。',
 
     pitfallsTitle: '⚠️ 常见误区',
     pitfalls: [
@@ -222,12 +231,25 @@ const C = {
         good: '它只是按相似度混合信息 —— 一套机械的打分加权流程，没有意识，也没有“聚焦”的主观体验',
         why: <><b>病因：</b>名字起得太拟人。“Attention” 只是研究者借人类认知打的比方，机制本身就是本课那三步：打分 → 换算比例 → 加权吸收。把它当成“AI 长出了人类式注意力”，会高估模型对世界的理解。</> },
       { bad: '模型像人一样，从左往右一个词一个词地读句子',
-        good: '所有词同时并行处理；谁先谁后的顺序信息，靠“位置编码”额外补进向量里',
+        good: '所有词同时并行处理；谁先谁后的顺序信息，靠“位置编码”（positional encoding）额外补进向量里',
         why: <><b>病因：</b>把自己的阅读习惯投射给了模型。注意力对全句一视同仁、一次算完 —— 这正是本课“圆桌会议”演示的第二个卖点：能在 GPU 上大规模并行，远快于逐词传话的老方法（RNN）。顺序到底怎么补？下一课 Transformer 见分晓。</> },
       { bad: '看一张注意力权重图，就能解释模型“为什么这么回答”',
         good: '权重只是亿万个中间计算值里的一小撮；“注意力能不能当解释”在研究界至今争论不休',
         why: <><b>病因：</b>本课的弧线图太直观，容易让人以为模型脑内真有一张“重点清单”。实际上单个头的权重和最终答案之间还隔着几十层的混合与改写 —— 拿一张权重图断言模型的“理由”，就像凭一帧监控画面给整部电影写剧情梗概。</> },
     ],
+    explainSourceNote: (
+      <>
+        “注意力权重能否当作模型的解释”至今仍有争论，正反两方代表作见 Jain & Wallace 2019{' '}
+        <a href="https://arxiv.org/abs/1902.10186" target="_blank" rel="noreferrer">
+          Attention is not Explanation
+        </a>
+        {' '}与 Wiegreffe & Pinter 2019{' '}
+        <a href="https://arxiv.org/abs/1908.04626" target="_blank" rel="noreferrer">
+          Attention is not not Explanation
+        </a>
+        。
+      </>
+    ),
 
     quizTitle: '✍️ 小练习',
     quiz: [
@@ -240,6 +262,9 @@ const C = {
       { q: '4. 朋友抱怨：“跟 AI 聊到第 200 轮，它回复越来越慢，听说费用还按对话长度涨 —— 是服务器不行吧？” 用本课的“握手账单”替 AI 喊个冤。',
         a: <>不是服务器的锅，是注意力的天性：<b>每生成一个新词，都要跟前文所有词握一遍手打分</b>。对话越长，每一步要握的手越多 —— 而且词数翻倍、握手次数大约翻四倍，速度和费用按平方恶化。这也是上下文窗口有上限的根本原因（第 17 课细讲），各家的“长上下文”竞赛，比的就是谁更会在这张账单上省钱。</> },
     ],
+    bridgeTitle: '➡️ 下一课怎么接上',
+    bridgeLead: '这一课你拆开了大模型的心脏：注意力让每个词环顾全场、按相关性重新定位自己，多头让它同时从语法、指代、语义多个角度看。但心脏不是全身 —— 注意力只负责“搬运信息”，搬来之后怎么加工、词的顺序怎么补、几十个零件怎么拼成一台能跑的引擎？下一课就把这些零件组装起来，看 2017 年那篇《Attention Is All You Need》造出的完整架构：Transformer。',
+    bridgeSteps: ['注意力 = 心脏', '但只负责搬运', '还缺顺序 / 加工 / 堆叠', '下一课：Transformer'],
   },
 
   en: {
@@ -328,6 +353,15 @@ const C = {
     whyCard2En: <>Hop 4 must <b>wait for hop 3</b></>,
     whyCard2Zh: <>Telephone is serial: the next word must wait until the previous one is processed, so an article of tens of thousands of words must dutifully pass tens of thousands of hops, while a GPU’s thousands of compute units can only stare blankly. Attention lets <b>all words scan and start work at the same time</b> — training speed takes off, and only then can a model stack up the later hundreds of billions of parameters (Lesson 15).</>,
     whyOutro: <>In one sentence: attention is not a “nice-to-have minor improvement,” but a generational replacement that simultaneously solves the two bottlenecks of <b>can’t remember</b> and <b>can’t compute fast</b>. That 2017 paper’s title says it plainly — “Attention Is All You Need” — and the architecture it spawned is the star of the next lesson: the Transformer.</>,
+    whySourceNote: (
+      <>
+        The 2017 paper that introduced the Transformer: Vaswani et al.,{' '}
+        <a href="https://arxiv.org/abs/1706.03762" target="_blank" rel="noreferrer">
+          Attention Is All You Need
+        </a>
+        .
+      </>
+    ),
 
     qkvTitle: '📚 Q, K, V: borrowing a book at the library',
     qkvLead: 'How exactly is the earlier “scoring” done? In engineering, each word’s vector passes separately through three trained “transformation steps,” splitting into three roles — just as one person in a library can be both a reader asking questions and a book on the shelf being searched. Imagine walking into a library:',
@@ -421,6 +455,19 @@ const C = {
         good: 'The weights are just a tiny handful among hundreds of millions of intermediate computation values; whether “attention can serve as an explanation” is still hotly debated in the research community',
         why: <><b>Cause:</b> this lesson’s arc diagrams are so intuitive that it’s easy to imagine the model really has a “highlight list” in its head. In reality, between a single head’s weights and the final answer lie dozens of layers of mixing and rewriting — asserting the model’s “reasons” from one weight diagram is like writing a whole movie’s plot summary from a single frame of surveillance footage.</> },
     ],
+    explainSourceNote: (
+      <>
+        Whether attention weights can serve as an explanation of the model is still debated; for both sides, see Jain & Wallace 2019{' '}
+        <a href="https://arxiv.org/abs/1902.10186" target="_blank" rel="noreferrer">
+          Attention is not Explanation
+        </a>
+        {' '}and Wiegreffe & Pinter 2019{' '}
+        <a href="https://arxiv.org/abs/1908.04626" target="_blank" rel="noreferrer">
+          Attention is not not Explanation
+        </a>
+        .
+      </>
+    ),
 
     quizTitle: '✍️ Quick Quiz',
     quiz: [
@@ -433,6 +480,9 @@ const C = {
       { q: '4. A friend complains: “Chatting with the AI to turn 200, its replies get slower and slower, and I hear the cost rises with conversation length — isn’t the server just bad?” Use this lesson’s “handshake bill” to clear the AI’s name.',
         a: <>It’s not the server’s fault, it’s attention’s nature: <b>every new word generated must shake hands and score with every word in the preceding text</b>. The longer the conversation, the more handshakes each step needs — and double the words, roughly quadruple the handshakes, so speed and cost worsen by the square. This is also the fundamental reason the context window has a ceiling (detailed in Lesson 17), and what every vendor’s “long context” race competes on is who can scrimp more out of this bill.</> },
     ],
+    bridgeTitle: '➡️ How This Leads to Lesson 10',
+    bridgeLead: 'This lesson took apart the heart of a large model: attention lets every word scan the whole scene and re-position itself by relevance, and multiple heads let it look from syntactic, coreference, and semantic angles at once. But the heart isn’t the whole body — attention only "moves information around," so how is it processed afterward, how is word order added back, and how do dozens of parts assemble into a running engine? The next lesson puts these parts together into the complete architecture that the 2017 "Attention Is All You Need" built: the Transformer.',
+    bridgeSteps: ['Attention = the heart', 'But it only moves things', 'Still missing order / processing / stacking', 'Next: Transformer'],
   },
 }
 
@@ -703,6 +753,7 @@ export default function L09() {
           </div>
         </div>
         <p className="lead mt">{c.whyOutro}</p>
+        <p className="footnote source-note">{c.whySourceNote}</p>
       </Lsec>
 
       <Lsec title={c.qkvTitle} lead={c.qkvLead}>
@@ -843,12 +894,27 @@ export default function L09() {
             </div>
           ))}
         </div>
+        <p className="footnote source-note">{c.explainSourceNote}</p>
       </Lsec>
 
       <Lsec title={c.quizTitle}>
         <div className="card quiz row-list">
           {c.quiz.map((qz, i) => (
             <QuizItem key={i} q={qz.q}>{qz.a}</QuizItem>
+          ))}
+        </div>
+      </Lsec>
+
+      <Lsec title={c.bridgeTitle} lead={c.bridgeLead}>
+        <div className="bridge-flow">
+          {c.bridgeSteps.map((step, i) => (
+            <span className="bridge-flow-item" key={step}>
+              <span className="bridge-flow-step">
+                <b>{i + 1}</b>
+                {step}
+              </span>
+              {i < c.bridgeSteps.length - 1 && <span className="bridge-flow-arrow">→</span>}
+            </span>
           ))}
         </div>
       </Lsec>

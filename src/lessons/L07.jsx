@@ -37,7 +37,7 @@ const C = {
     kernelTitle: '🔍 卷积核：一枚扛着模板巡逻的 3×3 小探测器',
     kernelLead: 'CNN 的最小零件叫卷积核（kernel）：一张 3×3 的小表格，里面装着它要找的“模式模板”。它从图像左上角出发，逐格滑动，每停一步就问一句：「我脚下这 9 个像素，长得像我的模板吗？」像，就输出一个大数（强烈响应）；不像，就输出接近 0。',
     formula1En: '响应 = 窗口里 9 个像素 × 核里 9 个权重，再加总',
-    formula1Zh: '这是全课唯一的式子，它本质上是“相似度打分”：脚下图案和模板越匹配，得分越高；图案平平无奇，得分接近 0。把所有位置的得分按原位置拼起来，就得到一张“特征图”—— 标记着“哪里有我要找的东西”。',
+    formula1Zh: '这是全课唯一的式子，它本质上是“相似度打分”：脚下图案和模板越匹配，得分越高；图案平平无奇，得分接近 0。把所有位置的得分按原位置拼起来，就得到一张“特征图”（feature map）—— 标记着“哪里有我要找的东西”。',
     kernelMid: '换一个核里的数字，就换了一种探测目标 —— 同一张图，不同的核“看到”完全不同的东西：',
     useCards1: [
       { label: '找“亮度跳变”', en: <>边缘核 <b>Edge</b></>, zh: '两侧权重一正一负，亮度突变处响应最大 —— 物体的轮廓就此现形。' },
@@ -56,7 +56,7 @@ const C = {
       ['更深层', '把部件拼成整体：人脸、汽车、猫', '词句'],
     ],
     poolEn: <>池化 <span className="hl">Pooling</span>：缩图保要点</>,
-    poolZh: '层与层之间常夹一步池化：每 2×2 格只保留最大响应，特征图边长减半。好处有二 —— 图变小、算得快；猫往旁边挪两个像素照样认得（这叫“抗位移”）。像把地图缩小：细节丢了，地标还在。',
+    poolZh: '层与层之间常夹一步池化：每 2×2 格只保留最大响应，特征图边长减半。好处有二 —— 图变小、算得快；猫往旁边挪两个像素照样认得（这叫“抗位移”，shift invariance）。像把地图缩小：细节丢了，地标还在。',
     layerOutro: '这条“边缘 → 纹理 → 部件 → 整体”的流水线，此刻正运行在你身边的无数设备里：',
     useCards2: [
       { label: '口袋里 · 每天几十次', en: <>人脸解锁 <b>Face ID</b></>, zh: '用卷积网络提取你五官的特征，与注册时的模板比对，毫秒级完成 —— 第 1 层找的边缘最终拼成了“你”。' },
@@ -64,9 +64,27 @@ const C = {
       { label: '马路上', en: <>自动驾驶感知 <b>Perception</b></>, zh: '从摄像头画面里框出车辆、行人、车道线。感知系统的视觉部分大量依赖 CNN（近年也与 Transformer 混合使用）。' },
       { label: '工厂里', en: <>工业质检 <b>Inspection</b></>, zh: '流水线上逐件拍照，找划痕、裂缝、缺件。比人眼快、不知疲倦，也不会下午三点开始走神。' },
     ],
-    demoSecTitle: '🎛️ 交互演示：亲眼看一次卷积',
+    demoSecTitle: '🎛️ 交互演示：亲眼看一次卷积（convolution）',
     demoSecLead: '左边是一张 12×12 的灰度小图（一个“7”），中间的 3×3 卷积核扛着模板从左上角扫到右下角，右边 10×10 的特征图逐格点亮 —— 越亮代表响应越强。切换不同的核，看看它们各自“在乎”什么。',
     demoSecFootnote: '为什么输出是 10×10？—— 12 格宽的图里，3 格宽的窗口只有 12 − 3 + 1 = 10 个落脚位置，纵向同理。',
+    medSourceNote: (
+      <>
+        “CNN 在特定病种检出上可达资深医师水平”的代表性研究见 Gulshan 等 2016 年《JAMA》糖尿病视网膜病变筛查论文{' '}
+        <a href="https://jamanetwork.com/journals/jama/fullarticle/2588763" target="_blank" rel="noreferrer">
+          Development and Validation of a Deep Learning Algorithm for Detection of Diabetic Retinopathy in Retinal Fundus Photographs
+        </a>
+        。
+      </>
+    ),
+    advSourceNote: (
+      <>
+        在停车标志上贴贴纸使模型误判为限速牌的实验，见 Eykholt 等 2018 年论文{' '}
+        <a href="https://arxiv.org/abs/1707.08945" target="_blank" rel="noreferrer">
+          Robust Physical-World Attacks on Deep Learning Visual Classification
+        </a>
+        。
+      </>
+    ),
     pitfallsTitle: '⚠️ 常见误区',
     pitfalls: [
       {
@@ -76,7 +94,7 @@ const C = {
       },
       {
         bad: <>识别准确率高，说明它真的理解了图像</>,
-        good: <>在停车标志上贴几张小贴纸，就可能让模型把它认成限速牌 —— 这叫对抗样本</>,
+        good: <>在停车标志上贴几张小贴纸，就可能让模型把它认成限速牌 —— 这叫对抗样本（adversarial example）</>,
         why: <><b>病因：</b>把“统计拟合得好”当成“语义理解”。对人眼几乎无影响的微小扰动，能让 CNN 满盘皆错 —— 因为它依赖的是像素层面的数字模式，而不是“停车标志意味着必须停车”的含义。对抗样本是计算机视觉安全研究的核心课题，也时刻提醒我们：识别 ≠ 理解。</>,
       },
     ],
@@ -95,6 +113,9 @@ const C = {
         a: <><b>因为 3 格宽的窗口在 12 格宽的图上只有 12 − 3 + 1 = 10 个落脚位置</b>，纵向同理，所以输出 10×10。真实 CNN 常在图像四周补一圈 0（叫 padding），让输出保持原尺寸。</>,
       },
     ],
+    bridgeTitle: '➡️ 下一课怎么接上',
+    bridgeLead: '这一课你看清了：图像本质是数字网格，CNN 用层层卷积把像素拼成边缘、部件、整张脸。但计算机要处理的不只有图像 —— 文字呢？「猫」这个字在网络眼里又该是什么数字？下一课给出答案：把每个词变成一串坐标，扔进一个“语义空间”，让意思相近的词彼此靠近。',
+    bridgeSteps: ['图像 = 数字网格（已懂）', '文字也得变数字', '每个词配一串坐标', '下一课：Embedding'],
   },
 
   en: {
@@ -158,6 +179,24 @@ const C = {
     demoSecTitle: '🎛️ Interactive Demo: See a Convolution With Your Own Eyes',
     demoSecLead: 'On the left is a small 12×12 grayscale image (a "7"), in the middle a 3×3 kernel carries its template and scans from top-left to bottom-right, and on the right a 10×10 feature map lights up cell by cell — brighter means a stronger response. Switch between kernels to see what each one "cares about."',
     demoSecFootnote: 'Why is the output 10×10? — In an image 12 cells wide, a window 3 cells wide has only 12 − 3 + 1 = 10 landing positions, and the same holds vertically.',
+    medSourceNote: (
+      <>
+        For a representative study behind "CNNs reach senior-physician level at detecting certain conditions," see Gulshan et al. 2016 (JAMA),{' '}
+        <a href="https://jamanetwork.com/journals/jama/fullarticle/2588763" target="_blank" rel="noreferrer">
+          Development and Validation of a Deep Learning Algorithm for Detection of Diabetic Retinopathy in Retinal Fundus Photographs
+        </a>
+        .
+      </>
+    ),
+    advSourceNote: (
+      <>
+        For the experiment where stickers on a stop sign make the model read it as a speed-limit sign, see Eykholt et al. 2018,{' '}
+        <a href="https://arxiv.org/abs/1707.08945" target="_blank" rel="noreferrer">
+          Robust Physical-World Attacks on Deep Learning Visual Classification
+        </a>
+        .
+      </>
+    ),
     pitfallsTitle: '⚠️ Common Misconceptions',
     pitfalls: [
       {
@@ -186,6 +225,9 @@ const C = {
         a: <><b>Because a window 3 cells wide has only 12 − 3 + 1 = 10 landing positions on an image 12 cells wide</b>, and the same holds vertically, so the output is 10×10. Real CNNs often pad a ring of 0s around the image (called padding) to keep the output at the original size.</>,
       },
     ],
+    bridgeTitle: '➡️ How This Leads to Lesson 8',
+    bridgeLead: 'This lesson made it clear: an image is fundamentally a grid of numbers, and a CNN uses layers of convolution to assemble pixels into edges, parts, and a whole face. But images aren’t the only thing computers must handle — what about text? What number should the word "cat" be in the network’s eyes? The next lesson answers: turn every word into a string of coordinates and drop it into a "semantic space," so words close in meaning sit close together.',
+    bridgeSteps: ['Image = number grid (done)', 'Text must become numbers too', 'Each word gets coordinates', 'Next: Embedding'],
   },
 }
 
@@ -355,6 +397,7 @@ export default function L07() {
             </div>
           ))}
         </div>
+        <p className="footnote source-note">{c.medSourceNote}</p>
       </Lsec>
 
       <Lsec
@@ -377,12 +420,27 @@ export default function L07() {
             </div>
           ))}
         </div>
+        <p className="footnote source-note">{c.advSourceNote}</p>
       </Lsec>
 
       <Lsec title={c.quizTitle}>
         <div className="card quiz row-list">
           {c.quiz.map((qz, i) => (
             <QuizItem key={i} q={qz.q}>{qz.a}</QuizItem>
+          ))}
+        </div>
+      </Lsec>
+
+      <Lsec title={c.bridgeTitle} lead={c.bridgeLead}>
+        <div className="bridge-flow">
+          {c.bridgeSteps.map((step, i) => (
+            <span className="bridge-flow-item" key={step}>
+              <span className="bridge-flow-step">
+                <b>{i + 1}</b>
+                {step}
+              </span>
+              {i < c.bridgeSteps.length - 1 && <span className="bridge-flow-arrow">→</span>}
+            </span>
           ))}
         </div>
       </Lsec>

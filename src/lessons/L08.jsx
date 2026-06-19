@@ -48,7 +48,7 @@ const C = {
 
     // ③ 苹果语境
     appleTxt: {
-      none: { t: '静态词向量的困境', d: <>word2vec 给每个词只发一张“身份证”。「苹果」只能卡在水果区和科技区中间的尴尬地带 —— 哪边都沾点，哪边都不像。一词多义，被压扁成了平均值。</> },
+      none: { t: '静态词向量（static word embedding）的困境', d: <>word2vec 给每个词只发一张“身份证”。「苹果」只能卡在水果区和科技区中间的尴尬地带 —— 哪边都沾点，哪边都不像。一词多义，被压扁成了平均值。</> },
       fruit: { t: '上下文把它拽进水果区', d: <>在大模型内部，「苹果」先查表领到初始向量，随后被「甜」「两斤」这些邻居一层层修正 —— 整句读完，它已经漂进水果群落。这就是语境化向量：“活”的坐标。</> },
       tech: { t: '同一个词，另一个灵魂', d: <>换个句子，「发布」「手机」把同一个「苹果」拽向科技区。至于每个词究竟如何“参考”周围的词来更新自己 —— 那正是下一课注意力机制的全部剧情。</> },
     },
@@ -81,7 +81,7 @@ const C = {
     machineBig: <>「猫」= <span className="hl">(0.82, −1.30, 2.41, …)</span></>,
     machineNote: '一个词 = 空间里的一个点。“像不像”不需要任何解释 —— 量一下两点之间的距离就行，距离是小学就会算的东西。',
     distEn: <><span className="hl">距离 = 语义相似度</span>，这是本课唯一要背下来的等式</>,
-    distZh: <>猫和狗离得近，猫和披萨离得远，猫和“民法典”几乎在两个星系。意义（meaning）这种最虚无缥缈的东西，<b>第一次变成了可以计算的对象</b> —— 后面的注意力、Transformer、第 18 课的 RAG，全部踩在这块地基上。</>,
+    distZh: <>猫和狗离得近，猫和披萨离得远，猫和“民法典”几乎在两个星系。意义（meaning）这种最虚无缥缈的东西，<b>第一次变成了可以计算的对象</b> —— 后面的注意力、Transformer、第 18 课的 RAG（检索增强生成），全部踩在这块地基上。</>,
     conceptTail: '所以当你给 ChatGPT 发一句话时，它做的第一件事不是“读”，而是把每个词换成这样一串数字 —— 词先变成向量，神经网络才有的吃。Embedding 是文字世界和数字世界之间唯一的海关。',
 
     formulaTitle: '🧭 明星算式：国王 − 男人 + 女人 ≈ 女王',
@@ -96,6 +96,15 @@ const C = {
       ['时态（英文语料）', 'walk → walked', 'go → went', '方向近似平行'],
     ],
     formulaP2: <>一句校准：注意算式里是 <b>≈ 不是 =</b>。这种类比在真实模型里“经常成立、并不保证”，研究者也发现不少例子要靠排除原词等小技巧才漂亮。把它当直觉的窗口，别当数学定理。</>,
+    formulaSourceNote: (
+      <>
+        「国王 − 男人 + 女人 ≈ 女王」出自 2013 年 word2vec 论文，Mikolov 等{' '}
+        <a href="https://arxiv.org/abs/1301.3781" target="_blank" rel="noreferrer">
+          Efficient Estimation of Word Representations in Vector Space
+        </a>
+        ；词类比规律的系统分析见同组《Linguistic Regularities in Continuous Space Word Representations》（NAACL 2013）。
+      </>
+    ),
 
     clarifyTitle: '🔬 两个关键澄清：别被星空图骗了',
     clarifyLead: '下面马上要看 3D 演示，但先打两针预防针 —— 这两点恰恰是 embedding 最容易被误解的地方。',
@@ -106,7 +115,7 @@ const C = {
     clarify2En: <>坐标<b>不是人标的</b>，是学出来的</>,
     clarify2Zh: <>没有任何语言学家给“猫”填过坐标。模型在海量文本里反复做“预测邻居词”的填空题，用第 4 课的梯度下降把猜错的程度一点点压低 —— <b>谁总出现在相似的语境里，谁的坐标就被一点点推近</b>。全自动，零人工标注，坐标只是训练的副产品。</>,
     firthEn: '“看一个词总跟谁作伴，你就懂了它。” —— 语言学家 J.R. Firth，1957',
-    firthZh: <>这叫<b>分布假设</b>。“猫”和“狗”都能填进“____ 在沙发上睡觉”“带 ____ 去打疫苗”，于是它们被推到一起。Embedding 学到的“意思”，本质是亿万条语境的统计压缩。</>,
+    firthZh: <>这叫<b>分布假设（distributional hypothesis）</b>。“猫”和“狗”都能填进“____ 在沙发上睡觉”“带 ____ 去打疫苗”，于是它们被推到一起。Embedding 学到的“意思”，本质是亿万条语境的统计压缩。</>,
 
     cosmosSecTitle: '🎛️ 交互演示：词向量星空',
     cosmosSecLead: '下面是一片手工设计的 3D 教学星空：36 个中文词、6 个语义群落。拖动旋转、滚轮缩放，先看“抱团”，再点红色按钮看类比算式动起来。',
@@ -131,7 +140,7 @@ const C = {
     bodySecLead: 'word2vec 是 2013 年的技术，为什么今天用 ChatGPT、Claude 的你还必须懂它？因为每个大模型体内都装着它的继承者，而且完成了一次关键升级：坐标从“死”的变成了“活”的。先看它在大模型流水线里的位置 ——',
     pipeCards: [
       { label: '入口 · 第一站', en: <>每个 token 先<b>查表领坐标</b></>, zh: <>你发出的话先被切成 token（第 11 课细讲），模型做的第一件事就是到体内那张 embedding 表里，把每个 token 换成一个向量。从这一刻起，所有计算只见数字，再也见不到文字。</> },
-      { label: '中段 · 几十层“调味”', en: <>向量被上下文<b>不断改写</b></>, zh: <>查表领到的只是“字典义”。接下来几十层注意力（下一课）让每个词的向量参考周围的词反复修正 —— 整句读完，「苹果」可能已被「发布会」拽进科技区。这叫<b>语境化向量</b>，是大模型与 word2vec 的分水岭。</> },
+      { label: '中段 · 几十层“调味”', en: <>向量被上下文<b>不断改写</b></>, zh: <>查表领到的只是“字典义”。接下来几十层注意力（下一课）让每个词的向量参考周围的词反复修正 —— 整句读完，「苹果」可能已被「发布会」拽进科技区。这叫<b>语境化向量（contextualized embedding）</b>，是大模型与 word2vec 的分水岭。</> },
       { label: '出口 · 还是比距离', en: <>生成回答也靠<b>这片空间</b></>, zh: <>模型吐下一个词时，本质是拿当前语境的向量去和词表里所有候选词比“匹配度”—— 谁匹配谁概率大（怎么按概率抽签，第 14 课讲）。大模型的一进一出，都发生在向量空间里。</> },
     ],
     ctxSecLead: '“活”坐标长什么样？下面这个演示里，「苹果」的位置不再固定 —— 点不同的句子，看上下文把它拽向哪边：',
@@ -159,7 +168,7 @@ const C = {
       { a: '推荐 / 去重', b: <>把你听过的歌变成向量求平均，附近的歌就是新歌单；两篇新闻向量几乎重合，就是洗稿或重复，自动归并。</> },
       { a: 'RAG 检索', b: <>公司文档切块、向量化入库；你提问时，先按距离捞出最相关的几块，再喂给大模型作答 —— 完整流程第 18 课拆给你看。</> },
     ],
-    everyTail: <>业界甚至把这件事做成了独立的产品形态：专门的 <b>embedding 模型</b>（输入文字、吐出向量，不聊天）和<b>向量数据库</b>（专门按距离检索的仓库）。第 18、28 课，你会亲手把这两块积木拼成一个能回答内部问题的系统 —— 到那时回头看，会发现整套系统的灵魂就是本课这一句：距离 = 语义相似度。</>,
+    everyTail: <>业界甚至把这件事做成了独立的产品形态：专门的 <b>embedding 模型</b>（输入文字、吐出向量，不聊天）和<b>向量数据库（vector database）</b>（专门按距离检索的仓库）。第 18、28 课，你会亲手把这两块积木拼成一个能回答内部问题的系统 —— 到那时回头看，会发现整套系统的灵魂就是本课这一句：距离 = 语义相似度。</>,
 
     pitfallsTitle: '⚠️ 常见误区',
     pitfalls: [
@@ -175,6 +184,9 @@ const C = {
       { q: '3. 朋友兴奋地说：“我发现模型向量的第 42 维存的就是词的褒贬！”这个说法有什么问题？', a: <>问题在于<b>把“方向”当成了“坐标轴”</b>。绝大多数单个维度不可解读，褒贬这类语义通常是几百个维度的组合方向；就算他真在数据里找到了一个与褒贬相关的方向，那也是事后挖掘的产物，且换个模型、换批语料就会变 —— 没有任何机制保证它恰好落在第 42 根轴上。</> },
       { q: '4. 在 word2vec 里「苹果」只有一个固定向量，在 ChatGPT 这类大模型里它却“会动”。用本课概念解释这个区别，并说明“动”的动力来自哪里。', a: <>word2vec 是<b>静态词向量</b>：一词一点，「苹果」的水果义和公司义被压成一个平均位置。大模型里 token 先查 embedding 表领到初始向量，随后被几十层网络按上下文反复改写成<b>语境化向量</b> ——「苹果真甜」里它漂向水果群落，「苹果发布会」里漂向科技群落。“动力”来自周围的词：每个词参考邻居来更新自己，至于具体怎么参考，就是下一课注意力机制的内容。</> },
     ],
+    bridgeTitle: '➡️ 下一课怎么接上',
+    bridgeLead: '这一课你拿到了 AI 的地基：每个词是空间里的一个坐标，距离 = 语义相似度。但也看到了关键缺口 —— 查表领到的只是“死”的字典义，「苹果」在两个句子里往哪漂，得靠上下文把它改写成“活”向量。每个词究竟怎么“参考”周围的词来更新自己？下一课的注意力机制（attention）就是这台改写引擎。',
+    bridgeSteps: ['查表领到死坐标', '一词多义压成平均', '让每个词参考邻居', '下一课：注意力'],
   },
 
   en: {
@@ -265,6 +277,15 @@ const C = {
       ['Tense (English corpus)', 'walk → walked', 'go → went', 'Roughly parallel directions'],
     ],
     formulaP2: <>One calibration: note the equation uses <b>≈, not =</b>. This kind of analogy "often holds but isn’t guaranteed" in real models, and researchers have found plenty of cases that only look clean after tricks like excluding the original words. Treat it as a window into intuition, not a mathematical theorem.</>,
+    formulaSourceNote: (
+      <>
+        "king − man + woman ≈ queen" comes from the 2013 word2vec paper, Mikolov et al.,{' '}
+        <a href="https://arxiv.org/abs/1301.3781" target="_blank" rel="noreferrer">
+          Efficient Estimation of Word Representations in Vector Space
+        </a>
+        ; for a systematic analysis of word analogies, see the same group’s "Linguistic Regularities in Continuous Space Word Representations" (NAACL 2013).
+      </>
+    ),
 
     clarifyTitle: '🔬 Two Key Clarifications: Don’t Be Fooled by the Cosmos Diagram',
     clarifyLead: 'We’re about to see the 3D demo, but first two vaccinations — these are precisely the points where embedding is most easily misunderstood.',
@@ -344,6 +365,9 @@ const C = {
       { q: '3. A friend excitedly says: "I discovered that dimension 42 of the model’s vectors stores a word’s positive/negative sentiment!" What’s wrong with this claim?', a: <>The problem is <b>mistaking a "direction" for a "coordinate axis."</b> The vast majority of single dimensions can’t be interpreted, and sentiment like positive/negative is usually a combined direction of hundreds of dimensions; even if they really found a direction in the data correlated with sentiment, that’s a product of after-the-fact digging, and it changes when you swap models or swap corpora — there’s no mechanism guaranteeing it happens to land on axis number 42.</> },
       { q: '4. In word2vec "apple" has only one fixed vector, but in large models like ChatGPT it "moves." Use this lesson’s concepts to explain the difference, and say where the "movement"’s driving force comes from.', a: <>word2vec is a <b>static word vector</b>: one word, one point, with "apple"’s fruit sense and company sense compressed into one average position. In a large model, the token first looks up the embedding table to get an initial vector, then dozens of layers rewrite it according to context into a <b>contextualized vector</b> — in "the apple is so sweet" it drifts toward the fruit cluster, in "Apple’s launch event" toward the tech cluster. The "driving force" comes from the surrounding words: each word refers to its neighbors to update itself, and exactly how it refers to them is the content of the next lesson’s attention mechanism.</> },
     ],
+    bridgeTitle: '➡️ How This Leads to Lesson 9',
+    bridgeLead: 'This lesson handed you AI’s foundation: every word is a coordinate in a space, and distance = semantic similarity. But you also saw the key gap — a table lookup only gives the "dead" dictionary meaning, and which way "apple" drifts in two different sentences depends on context rewriting it into a "living" vector. How exactly does each word "refer to" its neighbors to update itself? The next lesson’s attention mechanism is that rewriting engine.',
+    bridgeSteps: ['Lookup gives a dead coordinate', 'Polysemy flattened to an average', 'Let each word consult its neighbors', 'Next: Attention'],
   },
 }
 
@@ -580,6 +604,7 @@ export default function L08() {
           </tbody>
         </table>
         <p className="lead mt14">{c.formulaP2}</p>
+        <p className="footnote source-note">{c.formulaSourceNote}</p>
       </Lsec>
 
       <Lsec
@@ -718,6 +743,20 @@ export default function L08() {
         <div className="card quiz row-list">
           {c.quiz.map((qz, i) => (
             <QuizItem key={i} q={qz.q}>{qz.a}</QuizItem>
+          ))}
+        </div>
+      </Lsec>
+
+      <Lsec title={c.bridgeTitle} lead={c.bridgeLead}>
+        <div className="bridge-flow">
+          {c.bridgeSteps.map((step, i) => (
+            <span className="bridge-flow-item" key={step}>
+              <span className="bridge-flow-step">
+                <b>{i + 1}</b>
+                {step}
+              </span>
+              {i < c.bridgeSteps.length - 1 && <span className="bridge-flow-arrow">→</span>}
+            </span>
           ))}
         </div>
       </Lsec>

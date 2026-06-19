@@ -16,7 +16,7 @@ const C = {
       token: { title: '② 分词 Tokenize', period: '切成模型认识的最小单位',
         desc: '句子被切成 token：今天 / 天气 / 真，每个 token 对应词表里的一个编号。大模型的“字典”里装的不是汉字而是 token —— 具体怎么切、为什么按 token 计费，第 11 课专门拆解。', tags: ['token', '词表编号', '第 11 课预告'] },
       embed: { title: '③ 向量化 + 位置编码', period: '变成数字，再补回语序',
-        desc: '每个 token 换成一个高维语义向量 —— 就是第 8 课的 Embedding，意思相近的词向量也相近。但 Transformer 整句并行处理，天生不知道词的先后，「我打他」会等于「他打我」。所以每个向量还要叠加位置信息，把并行丢掉的语序补回来。', tags: ['Embedding（第 8 课）', '位置编码'] },
+        desc: '每个 token 换成一个高维语义向量 —— 就是第 8 课的 Embedding，意思相近的词向量也相近。但 Transformer 整句并行处理，天生不知道词的先后，「我打他」会等于「他打我」。所以每个向量还要叠加位置编码（positional encoding），把并行丢掉的语序补回来。', tags: ['Embedding（第 8 课）', '位置编码'] },
       block: { title: '④ Transformer 块 ×N', period: '流水线的心脏 · 反复加工几十轮',
         desc: '每个块两道工序：先过自注意力 —— 所有词开圆桌会、交换信息，就是第 9 课的“划重点”；再过前馈网络 —— 每个词带着新情报各自深加工。旁边绕行的虚线是残差连接：输出 = 原件 + 本层批注，哪怕某层没学到东西也不碍事，所以叠几十层照样训得动。GPT-3 叠了 96 个这样的块 —— 块内细节见下一节“发动机舱”。', tags: ['自注意力（第 9 课）', '前馈网络', '残差连接'] },
       softmax: { title: '⑤ 输出层 Softmax', period: '把打分压成概率',
@@ -111,9 +111,18 @@ const C = {
     fourSteps: [
       { label: '第 1 步 · 切', en: <>分词 <b>Token</b></>, zh: '把句子切成 token，查词表换成编号。' },
       { label: '第 2 步 · 变', en: <>向量 <b>+ 位置</b></>, zh: '每个 token 变成语义向量，再盖一个“位置戳”补回语序。' },
-      { label: '第 3 步 · 磨', en: <>N 个块 <b>反复加工</b></>, zh: '自注意力交换信息 + 前馈网络各自深加工，叠几十轮。' },
+      { label: '第 3 步 · 磨', en: <>N 个块 <b>反复加工</b></>, zh: '自注意力（self-attention）交换信息 + 前馈网络各自深加工，叠几十轮。' },
       { label: '第 4 步 · 猜', en: <>输出 <b>概率分布</b></>, zh: '给词表里所有 token 打分：下一个词最可能是谁？' },
     ],
+    conceptSourceNote: (
+      <>
+        本课的架构出自 2017 年那篇奠基论文：Vaswani 等（8 位作者）{' '}
+        <a href="https://arxiv.org/abs/1706.03762" target="_blank" rel="noreferrer">
+          Attention Is All You Need
+        </a>
+        。
+      </>
+    ),
     demo1Title: '🎛️ 交互演示 · 词语加工流水线',
     demo1Lead: '输入「今天天气真」，看一条 Transformer 流水线怎样把它逐层向上加工，最后给出「好 58% / 不错 21% / 冷 9%」的概率分布。流水线自下而上：从底部的输入文本开始，点击每一层（或右侧按钮）查看它的职责，也可以让它自动走一遍。',
     mechTitle: '📖 深入展开 · 拆开发动机舱：块里的三件套',
@@ -146,6 +155,19 @@ const C = {
         ],
       },
     ],
+    mechSourceNote: (
+      <>
+        残差连接源自图像识别的 ResNet，He 等 2015{' '}
+        <a href="https://arxiv.org/abs/1512.03385" target="_blank" rel="noreferrer">
+          Deep Residual Learning for Image Recognition
+        </a>
+        ；“事实记忆主要存放在前馈网络里”的研究见 Geva 等 2021{' '}
+        <a href="https://arxiv.org/abs/2012.14913" target="_blank" rel="noreferrer">
+          Transformer Feed-Forward Layers Are Key-Value Memories
+        </a>
+        。
+      </>
+    ),
     punchTitle: '📖 两记重拳：它凭什么淘汰 RNN',
     punchLead: '学术界从不缺新架构，Transformer 能横扫一切，靠的不是巧思，而是两个实打实的工程优势。',
     punchTh: ['较量回合', '🐢 RNN · 串行传纸条', '⚡ Transformer · 并行圆桌会'],
@@ -156,7 +178,7 @@ const C = {
     ],
     punchAfter: <>第一拳尤其致命：大模型时代的入场券是“用海量数据训练超大网络”，而 RNN 的串行天性让它根本排不进这个赛道。<b>不是 RNN 不够聪明，是它喂不饱。</b>“喂得饱”这个工程优势，最终滚成了智能上的代差 —— 这是 AI 史反复上演的剧本：赢在算力友好，而不是赢在精巧。</>,
     demo2Title: '🎛️ 交互演示 · 自回归生成器：亲手让模型蹦字',
-    demo2Lead: '流水线一次只产出一个 token。那 ChatGPT 一大段一大段的回答是哪来的？答案：选一个字接到句尾，把新句子重新跑一遍流水线，再选下一个 —— 行话叫“自回归”。下面亲手跑一遍：每点一次按钮 = 流水线完整运转一次。注意观察每一步的概率分布怎么变（数字为教学示意）。',
+    demo2Lead: '流水线一次只产出一个 token。那 ChatGPT 一大段一大段的回答是哪来的？答案：选一个字接到句尾，把新句子重新跑一遍流水线，再选下一个 —— 行话叫“自回归”（autoregressive）。下面亲手跑一遍：每点一次按钮 = 流水线完整运转一次。注意观察每一步的概率分布怎么变（数字为教学示意）。',
     demo2After: <>玩到最后你会发现一件颠覆直觉的事：写「好」的那一刻，模型完全不知道后面会出现「走走」。<b>整句话是六次互相独立的预测拼出来的</b> —— ChatGPT 逐字蹦出回答，不是打字机特效，而是它真实的工作节奏。这也解释了它为什么偶尔“说到一半把自己绕进去”：每一步都只对“下一个字”负责，没有谁在监督全文。</>,
     phenoTitle: '📖 深入展开 · 你见过的现象，背后全是它',
     phenoLead: '这一课讲的不是屠龙之技 —— 你每天在 ChatGPT、Claude 里撞见的“怪现象”，几乎条条能在流水线上找到根源。对照着读，机制才算真的学会了。',
@@ -170,13 +192,22 @@ const C = {
     ],
     phenoAfter: <>反过来这张表也是“防忽悠指南”：下次看到“我们的 AI 会通篇构思再下笔”之类的宣传，你可以直接对照第一行 —— 只要它是 Transformer 自回归路线，就是一个字一个字蹦的。</>,
     familyTitle: '📖 两大家族：会读的 BERT，会写的 GPT',
-    familyLead: '原始论文里的 Transformer 是“编码器 + 解码器”两半拼成的，用来做机器翻译。后来的研究者各取一半，分出了两条路线。',
+    familyLead: '原始论文里的 Transformer 是“编码器（encoder）+ 解码器（decoder）”两半拼成的，用来做机器翻译。后来的研究者各取一半，分出了两条路线。',
     familyCards: [
       { label: '编码器路线 · 2018 · Google', en: <>BERT <b>理解型</b></>, zh: <>训练方式是“完形填空”：挖掉句中一个词，让模型看着<b>前后双向</b>的上下文把它填回来。擅长理解类任务 —— 搜索相关度、文本分类、情感判断，Google 搜索曾大规模用它理解你的查询。</> },
       { label: '解码器路线 · 2018 · OpenAI', en: <>GPT <b>生成型</b></>, zh: <>训练方式是“文字接龙”：只许看左边，预测下一个 token。看似比 BERT“瞎了一只眼”，但<b>会接龙就能写出一切</b> —— ChatGPT、Claude、Gemini，今天的大模型基本都是这条路线。</> },
     ],
     familyMid: <>两条路线的全部分歧，浓缩成一个问题：<b>预测一个词时，允许看哪边？</b>点下面的词，亲眼比较两家的“视野”。</>,
     familyAfter: <>为什么“瞎了一只眼”的生成型笑到了最后？因为“预测下一个词”逼着模型理解一切：要接好“这道题的答案是”，就得真的会做题。规模上去之后，理解类任务也能直接用“生成答案”来完成 —— 让 GPT 判断一条评论的情感，只需问它“这条评论是好评还是差评？”，它接龙写出“好评”，分类就做完了。<b>一个接龙模型通吃读写</b>，而 BERT 永远写不了长文。这背后“规模出奇迹”的故事，第 12 课预训练专门讲。</>,
+    familySourceNote: (
+      <>
+        两大家族的原始论文：BERT 见 Devlin 等 2018{' '}
+        <a href="https://arxiv.org/abs/1810.04805" target="_blank" rel="noreferrer">
+          BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding
+        </a>
+        ；GPT 见 Radford 等 2018《Improving Language Understanding by Generative Pre-Training》（OpenAI）。
+      </>
+    ),
     pitfallsTitle: '⚠️ 常见误区',
     pitfalls: [
       {
@@ -201,6 +232,9 @@ const C = {
       { q: '4. 有创业者宣称：“我们用 RNN 在互联网级语料上训练了一个超大模型。”用本课知识，你会提出什么疑虑？',
         a: <>最大疑虑是<b>训练速度</b>：RNN 必须逐词串行计算，GPU 的并行算力用不上，互联网级语料根本喂不进去 —— 这正是当年大家集体转向 Transformer 的原因。其次，RNN 的长距离依赖在长文档上也撑不住。除非对方有真正的架构创新（近年确有让循环结构复兴的新尝试），否则值得追问细节。</> },
     ],
+    bridgeTitle: '➡️ 下一课怎么接上',
+    bridgeLead: '到这里，深度学习的四大基石（网络 / 卷积 / 向量 / 注意力）拼成了一台完整的引擎——Transformer。从下一课起进入“大模型篇”：这台引擎到底怎么被练成 ChatGPT？第一步，回到流水线最底层那道被一带而过的工序——分词。模型眼里没有“字”，只有 token；它怎么切、为什么中文更费 token、为什么按 token 计费，下一课全拆开。',
+    bridgeSteps: ['引擎已组装（Transformer）', '进入大模型篇', '先看最底层：分词', '下一课：Token'],
   },
 
   en: {
@@ -309,6 +343,15 @@ const C = {
       { label: 'Step 3 · Grind', en: <>N blocks <b>reprocessing</b></>, zh: 'Self-attention exchanges info + the feed-forward network processes each deeply, stacked over dozens of rounds.' },
       { label: 'Step 4 · Guess', en: <>Output <b>probability distribution</b></>, zh: 'Score every token in the vocab: who is most likely to be the next word?' },
     ],
+    conceptSourceNote: (
+      <>
+        This lesson’s architecture comes from the 2017 foundational paper: Vaswani et al. (8 authors),{' '}
+        <a href="https://arxiv.org/abs/1706.03762" target="_blank" rel="noreferrer">
+          Attention Is All You Need
+        </a>
+        .
+      </>
+    ),
     demo1Title: '🎛️ Interactive · The word-processing pipeline',
     demo1Lead: 'Enter 「今天天气真」 and watch a Transformer pipeline process it layer by layer upward, finally giving the probability distribution 「好 58% / 不错 21% / 冷 9%」. The pipeline runs bottom to top: starting from the input text at the bottom, click each layer (or a button on the right) to see its job, or let it walk through automatically.',
     mechTitle: '📖 Going deeper · Opening the engine bay: the three-piece set inside a block',
@@ -341,6 +384,19 @@ const C = {
         ],
       },
     ],
+    mechSourceNote: (
+      <>
+        Residual connections come from ResNet in image recognition, He et al. 2015{' '}
+        <a href="https://arxiv.org/abs/1512.03385" target="_blank" rel="noreferrer">
+          Deep Residual Learning for Image Recognition
+        </a>
+        ; for the finding that "factual memory is mainly stored in the feed-forward networks," see Geva et al. 2021{' '}
+        <a href="https://arxiv.org/abs/2012.14913" target="_blank" rel="noreferrer">
+          Transformer Feed-Forward Layers Are Key-Value Memories
+        </a>
+        .
+      </>
+    ),
     punchTitle: '📖 Two knockout punches: how it rendered RNNs obsolete',
     punchLead: 'Academia is never short of new architectures; the Transformer swept everything not on cleverness but on two solid engineering advantages.',
     punchTh: ['Round', '🐢 RNN · serial note-passing', '⚡ Transformer · parallel round table'],
@@ -372,6 +428,15 @@ const C = {
     ],
     familyMid: <>The entire divergence between the two routes boils down to one question: <b>when predicting a word, which side may it look at?</b> Click the words below to compare the two families\' "fields of view" with your own eyes.</>,
     familyAfter: <>Why did the generation type, "blind in one eye," have the last laugh? Because "predict the next word" forces the model to understand everything: to continue "the answer to this problem is" well, it has to actually be able to solve the problem. Once scale grows, understanding tasks can also be done directly by "generating an answer" — to have GPT judge a review\'s sentiment, just ask it "is this review positive or negative?" and it chains out "positive," and the classification is done. <b>One chain model handles both reading and writing</b>, whereas BERT can never write a long passage. The story of "scale works miracles" behind this gets its own treatment in Lesson 12 on pre-training.</>,
+    familySourceNote: (
+      <>
+        The original papers of the two families: for BERT see Devlin et al. 2018{' '}
+        <a href="https://arxiv.org/abs/1810.04805" target="_blank" rel="noreferrer">
+          BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding
+        </a>
+        ; for GPT see Radford et al. 2018, "Improving Language Understanding by Generative Pre-Training" (OpenAI).
+      </>
+    ),
     pitfallsTitle: '⚠️ Common Misconceptions',
     pitfalls: [
       {
@@ -396,6 +461,9 @@ const C = {
       { q: '4. An entrepreneur claims: "We trained a huge model with an RNN on an internet-scale corpus." Using this lesson\'s knowledge, what concern would you raise?',
         a: <>The biggest concern is <b>training speed</b>: an RNN must compute word by word serially, so the GPU\'s parallel compute goes unused and an internet-scale corpus simply cannot be fed in — exactly why everyone collectively switched to the Transformer back then. Next, the RNN\'s long-range dependencies also fail to hold up on long documents. Unless they have a genuine architectural innovation (in recent years there have indeed been new attempts to revive recurrent structures), it is worth pressing for details.</> },
     ],
+    bridgeTitle: '➡️ How This Leads to Lesson 11',
+    bridgeLead: 'With this, the four pillars of deep learning (networks / convolution / vectors / attention) come together into a complete engine — the Transformer. From the next lesson on, we enter the "large models" stage: how exactly is this engine trained into ChatGPT? The first step is to return to that bottom stage of the pipeline we glossed over — tokenization. In the model\'s eyes there are no "characters," only tokens; how it splits them, why Chinese costs more tokens, and why you\'re billed per token — the next lesson takes it all apart.',
+    bridgeSteps: ['Engine assembled (Transformer)', 'Enter the large-models stage', 'First, the bottom stage: tokenization', 'Next: Tokens'],
   },
 }
 
@@ -746,6 +814,7 @@ export default function L10() {
             <div className="card use-card" key={i}><div className="label">{u.label}</div><div className="en">{u.en}</div><div className="zh">{u.zh}</div></div>
           ))}
         </div>
+        <p className="footnote source-note">{c.conceptSourceNote}</p>
       </Lsec>
 
       <Lsec title={c.demo1Title} lead={c.demo1Lead}>
@@ -761,6 +830,7 @@ export default function L10() {
             </div>
           ))}
         </div>
+        <p className="footnote source-note">{c.mechSourceNote}</p>
       </Lsec>
 
       <Lsec title={c.punchTitle} lead={c.punchLead}>
@@ -809,6 +879,7 @@ export default function L10() {
         <p className="lead" style={{ marginTop: 18 }}>{c.familyMid}</p>
         <ScopeDemo c={c} />
         <p className="lead" style={{ marginTop: 14 }}>{c.familyAfter}</p>
+        <p className="footnote source-note">{c.familySourceNote}</p>
       </Lsec>
 
       <Lsec title={c.pitfallsTitle}>
@@ -829,6 +900,20 @@ export default function L10() {
         <div className="card quiz row-list">
           {c.quiz.map((qz, i) => (
             <QuizItem key={i} q={qz.q}>{qz.a}</QuizItem>
+          ))}
+        </div>
+      </Lsec>
+
+      <Lsec title={c.bridgeTitle} lead={c.bridgeLead}>
+        <div className="bridge-flow">
+          {c.bridgeSteps.map((step, i) => (
+            <span className="bridge-flow-item" key={step}>
+              <span className="bridge-flow-step">
+                <b>{i + 1}</b>
+                {step}
+              </span>
+              {i < c.bridgeSteps.length - 1 && <span className="bridge-flow-arrow">→</span>}
+            </span>
           ))}
         </div>
       </Lsec>
