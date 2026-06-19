@@ -60,7 +60,7 @@ export const UI = {
     lesson: {
       crumbHome: "课程",
       lessonN: (n) => `第 ${n} 课`,
-      minutes: "约 20 分钟",
+      minutes: (n) => `约 ${n} 分钟`,
       loading: "加载中…",
       placeholderLead: "本课正在从原静态页面迁移到 React 架构中。",
       placeholderNotePre: "原课程内容与交互演示完整保存在 ",
@@ -75,7 +75,7 @@ export const UI = {
       h1a: "为中文学习者设计的",
       h1b: "AI 入门课",
       subhead:
-        "用可视化和交互演示，把 AI 的核心原理装进你的直觉 —— 从“神经网络是什么”到亲手搭出 AI 应用，每课 20 分钟。",
+        "用可视化和交互演示，把 AI 的核心原理装进你的直觉 —— 从“神经网络是什么”到亲手搭出 AI 应用，每课约 10–30 分钟。",
       ctaPath: "查看学习路线",
       ctaStart: "从第 1 课开始学 →",
       vizCap: {
@@ -114,7 +114,7 @@ export const UI = {
       stageCount: (n) => `${n} 课`,
       usageEyebrow: "How To Learn",
       usageH2: "每一课怎么学",
-      usageSub: "所有课程共用同一结构，20 分钟走完一个完整的学习闭环：",
+      usageSub: "所有课程共用同一结构，一节课就是一个完整的学习闭环（约 10–30 分钟，随内容深浅而定）：",
       usageSteps: [
         { icon: "💡", label: "核心概念", desc: "直觉化讲透" },
         { icon: "🎛️", label: "交互演示", desc: "亲手调参数" },
@@ -158,7 +158,7 @@ export const UI = {
     lesson: {
       crumbHome: "Courses",
       lessonN: (n) => `Lesson ${n}`,
-      minutes: "~20 min",
+      minutes: (n) => `~${n} min`,
       loading: "Loading…",
       placeholderLead:
         "This lesson is being migrated from the original static page to the React architecture.",
@@ -176,7 +176,7 @@ export const UI = {
       h1a: "An Intuitive",
       h1b: "Intro to AI",
       subhead:
-        "Visuals and interactive demos that wire AI’s core ideas straight into your intuition — from “what is a neural network” to building your own AI app, 20 minutes per lesson.",
+        "Visuals and interactive demos that wire AI’s core ideas straight into your intuition — from “what is a neural network” to building your own AI app, about 10–30 minutes per lesson.",
       ctaPath: "See the learning path",
       ctaStart: "Start with Lesson 1 →",
       vizCap: {
@@ -216,7 +216,7 @@ export const UI = {
       usageEyebrow: "How To Learn",
       usageH2: "How Each Lesson Works",
       usageSub:
-        "Every lesson shares the same structure — a complete learning loop in 20 minutes:",
+        "Every lesson shares the same structure — one self-contained learning loop (about 10–30 minutes, depending on depth):",
       usageSteps: [
         { icon: "💡", label: "Core Concept", desc: "explained intuitively" },
         { icon: "🎛️", label: "Interactive Demo", desc: "tweak it yourself" },

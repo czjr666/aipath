@@ -109,6 +109,20 @@ If the displayed time is wrong, recommend one of two actions:
 
 Flag especially when every lesson is hard-coded to `约 20 分钟` / `~20 min` but the actual content clearly varies.
 
+### Real-duration source of truth (this repo)
+
+Lesson duration is NOT a single global string. Each lesson carries its own `minutes` integer in `src/data/lessons.js`, rendered by `t.lesson.minutes(n)` in `src/pages/LessonPage.jsx` (with a `?? 20` fallback). Duration must reflect real content volume, never a uniform placeholder.
+
+When reviewing a lesson, always compute its real time and set/update that lesson's `minutes` field if it is missing or off by more than ~2 minutes. Estimate with this baseline, then nudge by judgment:
+
+- Reading: Chinese character count of the lesson's `zh` content ÷ ~280 chars per minute (technical prose with think-time; the zh layer only — do not count the duplicated `en` layer or code).
+- Interaction: ~2 minutes per mounted interactive demo; add more for demos that invite real fiddling (3D scenes, multi-step steppers) and less for single-click toggles.
+- Concept density: nudge up for math-heavy or formula-dense lessons, quizzes that require computation, and tightly packed new terms.
+
+A quick way to get the reading proxy: count CJK characters per lesson file (e.g. `grep -oE "[一-龥]" Lxx.jsx | wc -l`) and subtract a small constant for comments.
+
+Keep homepage / marketing copy consistent with reality: if individual lessons span a wide range, the homepage must state a range (e.g. `每课约 10–30 分钟`), not a fixed `每课 20 分钟`. Update `src/i18n/strings.js` (`home.subhead`, `home.usageSub`) and the `单课时长` / `Per lesson` stat value in `src/pages/Home.jsx` together so they never contradict the per-lesson numbers.
+
 ## Diagram Trigger Rules
 
 When reviewing, actively look for text that should become a diagram. Do not wait for the user to ask.

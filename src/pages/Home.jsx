@@ -13,7 +13,7 @@ const STAT_NUMS = [
   "30",
   (
     <>
-      20<span style={{ fontSize: 15 }}>min</span>
+      10–30<span style={{ fontSize: 15 }}>min</span>
     </>
   ),
   "0",

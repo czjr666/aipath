@@ -92,7 +92,7 @@ export default function LessonPage({ lesson }) {
             {lesson.tags.map((tag, i) => (
               <Pill key={i} type={tag.type}>{pick(tag.text, lang)}</Pill>
             ))}
-            <span className="footnote">{t.lesson.minutes}</span>
+            <span className="footnote">{t.lesson.minutes(lesson.minutes ?? 20)}</span>
           </div>
         </header>
 

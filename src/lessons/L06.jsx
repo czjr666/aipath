@@ -122,11 +122,20 @@ const C = {
     sec1After: <>最妙的一点：<b>没有人告诉网络“第 1 层该学边缘、第 3 层该学耳朵”</b>。这套分工是训练中自己长出来的。“深度学习”的“深度”，说的就是这条抽象流水线的长度。这条流水线不只在识猫网络里 —— 接下来，我们把“扫描仪”对准 ChatGPT。</>,
     sec2Title: '🤖 把扫描仪对准大模型：它也在层层抽象',
     sec2Lead: 'ChatGPT 这类大语言模型，本质是几十到上百层网络模块的堆叠（具体长什么样，第 10 课 Transformer 细讲）。研究者像做“脑部扫描”一样逐层观察它处理句子的过程，发现了和识猫网络惊人相似的分工：浅层把字读顺，中层把话读懂，深层把理想通。拖动滑块，沿着深度往里看 —— 注意每一层“看到”的关系是怎么一步步变抽象的。',
-    sec2After: <>两点说明：① 这套分工同样<b>不是工程师设计的</b>，是训练中自己长出来的 —— 和识猫网络一模一样；② 层与层的边界是研究者事后“解剖”模型观察到的大致趋势（这门手艺叫可解释性研究，第 29 课再见），不是精确的楼层图。但大方向非常稳定：<b>层越深，处理的概念越抽象</b>。所以“深度”对大模型是命根子 —— 层数不够，就盖不出“推理”那层楼。</>,
+    sec2After: <>两点说明：① 这套分工同样<b>不是工程师设计的</b>，是训练中自己长出来的 —— 和识猫网络一模一样；② 层与层的边界是研究者事后“解剖”模型观察到的大致趋势（这门手艺叫可解释性（interpretability）研究，第 29 课再见），不是精确的楼层图。但大方向非常稳定：<b>层越深，处理的概念越抽象</b>。所以“深度”对大模型是命根子 —— 层数不够，就盖不出“推理”那层楼。</>,
+    sec2SourceNote: (
+      <>
+        「浅层语法、中层语义、深层推理」的分层观察来自可解释性研究，代表作见 Tenney 等 2019 年论文{' '}
+        <a href="https://arxiv.org/abs/1905.05950" target="_blank" rel="noreferrer">
+          BERT Rediscovers the Classical NLP Pipeline
+        </a>
+        。
+      </>
+    ),
     sec3Title: '💡 核心概念二：反向传播 —— 考砸了，往回追责',
     sec3Lead: '网络刚出厂时，权重全是随机数，把猫认成狗是常态。它怎么从错误中改进？靠一套固定流程，名叫反向传播（Backpropagation），分三步走：',
     sec3Cards: [
-      { label: '第 ① 步 · 向前', en: <>前向传播，<b>算出预测</b></>, zh: '数据从输入层一路流到输出层，网络给出答卷：“狗 71%”。' },
+      { label: '第 ① 步 · 向前', en: <>前向传播（forward pass），<b>算出预测</b></>, zh: '数据从输入层一路流到输出层，网络给出答卷：“狗 71%”。' },
       { label: '第 ② 步 · 对答案', en: <>比对答案，<b>得到损失</b></>, zh: '正确答案是“猫”。预测与答案的差距被量化成一个数 —— 就是第 4 课那座“山”的高度。' },
       { label: '第 ③ 步 · 往回', en: <>误差回传，<b>逐层追责</b></>, zh: '误差从输出层往输入层逐层回传，每个参数分到自己的“责任大小”（梯度），按责任挨个微调。' },
     ],
@@ -140,7 +149,7 @@ const C = {
       ['梯度', '每个人的“责任大小”—— 你的决定对结果影响多大'],
       ['更新权重', '责任大的人大改，责任小的人微调，下个项目再战'],
     ],
-    sec3After1: <><b>谁影响大，谁改得多</b> —— 这就是反向传播的全部精神。数学上，“逐层把责任算清楚”靠的是<b>链式法则</b>：复合函数求导的链条，一层一层往回乘，仅此而已，本课不展开。你只需记住两点：① 它是<b>纯机械的求导计算</b>，全自动，没有任何“思考”；② 它和第 4 课的梯度下降是一对搭档 —— 反向传播负责算出每个参数脚下的坡度，梯度下降负责照着坡度往下走一步。</>,
+    sec3After1: <><b>谁影响大，谁改得多</b> —— 这就是反向传播的全部精神。数学上，“逐层把责任算清楚”靠的是<b>链式法则（chain rule）</b>：复合函数求导的链条，一层一层往回乘，仅此而已，本课不展开。你只需记住两点：① 它是<b>纯机械的求导计算</b>，全自动，没有任何“思考”；② 它和第 4 课的梯度下降是一对搭档 —— 反向传播负责算出每个参数脚下的坡度，梯度下降负责照着坡度往下走一步。</>,
     sec3After2: <>放到大模型上，这套流程<b>一字不改</b>：ChatGPT 的训练就是亿万道「预测下一个词」的填空题（第 12 课细讲）—— 预测错了，误差就从最后一层一路回传到第 1 层，上万亿个参数人手一份责任、各自微调。你看到的每一句流畅回答，背后都是这套机械流程跑了无数遍的结果。训练大模型烧掉的天价算力，大头正是烧在这一来一回上：几万张 GPU 连转几个月，干的就是「前向 → 对答案 → 回传 → 微调」这一件事。</>,
     sec4Title: '📖 深一点：同样多的神经元，为什么“深”赢过“宽”',
     sec4Lead: '一个自然的疑问：既然神经元多本事就大，那把 1000 个神经元铺成又宽又浅的一层，和叠成 10 层、每层 100 个，有区别吗？区别大到出乎意料。',
@@ -152,8 +161,19 @@ const C = {
     sec4BeforeDepths: '大模型也用脚投了票，清一色选了“深”：',
     modelDepths: ['GPT-2 · 48 层', 'GPT-3 · 96 层', 'Llama 3 405B · 126 层', 'DeepSeek-V3 · 61 层'],
     sec4Depths: <>每往上一层，模型就把下层攒出的“语义零件”再组装一轮 —— 浅层的语法零件被中层的语义复用，中层的语义又被深层的推理复用。第 15 课讲“规模法则”时你会看到：把大模型做强要加深加宽一起上，但<b>“深”始终是底座</b> —— 没有深度，就没有逐层抽象，再宽也只是个大号查表机。</>,
+    sec4SourceNote: (
+      <>
+        层数依据各模型论文与技术报告：GPT-2（Radford 等 2019）；GPT-3（
+        <a href="https://arxiv.org/abs/2005.14165" target="_blank" rel="noreferrer">Brown 等 2020</a>
+        ）；Llama 3（
+        <a href="https://arxiv.org/abs/2407.21783" target="_blank" rel="noreferrer">Dubey 等 2024</a>
+        ）；DeepSeek-V3（
+        <a href="https://arxiv.org/abs/2412.19437" target="_blank" rel="noreferrer">DeepSeek-AI 2024</a>
+        ）。
+      </>
+    ),
     sec5Title: '📖 留个伏笔：追责的声音会越传越小',
-    sec5Lead: '深有深的代价：误差往回传时每过一层就衰减一截，层数一多，底层只能听到一丝耳语 —— 收不到调整信号，学不动了。这就是梯度消失，它曾让“很深的网络”多年训练不出来。在下面的实验台上亲手感受一下，再看工程师怎么修路救场：',
+    sec5Lead: '深有深的代价：误差往回传时每过一层就衰减一截，层数一多，底层只能听到一丝耳语 —— 收不到调整信号，学不动了。这就是梯度消失（vanishing gradient），它曾让“很深的网络”多年训练不出来。在下面的实验台上亲手感受一下，再看工程师怎么修路救场：',
     sec5BeforeExamples: '救场的是两件工程神器 —— 点到为止，混个脸熟即可：',
     sec5ExampleEn1: 'ReLU 激活函数',
     sec5ExampleZh1: '把神经元的“开关”换成极简版：负数归零、正数直通。误差回传时衰减大大变缓，如今是各类网络的默认选择 —— 下一课的 CNN 里就会见到它。',
@@ -192,6 +212,10 @@ const C = {
         a: <>因为这套分工<b>没有人设计，是训练中自己长出来的</b>：反向传播在亿万道“预测下一个词”的考题里反复微调参数，而“分层复用、逐层抽象”恰好是把这件事做好的最省力方案 —— 和识猫网络自发学出“边缘 → 部件”是同一个道理。</>,
       },
     ],
+    bridgeTitle: '➡️ 下一课怎么接上',
+    bridgeLead:
+      '这一课你看清了深度的两件事：逐层抽象（像素 → 边缘 → 部件 → 物体）和反向传播（考砸了往回追责）。但有个问题没细说：识猫网络第 1 层那些“边缘探测器”，凭什么不用海量神经元就能铺满整张图？下一课的卷积神经网络（CNN）给出答案 —— 一个 3×3 的小窗口在图上滑动，就能复用同一套零件扫遍全图。',
+    bridgeSteps: ['逐层抽象已理解', '但视觉怎么高效实现', '3×3 卷积核滑动复用', '下一课：CNN'],
   },
 
   en: {
@@ -310,6 +334,15 @@ const C = {
     sec2Title: '🤖 Point the scanner at a large model: it abstracts layer by layer too',
     sec2Lead: 'Large language models like ChatGPT are essentially stacks of tens to hundreds of layers of network modules (Lesson 10 on the Transformer covers exactly what they look like). Researchers observe it processing sentences layer by layer, much like a “brain scan,” and have found a division of labor strikingly similar to the cat network: the shallow layers get the words straight, the middle layers understand the sentence, the deep layers connect the reasoning. Drag the slider and look deeper along the depth — notice how the relations each layer “sees” grow more abstract step by step.',
     sec2After: <>Two notes: ① this division of labor likewise <b>was not designed by engineers</b>, but grew out of training on its own — exactly like the cat network; ② the boundaries between layers are rough trends researchers observed by “dissecting” the model afterward (this craft is called interpretability research, see you in Lesson 29), not a precise floor plan. But the big picture is very stable: <b>the deeper the layer, the more abstract the concept it handles</b>. So “depth” is the lifeblood of a large model — without enough layers, you can’t build the “reasoning” floor.</>,
+    sec2SourceNote: (
+      <>
+        The layered observation “shallow = grammar, middle = meaning, deep = reasoning” comes from interpretability research; for a representative work see Tenney et al. 2019,{' '}
+        <a href="https://arxiv.org/abs/1905.05950" target="_blank" rel="noreferrer">
+          BERT Rediscovers the Classical NLP Pipeline
+        </a>
+        .
+      </>
+    ),
     sec3Title: '💡 Core Idea 2: Backpropagation — flunked the test, so trace the blame back',
     sec3Lead: 'Fresh from the factory, a network’s weights are all random numbers, and mistaking a cat for a dog is the norm. How does it improve from its mistakes? Through a fixed procedure called backpropagation, in three steps:',
     sec3Cards: [
@@ -339,6 +372,17 @@ const C = {
     sec4BeforeDepths: 'Large models voted with their feet too, uniformly choosing “deep”:',
     modelDepths: ['GPT-2 · 48 layers', 'GPT-3 · 96 layers', 'Llama 3 405B · 126 layers', 'DeepSeek-V3 · 61 layers'],
     sec4Depths: <>With each layer up, the model assembles the “semantic components” accumulated below into another round — the shallow layers’ grammar components are reused by the middle layers’ meaning, and the middle layers’ meaning is in turn reused by the deep layers’ reasoning. When Lesson 15 covers “scaling laws,” you’ll see: making a large model stronger means going deeper and wider together, but <b>“deep” is always the foundation</b> — without depth there is no layer-by-layer abstraction, and no matter how wide, it’s just an oversized lookup table.</>,
+    sec4SourceNote: (
+      <>
+        Layer counts per each model’s paper or technical report: GPT-2 (Radford et al. 2019); GPT-3 (
+        <a href="https://arxiv.org/abs/2005.14165" target="_blank" rel="noreferrer">Brown et al. 2020</a>
+        ); Llama 3 (
+        <a href="https://arxiv.org/abs/2407.21783" target="_blank" rel="noreferrer">Dubey et al. 2024</a>
+        ); DeepSeek-V3 (
+        <a href="https://arxiv.org/abs/2412.19437" target="_blank" rel="noreferrer">DeepSeek-AI 2024</a>
+        ).
+      </>
+    ),
     sec5Title: '📖 A teaser: the blame’s voice fades the further back it travels',
     sec5Lead: 'Depth has its price: as the error is passed back, it decays a bit at every layer, and once there are many layers, the bottom can only hear a faint whisper — receiving no adjustment signal, it can’t learn. This is the vanishing gradient, and it kept “very deep networks” untrainable for years. Feel it for yourself on the lab below, then see how engineers paved a road to the rescue:',
     sec5BeforeExamples: 'The rescuers are two pieces of engineering magic — just a quick introduction, enough to get acquainted:',
@@ -379,6 +423,10 @@ const C = {
         a: <>Because this division of labor <b>was designed by no one; it grew out of training on its own</b>: across billions of “predict the next word” questions, backpropagation repeatedly fine-tuned the parameters, and “layered reuse, layer-by-layer abstraction” happens to be the most effortless way to do that well — the same reason the cat network spontaneously learned “edges → parts.”</>,
       },
     ],
+    bridgeTitle: '➡️ How This Leads to Lesson 7',
+    bridgeLead:
+      'This lesson made two things about depth clear: layer-by-layer abstraction (pixels → edges → parts → object) and backpropagation (flunk the test, trace the blame back). But one question went unaddressed: those “edge detectors” in layer 1 of the cat network — how do they blanket an entire image without a vast army of neurons? The next lesson’s convolutional neural network (CNN) gives the answer — a tiny 3×3 window sliding over the image reuses one set of components to sweep the whole thing.',
+    bridgeSteps: ['Abstraction understood', 'But how is vision done efficiently', 'A 3×3 kernel slides and reuses', 'Next: CNN'],
   },
 }
 
@@ -829,6 +877,7 @@ export default function L06() {
       >
         <LLMScanDemo c={c.llm} />
         <p className="lead" style={{ marginTop: 16 }}>{c.sec2After}</p>
+        <p className="footnote source-note">{c.sec2SourceNote}</p>
       </Lsec>
 
       <Lsec
@@ -892,6 +941,7 @@ export default function L06() {
           </div>
           <p style={{ fontSize: 14, color: 'var(--fg-1)', marginTop: 12 }}>{c.sec4Depths}</p>
         </div>
+        <p className="footnote source-note">{c.sec4SourceNote}</p>
       </Lsec>
 
       <Lsec
@@ -929,6 +979,20 @@ export default function L06() {
         <div className="card quiz row-list">
           {c.quiz.map((qz, i) => (
             <QuizItem key={i} q={qz.q}>{qz.a}</QuizItem>
+          ))}
+        </div>
+      </Lsec>
+
+      <Lsec title={c.bridgeTitle} lead={c.bridgeLead}>
+        <div className="bridge-flow">
+          {c.bridgeSteps.map((step, i) => (
+            <span className="bridge-flow-item" key={step}>
+              <span className="bridge-flow-step">
+                <b>{i + 1}</b>
+                {step}
+              </span>
+              {i < c.bridgeSteps.length - 1 && <span className="bridge-flow-arrow">→</span>}
+            </span>
           ))}
         </div>
       </Lsec>

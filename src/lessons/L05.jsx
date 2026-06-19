@@ -119,7 +119,7 @@ const C = {
       {
         label: '模拟考 · 约 10–15%',
         term: <>验证集 <b>Validation Set</b></>,
-        body: <>不用来学，只用来<b>摸底</b>：调超参数（比如下山的步长）、在几个候选模型里挑出最好的那个。模拟考可以反复考。</>,
+        body: <>不用来学，只用来<b>摸底</b>：调超参数（hyperparameter，比如下山的步长）、在几个候选模型里挑出最好的那个。模拟考可以反复考。</>,
       },
       {
         label: '高考 · 约 10–15%',
@@ -147,6 +147,19 @@ const C = {
         body: <><b>考题混进了练习册</b> —— 最隐蔽的作弊。模型“考前见过题”，测试成绩虚高，一上线就现出原形。典型案例：测试样本混进训练集、用“未来”的信息预测过去、同一个病人的记录同时出现在训练集和测试集。</>,
       },
     ],
+    garbageSourceNote: (
+      <>
+        数据偏见的亚马逊招聘案例见路透社 2018 年报道{' '}
+        <a
+          href="https://www.reuters.com/article/us-amazon-com-jobs-automation-insight-idUSKCN1MK08G"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Amazon scraps secret AI recruiting tool that showed bias against women
+        </a>
+        。
+      </>
+    ),
     demoSecTitle: '🎛️ 交互演示：三种学法，一眼分高下',
     demoSecLead: '同一组数据，三种学法。12 个实心点是训练数据（平时练习题），它们背后的真实规律是那条灰色虚线 —— 一条平缓的曲线；点没有正好落在线上，因为现实数据总带噪声。空心点是新抽的 5 道“考试题”，三种模型谁都没见过。逐个点击三档，盯紧右侧两根误差条。',
     demoTitle: '🎛️ 交互演示 · 欠拟合 / 刚好 / 过拟合',
@@ -163,7 +176,7 @@ const C = {
       { key: 'over', label: '过拟合' },
     ],
     modes: {
-      under: { title: '欠拟合 · 学得太浅', period: '训练误差大 · 考试误差也大',
+      under: { title: '欠拟合（underfitting）· 学得太浅', period: '训练误差大 · 考试误差也大',
         desc: '一条直线，连大方向都没抓住 —— 像上课只记了一句口诀的学生。练习题做不对，考试自然也不行：两根误差条都很高。' },
       good: { title: '刚好 · 学到了规律', period: '训练误差小 · 考试误差也小',
         desc: '平滑曲线贴住了真实趋势（看它几乎和灰色虚线重合），但不去追逐每个点的噪声。练习偶有小错，考试稳定发挥 —— 这就是泛化。' },
@@ -207,6 +220,10 @@ const C = {
         a: <><b>不能，这是数据泄漏。</b>模型在训练时已经见过这位病人的其他记录，测试时它认出的是“这个人”，而不是学会了判断疾病 —— 考题混进了练习册。正确做法是<b>按病人切分</b>：同一个人的所有记录，只能整体进训练集或整体进测试集。</>,
       },
     ],
+    bridgeTitle: '➡️ 下一课怎么接上',
+    bridgeLead:
+      '现在你会喂数据、会用「训练误差 vs 测试误差」判断模型到底学没学会。但有个限制一直没提：前面这些网络都太浅 —— 第 3 课那种单个神经元，只会画直线，认不出一只猫。下一课进入原理篇，把网络一层层叠深，并解决随之而来的难题：误差怎么一层层「追责」回每一层？这就是反向传播。',
+    bridgeSteps: ['单个神经元', '只能画直线', '叠成多层网络', '下一课：反向传播分摊误差'],
   },
 
   en: {
@@ -270,6 +287,19 @@ const C = {
         body: <><b>Exam questions slipped into the workbook</b> — the most insidious form of cheating. The model "saw the questions before the exam," so its test score is inflated, and it shows its true colors the moment it goes live. Classic cases: test samples leaking into the training set, using "future" information to predict the past, and the same patient’s records appearing in both the training and test sets.</>,
       },
     ],
+    garbageSourceNote: (
+      <>
+        For the Amazon hiring case of data bias, see Reuters (2018),{' '}
+        <a
+          href="https://www.reuters.com/article/us-amazon-com-jobs-automation-insight-idUSKCN1MK08G"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Amazon scraps secret AI recruiting tool that showed bias against women
+        </a>
+        .
+      </>
+    ),
     demoSecTitle: '🎛️ Interactive: Three Ways to Learn, Told Apart at a Glance',
     demoSecLead: 'The same dataset, three ways to learn. The 12 solid dots are the training data (the everyday practice problems), and the true pattern behind them is that gray dashed line — a gentle curve; the dots don’t land exactly on it, because real-world data always carries noise. The hollow dots are 5 freshly drawn "exam questions" that none of the three models has seen. Click through the three settings one by one and keep your eye on the two error bars on the right.',
     demoTitle: '🎛️ Interactive · Underfit / Just Right / Overfit',
@@ -330,6 +360,10 @@ const C = {
         a: <><b>No — this is data leakage.</b> During training the model already saw this patient’s other records, so at test time it recognizes "this person" rather than having learned to judge the disease — the exam questions slipped into the workbook. The right approach is to <b>split by patient</b>: all of one person’s records must go entirely into the training set or entirely into the test set.</>,
       },
     ],
+    bridgeTitle: '➡️ How This Leads to Lesson 6',
+    bridgeLead:
+      'Now you can feed data and use "training error vs. test error" to judge whether a model has truly learned. But one limit went unmentioned: all these networks have been too shallow — the single neuron from Lesson 3 can only draw a straight line, never recognize a cat. The next lesson opens the "principles" stage: stacking the network deeper, layer by layer, and solving the problem that comes with it — how do you trace the error’s "blame" back through every layer? That is backpropagation.',
+    bridgeSteps: ['A single neuron', 'Can only draw a line', 'Stack into many layers', 'Next: backprop assigns the blame'],
   },
 }
 
@@ -460,6 +494,7 @@ export default function L05() {
             </div>
           ))}
         </div>
+        <p className="footnote source-note">{c.garbageSourceNote}</p>
       </Lsec>
 
       <Lsec
@@ -487,6 +522,20 @@ export default function L05() {
         <div className="card quiz row-list">
           {c.quiz.map((qz, i) => (
             <QuizItem key={i} q={qz.q}>{qz.a}</QuizItem>
+          ))}
+        </div>
+      </Lsec>
+
+      <Lsec title={c.bridgeTitle} lead={c.bridgeLead}>
+        <div className="bridge-flow">
+          {c.bridgeSteps.map((step, i) => (
+            <span className="bridge-flow-item" key={step}>
+              <span className="bridge-flow-step">
+                <b>{i + 1}</b>
+                {step}
+              </span>
+              {i < c.bridgeSteps.length - 1 && <span className="bridge-flow-arrow">→</span>}
+            </span>
           ))}
         </div>
       </Lsec>

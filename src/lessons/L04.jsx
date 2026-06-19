@@ -94,7 +94,7 @@ const C = {
     ),
     formula1Zh: (
       <>
-        最常用的一把尺子：平方损失。预测房价时，猜 520 万、实际 500 万，差
+        最常用的一把尺子：平方损失（squared loss）。预测房价时，猜 520 万、实际 500 万，差
         20，损失 400；猜 510 万只差 10，损失 100。平方有两个用意：
         <b>抹掉正负号</b>（多猜少猜都算错），以及<b>狠狠放大离谱的错误</b> —— 差
         20 的罚分是差 10 的 4 倍。
@@ -179,7 +179,7 @@ const C = {
         没有顿悟，没有灵感，只有挪步。
       </>
     ),
-    dimsTitle: "真实的山有亿万个维度",
+    dimsTitle: "📖 真实的山有亿万个维度",
     dimsLead:
       "3D 演示是一个善意的“谎言”—— 真实的下山发生在你无法想象的空间里。但好消息恰恰也藏在那里。",
     dimsParas: [
@@ -227,7 +227,7 @@ const C = {
         。
       </>
     ),
-    saddleTitle: "困得住 vs 关不住 —— 局部最优与鞍点",
+    saddleTitle: "🧭 困得住 vs 关不住 —— 局部最优与鞍点",
     saddleLead:
       "上一节说鞍点比局部最优常见，可它俩到底差在哪？下面这张“坡度罗盘”站在小球脚下看四个方向：红色箭头是上坡（把你推回坑里），绿色箭头是下坡（还能往外溜）。切换两种地形，再点“尝试逃离”，亲眼看哪种困得住、哪种关不住。",
     saddleCaseLocal: "局部最优",
@@ -336,6 +336,15 @@ const C = {
           </>
         ),
       },
+    ],
+    bridgeTitle: "➡️ 下一课怎么接上",
+    bridgeLead:
+      "这一课你看清了「训练 = 蒙眼下山」：损失定义山形，梯度指方向，学习率定步幅。但有个问题一直没碰 —— 把损失降到极低，模型就一定聪明吗？万一它只是把训练数据「背」了下来呢？下一课《数据为王》就来拆穿这件事：训练集、测试集，以及所有炼丹师的噩梦 —— 过拟合。",
+    bridgeSteps: [
+      "损失降到很低",
+      "可能只是背下了数据",
+      "换新数据就翻车",
+      "下一课：过拟合与泛化",
     ],
   },
 
@@ -748,6 +757,15 @@ const C = {
           </>
         ),
       },
+    ],
+    bridgeTitle: "➡️ How This Leads to Lesson 5",
+    bridgeLead:
+      'This lesson made "training = descending blindfolded" clear: the loss defines the mountain’s shape, the gradient points the way, the learning rate sets the stride. But one question went untouched — drive the loss very low and is the model necessarily smart? What if it has merely "memorized" the training data? The next lesson, "Data Is King," exposes exactly this: training sets, test sets, and every practitioner’s nightmare — overfitting.',
+    bridgeSteps: [
+      "Loss driven very low",
+      "May have just memorized the data",
+      "New data breaks it",
+      "Next: overfitting & generalization",
     ],
   },
 };
@@ -1163,6 +1181,20 @@ export default function L04() {
             <QuizItem key={i} q={qz.q}>
               {qz.a}
             </QuizItem>
+          ))}
+        </div>
+      </Lsec>
+
+      <Lsec title={c.bridgeTitle} lead={c.bridgeLead}>
+        <div className="bridge-flow">
+          {c.bridgeSteps.map((step, i) => (
+            <span className="bridge-flow-item" key={step}>
+              <span className="bridge-flow-step">
+                <b>{i + 1}</b>
+                {step}
+              </span>
+              {i < c.bridgeSteps.length - 1 && <span className="bridge-flow-arrow">→</span>}
+            </span>
           ))}
         </div>
       </Lsec>
