@@ -1,1 +1,0 @@
-../../../.codex/skills/course-content-review/SKILL.md
