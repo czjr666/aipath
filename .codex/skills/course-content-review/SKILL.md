@@ -15,7 +15,7 @@ Review course content for Chinese learner readability, conceptual clarity, and t
 2. Review Chinese copy first: wording, idiom, tone, concept load, terminology, examples, and flow.
 3. Check source grounding: if the lesson mentions an external paper, standard, named concept, model, historical event, or web resource, add or request an inline note/link so readers can see the course is grounded in real sources.
 4. Check terminology: professional terms must show Chinese plus English on first meaningful use, for example `激活函数（activation function）`, `偏置（bias）`.
-5. Identify diagram opportunities. If a process, branching logic, feedback loop, layered structure, before/after comparison, data pipeline, or cause-effect chain would be clearer visually, produce an React/SVG flowchart artifact in addition to text feedback.
+5. Identify diagram opportunities. If a process, branching logic, feedback loop, layered structure, before/after comparison, data pipeline, or cause-effect chain would be clearer visually, produce a React/SVG flowchart artifact in addition to text feedback.
 6. Report findings before summaries. Include exact file/line references when reviewing files.
 7. When asked to modify the content, apply concise edits and verify the build or relevant rendering path.
 
@@ -48,6 +48,8 @@ If a chapter contains external grounding, make it visible to learners. Examples:
 - A paper or historical source: `McCulloch-Pitts 神经元（1943）` should have a footnote/link to the paper or a reliable reference.
 - A named function or concept: `sigmoid` or `ReLU` should link or note that these are standard activation functions when first introduced.
 - A protocol, benchmark, model family, library, or product: provide an official doc, paper, or stable reference when possible.
+
+**Placement rule: keep links out of the body. Do not put reference links inline in the prose.** Collect them into a single source note at the foot of the section, rendered as a footnote element (the repo convention is `<p className="footnote source-note">…</p>`, as in `L03.jsx`'s `brainSourceNote` / `actSourceNote`). The body text stays clean and readable; the footer is where curious learners go to verify. One footer note per section is enough — if a section grounds several claims, combine them into one note separated by `；`/`;` rather than scattering links through the paragraphs.
 
 Prefer concise notes over academic citation clutter. A single footnote-style sentence is enough when the lesson is not research-heavy. If no source can be verified locally and the fact is not common/stable, browse or ask before adding a link.
 
@@ -85,11 +87,11 @@ Create or recommend a diagram when the text contains:
 
 Do not create a diagram for a simple definition, a single sentence contrast, or content already clear as a short table.
 
-## Excalidraw Requirement
+## Interactive Diagram Requirement
 
-If a diagram is warranted and the user has not forbidden file changes, create an editable Excalidraw artifact, not just a prose suggestion.
+This project favors playable, interactive diagrams over static images. When a diagram is warranted and the user has not forbidden file changes, implement it with the repo's existing UI technology (React/SVG/Canvas) so learners can interact with it, rather than only suggesting it in prose.
 
-Use `.excalidraw` JSON unless the repo already has a diagram convention. Store it near the lesson or in an appropriate assets/media directory. Name it descriptively, for example:
+If you need a design source before implementing, sketch the structure as an editable `.excalidraw` JSON file and store it near the lesson or in an appropriate assets/media directory. Name it descriptively, for example:
 
 - `rule-explosion.excalidraw`
 - `training-loop.excalidraw`
@@ -102,9 +104,7 @@ The diagram must:
 - Show direction with arrows.
 - Use color sparingly to distinguish states such as normal/risk/failure.
 - Include a short caption or note if a visual shortcut could be misunderstood.
-- Be editable in Excalidraw.
-
-When the project needs an embedded runtime diagram rather than a source artifact, use the Excalidraw file as the design source and implement the lesson rendering with the repo's existing UI technology, such as React/SVG/Canvas, unless the user explicitly wants an embedded Excalidraw editor.
+- Prefer an interactive React/SVG rendering embedded in the lesson; use an embedded Excalidraw editor only when the user explicitly asks for one.
 
 ## Review Output Format
 

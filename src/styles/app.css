@@ -856,4 +856,6 @@ table.match.map td:first-child { font-weight: 600; font-size: 15px; color: var(-
 .prose p + p { margin-top: 10px; }
 .prose b { color: var(--fg-0); }
 .mt14 { margin-top: 14px; }
+.gd-shake { animation: gd-shake 0.45s ease; }
+@keyframes gd-shake { 0%, 100% { transform: none; } 20% { transform: translateX(-5px); } 40% { transform: translateX(5px); } 60% { transform: translateX(-3px); } 80% { transform: translateX(3px); } }
 @media (max-width: 700px) { .gd-wrap { height: 300px; } }
