@@ -15,9 +15,11 @@ Review course content for Chinese learner readability, conceptual clarity, and t
 2. Review Chinese copy first: wording, idiom, tone, concept load, terminology, examples, and flow.
 3. Check source grounding: if the lesson mentions an external paper, standard, named concept, model, historical event, or web resource, add or request an inline note/link so readers can see the course is grounded in real sources.
 4. Check terminology: professional terms must show Chinese plus English on first meaningful use, for example `激活函数（activation function）`, `偏置（bias）`.
-5. Identify diagram opportunities. If a process, branching logic, feedback loop, layered structure, before/after comparison, data pipeline, or cause-effect chain would be clearer visually, produce a React/SVG flowchart artifact in addition to text feedback.
-6. Report findings before summaries. Include exact file/line references when reviewing files.
-7. When asked to modify the content, apply concise edits and verify the build or relevant rendering path.
+5. Check lesson continuity: each lesson should include a concise "下一课怎么接上" bridge unless it is the final lesson or the next lesson is unknown.
+6. Check duration fit: compare the lesson's real content volume with its displayed estimated learning time.
+7. Identify diagram opportunities. If a process, branching logic, feedback loop, layered structure, before/after comparison, data pipeline, or cause-effect chain would be clearer visually, produce a React/SVG flowchart artifact in addition to text feedback.
+8. Report findings before summaries. Include exact file/line references when reviewing files.
+9. When asked to modify the content, apply concise edits and verify the build or relevant rendering path.
 
 ## Chinese Learner Copy Checks
 
@@ -71,6 +73,42 @@ Use this especially for terms learners will search later:
 - 注意力机制（attention）
 - 检索增强生成（RAG, Retrieval-Augmented Generation）
 
+## Lesson Continuity Rule
+
+Each non-final lesson should end with a short bridge to the next lesson. This keeps the course feeling like a guided path rather than isolated articles.
+
+Use a concise section such as `➡️ 下一课怎么接上`:
+
+- One short paragraph, usually 1-3 sentences.
+- Explain what this lesson established.
+- Name the next lesson's question or next conceptual move.
+- Do not summarize the whole lesson again.
+- Do not introduce heavy new concepts that belong in the next lesson.
+- If helpful, add a tiny 3-4 step flow, for example `人写规则 → 规则越写越多 → 机器从数据里找规则 → 进入机器学习`.
+
+Review for missing or weak bridges. When editing a lesson, add or tighten the bridge if the next lesson is known from the course order.
+
+## Duration Fit Rule
+
+Do not assume the displayed lesson duration is correct. Estimate the actual learning time from the content itself and flag mismatches.
+
+When reviewing a lesson, estimate time from:
+
+- Chinese reading volume and concept density.
+- Number and difficulty of new terms.
+- Interactive demos and how long a learner needs to try them.
+- Examples, flip cards, quizzes, and reflection tasks.
+- Source notes or optional reading, counted as optional time only.
+
+Use practical ranges, not fake precision: `8-12 分钟`, `15-18 分钟`, `20-25 分钟`.
+
+If the displayed time is wrong, recommend one of two actions:
+
+- Adjust the displayed time to match the real lesson.
+- Expand or trim the lesson if the course promises a fixed duration such as "每课 20 分钟".
+
+Flag especially when every lesson is hard-coded to `约 20 分钟` / `~20 min` but the actual content clearly varies.
+
 ## Diagram Trigger Rules
 
 When reviewing, actively look for text that should become a diagram. Do not wait for the user to ask.
@@ -114,8 +152,10 @@ For review-only requests:
 2. Each finding includes file/line, the issue, and a concrete replacement.
 3. Add a "Source notes" section for missing or recommended external links/notes.
 4. Add a "Terminology" section for missing English labels on professional terms.
-5. Add a "Diagram opportunities" section if any diagram is warranted.
-6. If no major issues, say so and list minor polish only.
+5. Add a "Lesson continuity" section if the bridge to the next lesson is missing, too long, or unclear.
+6. Add a "Duration fit" section comparing estimated actual time with displayed time.
+7. Add a "Diagram opportunities" section if any diagram is warranted.
+8. If no major issues, say so and list minor polish only.
 
 For edit requests:
 
@@ -123,7 +163,9 @@ For edit requests:
 2. Modify only the requested lesson/content.
 3. Preserve bilingual structure and interactive logic unless asked otherwise.
 4. Add source notes and terminology labels when the edit touches relevant concepts.
-5. Verify with the relevant command, usually the app's build command.
+5. Add or tighten the concise next-lesson bridge when the next lesson is known.
+6. Adjust duration metadata or content volume when the requested edit changes the real learning time enough to matter.
+7. Verify with the relevant command, usually the app's build command.
 
 ## Common Mistakes
 
@@ -131,5 +173,7 @@ For edit requests:
 - Do not remove all English technical terms; keep terms learners need, but explain them naturally.
 - Do not leave important technical terms Chinese-only on first use.
 - Do not mention external foundations as if the course invented them; add a concise source note/link where it helps credibility.
+- Do not leave a lesson feeling like a standalone article when the next lesson has a clear conceptual handoff.
+- Do not accept hard-coded `20 分钟` / `20 min` estimates when the lesson's real volume is clearly shorter or longer.
 - Do not add diagrams for decoration. Add them only when they reduce cognitive load.
 - Do not embed a heavy whiteboard editor into a lesson when a lightweight SVG/React rendering is enough.
