@@ -70,15 +70,19 @@ table.match td.ex { color: var(--fg-1); }
 
 /* 上下课导航 */
 .pager { display: flex; gap: 14px; margin-top: 56px; }
-.pager a { flex: 1; padding: 18px 22px; text-decoration: none; color: inherit; transition: border-color 0.15s ease; }
+.pager a { flex: 1; min-width: 0; padding: 18px 22px; text-decoration: none; color: inherit; transition: border-color 0.15s ease; }
 .pager a:hover { border-color: var(--fg-2); }
 .pager .dir { font-size: 13px; color: var(--fg-2); }
-.pager .name { font-size: 16px; font-weight: 600; margin-top: 2px; }
+.pager .name { display: grid; gap: 6px; margin-top: 10px; }
+.pager-no { display: block; font-size: 24px; line-height: 1; font-weight: 800; color: var(--fg-0); font-variant-numeric: tabular-nums; }
+.pager-title { display: block; min-width: 0; font-size: 15px; line-height: 1.45; font-weight: 600; color: var(--fg-0); overflow-wrap: anywhere; }
 .pager .next { text-align: right; }
 .pager .disabled { opacity: 0.5; pointer-events: none; }
 
 @media (max-width: 700px) {
   .contrast, .use-grid, .use-grid.cols-2, .use-grid.cols-4 { grid-template-columns: 1fr; }
+  .pager { flex-direction: column; }
+  .pager .next { text-align: left; }
 }
 
 /* ============================================================

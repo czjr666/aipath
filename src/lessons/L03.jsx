@@ -80,7 +80,7 @@ const C = {
       },
     ],
     brainTitle: '📖 名字借自大脑，本事全靠数学',
-    brainLead: '上世纪 40 年代，研究者观察到生物神经元“信号汇总、过阈值就放电”的行为，从中抽出了这道打分题。对照关系如下 —— 但请记住，这只是一次松散的启发，不是模拟。',
+    brainLead: '上世纪 40 年代，研究者观察到生物神经元“信号汇总、过阈值（threshold）就放电”的行为，从中抽出了这道打分题。对照关系如下 —— 但请记住，这只是一次松散的启发，不是模拟。',
     tableHead: ['生物神经元', '人工神经元', '它干的事'],
     tableRows: [
       { be: '树突', ae: '输入 x', ex: '接收上游传来的信号' },
@@ -126,6 +126,10 @@ const C = {
         why: <><b>病因：</b>把“能做决定”误当成“聪明”。你刚才在演示里看到的，只是一次简单的加权计算。智能不在零件里，而在亿万个零件的组织方式里 —— 一粒沙不是城堡，但亿万粒沙可以是。</>,
       },
     ],
+    bridgeTitle: '➡️ 下一课怎么接上',
+    bridgeLead:
+      '你已经亲手调出了一个会做决定的神经元 —— 但那三个数是你手动拖出来的。真实模型有亿万个这样的参数，没人调得过来。下一课就来看机器自己怎么调：把“猜错的程度”变成一座山，闭着眼一步步下山。',
+    bridgeSteps: ['手动调 3 个数', '真实模型亿万个参数', '没人手调得过来', '下一课：机器自己下山'],
     quizTitle: '✍️ 小练习',
     quiz: [
       {
@@ -187,7 +191,7 @@ const C = {
     },
     ex2: {
       en: <>z = w₁x₁ + w₂x₂ + b　→　y = σ(z)</>,
-      zh: <>The smallest building block of all of deep learning is this one line: multiply each input x by a weight w and sum, add the bias b to get the score z, then squeeze it through the activation function σ into the final output y. Everything in the next 27 lessons is just billions of permutations of this one formula.</>,
+      zh: <>The smallest building block of all of deep learning is this one line: multiply each input x by a weight w and sum, add the bias b to get the score z, then squeeze it through the activation function σ into the final output y. Much of what the later lessons build is just billions of permutations of this one formula.</>,
     },
     useCards: [
       {
@@ -253,6 +257,10 @@ const C = {
         why: <><b>Cause:</b> mistaking “being able to make a decision” for “being smart.” What you just saw in the demo is only a grade-school arithmetic problem. Intelligence isn’t in the parts but in how billions of parts are organized — one grain of sand isn’t a castle, but billions of grains can be.</>,
       },
     ],
+    bridgeTitle: '➡️ How This Leads to Lesson 4',
+    bridgeLead:
+      'You’ve sculpted a decision-making neuron by hand — but those three numbers were ones you dragged into place yourself. A real model has billions of such parameters; no one could tune them by hand. The next lesson shows how the machine tunes them itself: turn “how wrong the guess is” into a mountain, and feel your way downhill with eyes closed.',
+    bridgeSteps: ['Tune 3 numbers by hand', 'Real models: billions of parameters', 'No one can hand-tune that', 'Next: the machine goes downhill itself'],
     quizTitle: '✍️ Quick Quiz',
     quiz: [
       {
@@ -510,6 +518,20 @@ export default function L03() {
         lead={c.demoLead}
       >
         <NeuronDemo c={c.demo} />
+      </Lsec>
+
+      <Lsec title={c.bridgeTitle} lead={c.bridgeLead}>
+        <div className="bridge-flow">
+          {c.bridgeSteps.map((step, i) => (
+            <span className="bridge-flow-item" key={step}>
+              <span className="bridge-flow-step">
+                <b>{i + 1}</b>
+                {step}
+              </span>
+              {i < c.bridgeSteps.length - 1 && <span className="bridge-flow-arrow">→</span>}
+            </span>
+          ))}
+        </div>
       </Lsec>
 
       <Lsec title={c.pitfallsTitle}>

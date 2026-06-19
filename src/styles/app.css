@@ -331,6 +331,16 @@ a.lesson:hover { background: var(--glass); }
 .venn-ring .sub { font-weight: 500; font-size: 11px; }
 .venn-ring.dim circle { fill-opacity: 0.3; }
 .venn-ring.active circle { fill-opacity: 0.72; stroke-width: 2.5; }
+.bridge-flow { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; margin-top: 18px; }
+.bridge-flow-item { display: inline-flex; align-items: center; gap: 10px; min-width: 0; }
+.bridge-flow-step { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 8px 14px; border-radius: var(--r-sm); background: var(--bg-inset); border: 1px solid var(--hairline); color: var(--fg-1); font-size: 14px; font-weight: 600; line-height: 1.35; }
+.bridge-flow-step b { color: var(--fg-0); font-variant-numeric: tabular-nums; }
+.bridge-flow-arrow { color: var(--fg-2); font-weight: 700; }
+@media (max-width: 640px) {
+  .bridge-flow { display: grid; gap: 8px; }
+  .bridge-flow-item { display: grid; grid-template-columns: 1fr; gap: 6px; }
+  .bridge-flow-arrow { display: none; }
+}
 
 /* ---------- L02：训练循环 + 猜下一个词 ---------- */
 .demo-body.single { grid-template-columns: 1fr; }

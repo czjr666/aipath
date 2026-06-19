@@ -124,9 +124,9 @@ const C = {
     paradigmsLead: '“喂数据”也分三种喂法，区别只在一个问题上：正确答案从哪儿来？这三个词在 AI 新闻里出场率极高，认清它们，后面的课会轻松很多。',
     pCards: [
       { label: '范式一 · 答案人来标', en: <>监督学习 <b>Supervised</b></>,
-        zh: <>拿“带答案的练习册”刷题：每条数据都配有标准答案。猜“是不是垃圾邮件”这类选择题叫<b>分类</b>，猜“这套房值多少万”这类填数字题叫<b>回归</b>。工业界落地的模型，大半是它。</> },
+        zh: <>拿“带答案的练习册”刷题：每条数据都配有标准答案。猜“是不是垃圾邮件”这类选择题叫<b>分类（classification）</b>，猜“这套房值多少万”这类填数字题叫<b>回归（regression）</b>。工业界落地的模型，大半是它。</> },
       { label: '范式二 · 没有答案', en: <>无监督学习 <b>Unsupervised</b></>,
-        zh: <>只给数据、不给答案，让机器自己发现结构。最常见的是<b>聚类</b>：把千万用户按行为自动分成“高频购买用户”“价格敏感用户”“很少下单用户”—— 分几群、按什么分，事先没人规定。</> },
+        zh: <>只给数据、不给答案，让机器自己发现结构。最常见的是<b>聚类（clustering）</b>：把千万用户按行为自动分成“高频购买用户”“价格敏感用户”“很少下单用户”—— 分几群、按什么分，事先没人规定。</> },
       { label: '范式三 · 试错 + 奖励', en: <>强化学习 <b>Reinforcement</b></>,
         zh: <>没有练习册，只有一个会打分的环境：做对加分、做错扣分，在海量试错里摸索出拿高分的<b>策略</b>。AlphaGo 的神之一手、打游戏的 AI、学走路的机器人，都靠它。</> },
     ],
@@ -147,7 +147,7 @@ const C = {
     chatgptTitle: '🤖 同一个循环，喂出 ChatGPT',
     chatgptLead: '你可能想问：这套“猜 → 比对 → 微调”，跟 ChatGPT 这样的大语言模型（LLM）有什么关系？答案是：关系就是全部 —— 大模型就是这个循环开到极大规模后的产物。变化只有两处：题目换了，规模变得极大。',
     chatgptExEn: <>题目：从“这封邮件是垃圾吗”，换成“<span className="hl">猜下一个词</span>”</>,
-    chatgptExZh: <>把互联网上的文本遮住一截让模型猜：“床前明月＿”。妙处在于：<b>答案自带</b> —— 下一个词就写在原文里，根本不用人工标注。机器自己出题、自己对答案，行话叫<b>自监督学习</b>，可以理解成“监督学习的免费版”。标注免费，数据规模才能从 10 万封邮件，冲到<b>万亿个词</b>。</>,
+    chatgptExZh: <>把互联网上的文本遮住一截让模型猜：“床前明月＿”。妙处在于：<b>答案自带</b> —— 下一个词就写在原文里，根本不用人工标注。机器自己出题、自己对答案，行话叫<b>自监督学习（self-supervised learning）</b>，可以理解成“监督学习的免费版”。标注免费，数据规模才能从 10 万封邮件，冲到<b>万亿个词</b>。</>,
     chatgptMid: <>一个朴素到让人不敢信的事实：ChatGPT 写诗、写代码、答题的很多能力，都是从“猜下一个词”这一道题里长出来的 —— 题目足够简单、数据足够海量、循环次数足够多，仅此而已。拖动下面的滑块，看看一个小模型怎样随训练量变大而变化：</>,
     chatgptAfter: <>当然，光会接话还成不了 ChatGPT。从“复读机”到“助手”，要闯三关 —— 注意看每张卡片上的范式标签：上一节的三种学法，在这条流水线里<b>全部登场</b>。</>,
     chatgptCards: [
@@ -165,6 +165,10 @@ const C = {
     sortTitle: '🎛️ 动手分一分：这是哪种学法？',
     sortLead: '下面 6 个场景分别用的哪种范式？先自己判断，再点卡片揭晓。口诀照旧：答案从哪儿来？',
 
+    bridgeTitle: '➡️ 下一课怎么接上',
+    bridgeLead: '这一课你看清了机器学习的内核：不靠灵感，靠“猜 → 比对 → 微调”的循环，把一堆参数（parameter）一点点调到位。可被调整的“参数”到底长什么样？下一课就钻进神经网络的最小零件 —— 一个神经元，看权重、偏置、激活如何让它做出一次判断。',
+    bridgeSteps: ['机器找规则', '规则 = 一堆参数', '参数住在神经元里', '下一课：拆开一个神经元'],
+
     pitfallsTitle: '⚠️ 常见误区',
     pitfalls: [
       {
@@ -180,7 +184,7 @@ const C = {
       {
         bad: '模型答对了，说明它“理解”了任务',
         good: '它只是拟合了统计规律：在见过的数据里，找到了特征与答案之间的相关性',
-        why: <><b>病因：</b>拟人化的宣传语。一个经典翻车案例：区分狼和哈士奇的模型，实际学到的规律是“背景有雪 = 狼”—— 因为训练照片里狼总站在雪地上。换一张草地上的狼，它立刻认错。大模型的“一本正经胡说八道”（幻觉）同根同源：它输出的是“统计上最像答案的词”，而不是“查证过的事实”，第 29 课细讲。</>,
+        why: <><b>病因：</b>拟人化的宣传语。一个经典翻车案例：区分狼和哈士奇的模型，实际学到的规律是“背景有雪 = 狼”—— 因为训练照片里狼总站在雪地上。换一张草地上的狼，它立刻认错。大模型的“一本正经胡说八道”（幻觉，hallucination）同根同源：它输出的是“统计上最像答案的词”，而不是“查证过的事实”，第 29 课细讲。</>,
       },
     ],
 
@@ -196,7 +200,7 @@ const C = {
       },
       {
         q: '3. 判断：一个训练完成、已经上线的垃圾邮件过滤模型，每天处理新邮件时，还在继续“学习”吗？',
-        a: <><b>默认不在。</b>训练和使用（行话叫“推理”）是两个分开的阶段：上线后参数被“冻结”，它只是在执行已经学到的规则。想让它变聪明，要收集新数据、重新训练一轮再上线 —— 这也是大模型会有“知识截止日期”的原因。</>,
+        a: <><b>默认不在。</b>训练和使用（行话叫“推理”，inference）是两个分开的阶段：上线后参数被“冻结”，它只是在执行已经学到的规则。想让它变聪明，要收集新数据、重新训练一轮再上线 —— 这也是大模型会有“知识截止日期”的原因。</>,
       },
       {
         q: '4. 大模型预训练吃掉了几乎整个互联网的文本，却基本不需要人工标注。它的“标准答案”是从哪来的？',
@@ -362,6 +366,10 @@ const C = {
 
     sortTitle: '🎛️ Sort Them Yourself: Which Learning Style Is This?',
     sortLead: 'Which paradigm does each of the 6 scenarios below use? Decide for yourself first, then tap a card to reveal. Same rule as before: where does the answer come from?',
+
+    bridgeTitle: '➡️ How This Leads to Lesson 3',
+    bridgeLead: 'This lesson showed you the core of machine learning: not inspiration, but the “guess → compare → tweak” loop that nudges a pile of parameters into place. But what does an adjustable “parameter” actually look like? The next lesson zooms into a neural network’s smallest part — a single neuron — to see how weights, bias, and activation let it make one decision.',
+    bridgeSteps: ['Machines find rules', 'Rules = a pile of parameters', 'Parameters live in neurons', 'Next: take apart one neuron'],
 
     pitfallsTitle: '⚠️ Common Misconceptions',
     pitfalls: [
@@ -770,6 +778,20 @@ export default function L02() {
       >
         <div className="flip-grid">
           {c.flips.map((f, i) => <FlipCard key={i} q={f.q} pill={f.pill} why={f.why} />)}
+        </div>
+      </Lsec>
+
+      <Lsec title={c.bridgeTitle} lead={c.bridgeLead}>
+        <div className="bridge-flow">
+          {c.bridgeSteps.map((step, i) => (
+            <span className="bridge-flow-item" key={step}>
+              <span className="bridge-flow-step">
+                <b>{i + 1}</b>
+                {step}
+              </span>
+              {i < c.bridgeSteps.length - 1 && <span className="bridge-flow-arrow">→</span>}
+            </span>
+          ))}
         </div>
       </Lsec>
 

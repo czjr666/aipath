@@ -15,23 +15,33 @@ export default function Pager({ lesson }) {
       {prev ? (
         <Link className="card prev" to={`/lesson/${prev.slug}`}>
           <div className="dir">{t.pager.prevDir}</div>
-          <div className="name">{String(prev.id).padStart(2, '0')} {pick(prev.title, lang)}</div>
+          <div className="name">
+            <span className="pager-no">{String(prev.id).padStart(2, '0')}</span>
+            <span className="pager-title">{pick(prev.title, lang)}</span>
+          </div>
         </Link>
       ) : (
         <Link className="card prev" to="/#path">
           <div className="dir">{t.pager.tocBackDir}</div>
-          <div className="name">{t.pager.pathName}</div>
+          <div className="name">
+            <span className="pager-title">{t.pager.pathName}</span>
+          </div>
         </Link>
       )}
       {next ? (
         <Link className="card next" to={`/lesson/${next.slug}`}>
           <div className="dir">{t.pager.nextDir}</div>
-          <div className="name">{String(next.id).padStart(2, '0')} {pick(next.title, lang)}</div>
+          <div className="name">
+            <span className="pager-no">{String(next.id).padStart(2, '0')}</span>
+            <span className="pager-title">{pick(next.title, lang)}</span>
+          </div>
         </Link>
       ) : (
         <Link className="card next" to="/#path">
           <div className="dir">{t.pager.tocFwdDir}</div>
-          <div className="name">{t.pager.backToPath}</div>
+          <div className="name">
+            <span className="pager-title">{t.pager.backToPath}</span>
+          </div>
         </Link>
       )}
     </div>

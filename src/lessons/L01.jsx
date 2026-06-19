@@ -16,19 +16,19 @@ const C = {
     venn: {
       data: {
         ai: {
-          title: "人工智能 Artificial Intelligence",
+          title: "人工智能（Artificial Intelligence, AI）",
           period: "1956 年 · 达特茅斯会议命名",
-          desc: "让机器表现出智能的一切努力 —— 是一个领域、一个梦想，而不是某种具体技术。手写规则的专家系统、棋类搜索算法都属于这一圈，哪怕它们完全不会“学习”。",
+          desc: "让机器表现出智能的一切努力 —— 是一个领域、一个梦想，而不是某种具体技术。手写规则的专家系统（expert system）、棋类搜索算法都属于这一圈，哪怕它们完全不会“学习”。",
           tags: ["专家系统", "深蓝下棋", "路径搜索"],
         },
         ml: {
-          title: "机器学习 Machine Learning",
+          title: "机器学习（Machine Learning, ML）",
           period: "1980 年代 · 兴起为主流路线",
           desc: "实现 AI 的一条路线：不再由人逐条写规则，而是让机器从数据中自动找出规律。数据越多，通常表现越好 —— “学习”二字从此有了实义。",
           tags: ["垃圾邮件过滤", "推荐系统", "信用评分"],
         },
         dl: {
-          title: "深度学习 Deep Learning",
+          title: "深度学习（Deep Learning, DL）",
           period: "2012 年 · AlexNet 引爆",
           desc: "机器学习的一种方法：用层数很深的神经网络自动学习特征。这一轮 AI 浪潮的全部主角 —— ChatGPT、Midjourney、自动驾驶感知 —— 都基于它。",
           tags: ["ChatGPT", "人脸识别", "AlphaGo"],
@@ -50,14 +50,23 @@ const C = {
     },
     goalsTitle: "🎯 你将学会",
     goals: [
-      "一句话说清 AI、机器学习、深度学习的包含关系，看新闻不再发懵",
+      "一句话说清人工智能（artificial intelligence, AI）、机器学习（machine learning, ML）、深度学习（deep learning, DL）的包含关系，看新闻不再发懵",
       "知道三个圈各自的代表技术和典型产品",
-      "掌握一个判断标准：这个产品到底有没有在“学习”",
-      "记住三个关键年份：1956、20 世纪 80 年代、2012 —— 三个圈各自的起点",
+      "掌握四个判断问题：一个产品到底是在学习，还是只是写死的规则",
+      "明白 2012 年深度学习爆发的三件事：数据、算力、模型结构",
     ],
     conceptTitle: "💡 核心概念：三个套在一起的圈",
     conceptLead:
-      "人工智能是最大的圈，机器学习是其中一种实现方式，深度学习又是机器学习里最重要的一类方法。它们像三个套在一起的圆：AI 包含机器学习，机器学习包含深度学习。今天所有刷屏的 AI —— ChatGPT、Midjourney、自动驾驶 —— 几乎都在最里面那个小圈里。点击下图的每一环看看。",
+      "人工智能是最大的圈，机器学习是其中一种实现方式，深度学习又是机器学习里最重要的一类方法。它们像三个套在一起的圆：AI 包含机器学习，机器学习包含深度学习。今天刷屏的大多数 AI 产品 —— ChatGPT、Midjourney、自动驾驶感知 —— 都在最里面那个小圈里。点击下图的每一环看看。",
+    conceptSourceNote: (
+      <>
+        依据：1955 年的达特茅斯暑期研究计划提案使用了 “artificial intelligence” 这个说法，并计划在 1956 年夏天于达特茅斯讨论机器如何使用语言、形成抽象、解决问题和改进自身。见{" "}
+        <a href="https://www-formal.stanford.edu/jmc/history/dartmouth/dartmouth.html" target="_blank" rel="noreferrer">
+          A Proposal for the Dartmouth Summer Research Project on Artificial Intelligence
+        </a>
+        。
+      </>
+    ),
     threeTitle: "📖 三个圈，三句话",
     threeLead: "把它们各自最关键的一句话记住，这一课的核心就掌握了。",
     useCards: [
@@ -65,7 +74,7 @@ const C = {
         label: "最外圈 · 1956 年起",
         term: (
           <>
-            人工智能 <b>AI</b>
+            人工智能（<b>AI</b>）
           </>
         ),
         body: (
@@ -80,7 +89,7 @@ const C = {
         label: "中间圈 · 20 世纪 80 年代兴起",
         term: (
           <>
-            机器学习 <b>ML</b>
+            机器学习（<b>ML</b>）
           </>
         ),
         body: (
@@ -93,12 +102,13 @@ const C = {
         label: "最内圈 · 2012 年爆发",
         term: (
           <>
-            深度学习 <b>DL</b>
+            深度学习（<b>DL</b>）
           </>
         ),
         body: (
           <>
-            用<b>多层神经网络</b>做机器学习。人脸识别、AlphaGo、ChatGPT ——
+            用<b>多层神经网络（neural network）</b>
+            做机器学习。人脸识别、AlphaGo、ChatGPT ——
             这一轮 AI 浪潮的主角全在这里。
           </>
         ),
@@ -111,7 +121,7 @@ const C = {
       {
         q: "1997 年击败国际象棋世界冠军的“深蓝”",
         pill: { type: "sky", text: "最外圈 · 传统 AI" },
-        why: "它靠的是开发者预先写好的下棋规则，而不是从棋谱数据中自己找规律。这正好说明：AI 这个大圈里，有些技术并不需要“学习”。",
+        why: "它靠的是海量暴力搜索 + 人工写死的评估规则，而不是从棋谱数据中自己找规律。这正好说明：AI 这个大圈里，有些技术并不需要“学习”。",
       },
       {
         q: "邮箱的垃圾邮件过滤器",
@@ -139,6 +149,68 @@ const C = {
         why: "从你和千万用户的行为数据中学习偏好。常见做法会根据相似用户的行为来推荐，新一代系统也开始用深度学习。",
       },
     ],
+    judgeTitle: "🔎 一眼判断：它是真的在学习吗",
+    judgeLead:
+      "很多产品都会把“智能”写在宣传页上，但技术上是不是机器学习，不能只看名字。你可以按下面四个问题快速判断。",
+    judgeCards: [
+      {
+        label: "问题一",
+        term: <>规则是不是写死的？</>,
+        body: <>如果只是“温度高于 26℃ 就制冷”“库存低于 10 就提醒”，那是普通规则程序。它可能很好用，但不是机器学习。</>,
+      },
+      {
+        label: "问题二",
+        term: <>数据变多会不会变好？</>,
+        body: <>垃圾邮件过滤器见过更多“垃圾 / 正常”样本后，通常能抓得更准；推荐系统记录更多行为后，通常更懂你的偏好。这才叫从数据中学习。</>,
+      },
+      {
+        label: "问题三",
+        term: <>有没有神经网络？</>,
+        body: <>如果用的是多层神经网络，比如人脸识别、大语言模型（large language model, LLM），它通常属于深度学习。没有神经网络，也可能仍是机器学习。</>,
+      },
+      {
+        label: "问题四",
+        term: <>效果能不能被验证？</>,
+        body: <>真正的学习系统通常能用准确率、召回率、点击率、错误率等指标评估。只说“更智能”，却说不清怎么变好，多半要谨慎。</>,
+      },
+    ],
+    boomTitle: "📖 为什么 2012 年突然爆发",
+    boomLead:
+      "深度学习不是 2012 年才被发明。它在此前已经研究了很多年，只是长期受限于数据不够、算力不够、训练技巧不成熟。2012 年像一个拐点，是因为三件事终于凑到了一起。",
+    boomCards: [
+      {
+        label: "第一件事",
+        term: <>数据够大</>,
+        body: <>ImageNet 这类大规模标注数据集，让模型第一次能在足够多、足够复杂的图片上练习。没有数据，机器就没有东西可学。</>,
+      },
+      {
+        label: "第二件事",
+        term: <>算力够用</>,
+        body: <>GPU 原本常用于图形计算，但它擅长并行处理大量相似计算，刚好适合训练神经网络。以前跑不动的模型，开始跑得动了。</>,
+      },
+      {
+        label: "第三件事",
+        term: <>网络够深</>,
+        body: <>AlexNet 用更深的卷积神经网络（convolutional neural network, CNN）参加 ImageNet 图像识别比赛，错误率显著低于过去方法，深度学习的优势一下子变得很难忽视。</>,
+      },
+    ],
+    boomSourceNote: (
+      <>
+        依据：ImageNet 数据集见 Deng 等人 2009 年论文{" "}
+        <a href="https://www.image-net.org/static_files/papers/imagenet_cvpr09.pdf" target="_blank" rel="noreferrer">
+          ImageNet: A Large-Scale Hierarchical Image Database
+        </a>
+        ；AlexNet 见 Krizhevsky、Sutskever 与 Hinton 2012 年论文{" "}
+        <a href="https://proceedings.neurips.cc/paper_files/paper/2012/hash/c399862d3b9d6b76c8436e924a68c45b-Abstract.html" target="_blank" rel="noreferrer">
+          ImageNet Classification with Deep Convolutional Neural Networks
+        </a>
+        。
+      </>
+    ),
+    bridgeTitle: "➡️ 下一课怎么接上",
+    bridgeLead:
+      "第一课只负责把地图摊开：AI 是大领域，机器学习是从数据里找规律，深度学习是用多层神经网络找规律。下一课会把“从数据里找规律”拆开，看它为什么比人手写规则更有弹性。",
+    bridgeSteps: ["人写规则", "规则越写越多", "机器从数据里找规则", "进入机器学习"],
     pitfallsTitle: "⚠️ 常见误区",
     pitfalls: [
       {
@@ -164,12 +236,12 @@ const C = {
         ),
       },
       {
-        bad: "ChatGPT 这么聪明，说明通用人工智能（AGI）已经实现了",
+        bad: "ChatGPT 这么聪明，说明通用人工智能（Artificial General Intelligence, AGI）已经实现了",
         good: "目前所有落地的 AI 都是“专用 AI”，AGI 何时到来仍是开放问题",
         why: (
           <>
             <b>病因：</b>
-            把“对话流畅”等同于“全面智能”。大模型在很多任务上仍会出错和“幻觉”（第
+            把“对话流畅”等同于“全面智能”。大模型在很多任务上仍会出错和“幻觉（hallucination）”（第
             29 课细讲），离稳定可靠的通用智能还有距离 ——
             距离多远，专家们也在激烈争论。
           </>
@@ -204,6 +276,14 @@ const C = {
             <b>1956</b> 达特茅斯会议提出“人工智能”一词 → <b>20 世纪 80 年代</b>{" "}
             机器学习作为独立路线兴起 → <b>2012</b> AlexNet
             在图像识别竞赛中碾压对手，深度学习时代开启。
+          </>
+        ),
+      },
+      {
+        q: "4. 为什么 2012 年常被当作深度学习爆发的关键年份？只说一个原因够吗？",
+        a: (
+          <>
+            不够。更准确的说法是：<b>大数据集、更强算力、更深的神经网络</b>同时到位，效果才突然拉开差距。AlexNet 是标志性事件，但它背后不是单点奇迹。
           </>
         ),
       },
@@ -251,12 +331,21 @@ const C = {
     goals: [
       "State in one sentence how AI, machine learning, and deep learning nest — and stop feeling lost reading the news",
       "Know the signature techniques and typical products of each circle",
-      "Master one test: is this product actually “learning” or not",
-      "Remember three key years: 1956, 1980s, 2012 — the starting point of each circle",
+      "Master four questions: is a product actually learning, or just running hard-coded rules",
+      "Understand the three things behind deep learning’s 2012 breakout: data, compute, and network architecture",
     ],
     conceptTitle: "💡 Core Idea: Three Nested Circles",
     conceptLead:
       "AI is the biggest circle (a dream), machine learning is one circle inside it (a route), and deep learning is a smaller circle still (a method). Almost every AI in the headlines today — ChatGPT, Midjourney, self-driving — lives in that innermost circle. Click each ring below.",
+    conceptSourceNote: (
+      <>
+        Source: the 1955 Dartmouth proposal used the term “artificial intelligence” and planned a 1956 summer study on machines using language, forming abstractions, solving problems, and improving themselves. See{" "}
+        <a href="https://www-formal.stanford.edu/jmc/history/dartmouth/dartmouth.html" target="_blank" rel="noreferrer">
+          A Proposal for the Dartmouth Summer Research Project on Artificial Intelligence
+        </a>
+        .
+      </>
+    ),
     threeTitle: "📖 Three Circles, Three Sentences",
     threeLead:
       "Memorize the single most important sentence for each, and this lesson has already paid for itself.",
@@ -342,6 +431,68 @@ const C = {
         why: "It learns your preferences from your behavior and that of millions of users. The classic approach uses collaborative filtering; newer ones increasingly use deep learning.",
       },
     ],
+    judgeTitle: "🔎 Quick Test: Is It Actually Learning?",
+    judgeLead:
+      "Plenty of products put “smart” on the landing page. To decide whether it is technically machine learning, ignore the label and ask four questions.",
+    judgeCards: [
+      {
+        label: "Question 1",
+        term: <>Are the rules hard-coded?</>,
+        body: <>If it is only “cool when temperature exceeds 26°C” or “alert when stock drops below 10,” it is a useful rule-based program, not machine learning.</>,
+      },
+      {
+        label: "Question 2",
+        term: <>Does more data improve it?</>,
+        body: <>A spam filter usually improves after seeing more spam/not-spam samples; a recommender usually improves after seeing more behavior. That is learning from data.</>,
+      },
+      {
+        label: "Question 3",
+        term: <>Does it use neural networks?</>,
+        body: <>If it uses many-layer neural networks, such as face recognition or a large language model (LLM), it is usually deep learning. Without neural networks, it may still be machine learning.</>,
+      },
+      {
+        label: "Question 4",
+        term: <>Can the improvement be measured?</>,
+        body: <>Real learning systems are usually evaluated with accuracy, recall, click-through rate, error rate, or similar metrics. “Smarter” without a metric deserves skepticism.</>,
+      },
+    ],
+    boomTitle: "📖 Why 2012 Became the Breakout Year",
+    boomLead:
+      "Deep learning was not invented in 2012. It had been studied for decades, but for a long time the data was too small, compute too weak, and training tricks too immature. Around 2012, three things finally lined up.",
+    boomCards: [
+      {
+        label: "Factor 1",
+        term: <>Enough data</>,
+        body: <>Large labeled datasets like ImageNet gave models enough varied images to practice on. Without data, there is nothing for the machine to learn from.</>,
+      },
+      {
+        label: "Factor 2",
+        term: <>Enough compute</>,
+        body: <>GPUs were built for graphics, but their parallel computation style happens to fit neural-network training well. Models that used to be impractical became trainable.</>,
+      },
+      {
+        label: "Factor 3",
+        term: <>Deep enough networks</>,
+        body: <>AlexNet used a deeper convolutional neural network (CNN) in the ImageNet challenge and beat older methods by a large margin. After that, deep learning became hard to ignore.</>,
+      },
+    ],
+    boomSourceNote: (
+      <>
+        Sources: for ImageNet, see Deng et al. 2009,{" "}
+        <a href="https://www.image-net.org/static_files/papers/imagenet_cvpr09.pdf" target="_blank" rel="noreferrer">
+          ImageNet: A Large-Scale Hierarchical Image Database
+        </a>
+        ; for AlexNet, see Krizhevsky, Sutskever, and Hinton 2012,{" "}
+        <a href="https://proceedings.neurips.cc/paper_files/paper/2012/hash/c399862d3b9d6b76c8436e924a68c45b-Abstract.html" target="_blank" rel="noreferrer">
+          ImageNet Classification with Deep Convolutional Neural Networks
+        </a>
+        .
+      </>
+    ),
+    bridgeTitle: "➡️ How This Leads to Lesson 2",
+    bridgeLead:
+      "Lesson 1 lays out the map: AI is the broad field, machine learning finds patterns from data, and deep learning finds patterns with many-layer neural networks. Lesson 2 zooms into that middle idea: why learning rules from data is more flexible than hand-writing rules.",
+    bridgeSteps: ["Humans write rules", "Rules keep piling up", "Machines learn rules from data", "Enter machine learning"],
     pitfallsTitle: "⚠️ Common Misconceptions",
     pitfalls: [
       {
@@ -567,6 +718,7 @@ export default function L01() {
 
       <Lsec title={c.conceptTitle} lead={c.conceptLead}>
         <VennDemo c={c.venn} />
+        <p className="footnote source-note">{c.conceptSourceNote}</p>
       </Lsec>
 
       <Lsec title={c.threeTitle} lead={c.threeLead}>
@@ -585,6 +737,45 @@ export default function L01() {
         <div className="flip-grid">
           {c.flips.map((f, i) => (
             <FlipCard key={i} q={f.q} pill={f.pill} why={f.why} />
+          ))}
+        </div>
+      </Lsec>
+
+      <Lsec title={c.judgeTitle} lead={c.judgeLead}>
+        <div className="use-grid">
+          {c.judgeCards.map((u, i) => (
+            <div className="card use-card" key={i}>
+              <div className="label">{u.label}</div>
+              <div className="en">{u.term}</div>
+              <div className="zh">{u.body}</div>
+            </div>
+          ))}
+        </div>
+      </Lsec>
+
+      <Lsec title={c.boomTitle} lead={c.boomLead}>
+        <div className="use-grid">
+          {c.boomCards.map((u, i) => (
+            <div className="card use-card" key={i}>
+              <div className="label">{u.label}</div>
+              <div className="en">{u.term}</div>
+              <div className="zh">{u.body}</div>
+            </div>
+          ))}
+        </div>
+        <p className="footnote source-note">{c.boomSourceNote}</p>
+      </Lsec>
+
+      <Lsec title={c.bridgeTitle} lead={c.bridgeLead}>
+        <div className="bridge-flow">
+          {c.bridgeSteps.map((step, i) => (
+            <span className="bridge-flow-item" key={step}>
+              <span className="bridge-flow-step">
+                <b>{i + 1}</b>
+                {step}
+              </span>
+              {i < c.bridgeSteps.length - 1 && <span className="bridge-flow-arrow">→</span>}
+            </span>
           ))}
         </div>
       </Lsec>
