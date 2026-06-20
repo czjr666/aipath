@@ -105,14 +105,44 @@ const C = {
     chinP3: <>同样的钱，换个分法，白捡一截性能 —— 此后所有前沿实验室的训练配方都被改写。至于 2020 年为什么算错，复盘原因相当技术化（一些训练设置没随规模调对，导致低估了数据的价值），对我们重要的是教训：<b>Scaling 不是无脑堆某一个轴，三个轴要配平着一起放大。</b></>,
     chinP4: '但故事还有反转：20 : 1 是“训练预算固定”下的最优解，后来大家发现真正该算的是另一本账 —— 模型训完要被调用亿万次，小模型每次调用便宜得多。于是厂商开始故意“过量喂养”：给几十亿参数的小模型喂上十几万亿 token（每参数上千个，远超 20 : 1），多花的训练费靠之后亿万次的便宜调用赚回来。你手机上能离线跑动的那些小模型，多半就是这么喂出来的。这不是 Chinchilla 错了，而是优化目标从“训练最划算”换成了“训练 + 服务总账最划算”—— 法则没变，账本变了。',
 
+    chinSourceNote: (
+      <>
+        幂律最早系统提出见 OpenAI 的 Kaplan 等 2020{' '}
+        <a href="https://arxiv.org/abs/2001.08361" target="_blank" rel="noreferrer">
+          Scaling Laws for Neural Language Models
+        </a>
+        ；参数与数据配平的修正来自 DeepMind 的 Chinchilla，Hoffmann 等 2022{' '}
+        <a href="https://arxiv.org/abs/2203.15556" target="_blank" rel="noreferrer">
+          Training Compute-Optimal Large Language Models
+        </a>
+        ；GPT-4 用小模型外推预测最终损失见{' '}
+        <a href="https://arxiv.org/abs/2303.08774" target="_blank" rel="noreferrer">
+          GPT-4 Technical Report（2023）
+        </a>
+        。
+      </>
+    ),
     emgTitle: '📖 涌现：平均分平滑上涨，某些题突然会做',
     emgLead: '用过不同代模型的人都有这种体感：给上一代模型出一道多步应用题，它一本正经地胡说；换下一代，突然就会一步步算了。能力似乎不是“渐渐变好”，而是“某天突然开窍”。这和幂律的“平滑”矛盾吗？先看现场：',
     exampleEnC: '题目：筐里有 23 个苹果，先拿走 7 个，剩下的平分给 4 个人，每人分到几个？',
     exampleZhC: <><b>规模不够的模型：</b>「每人分 5 个。」—— 张口就答，自信且错；追问过程，它还会现编一段看似合理的“算法”。<b>跨过临界规模的模型：</b>「先算剩余：23 拿走 7，还剩 16；再平分：16 个分给 4 人，每人 4 个。」—— 不仅答对，还开始自发列步骤。在标准评测里，这类任务的得分曲线长期贴着 0%，跨过某个规模后陡然蹿到很高 —— 研究者把这种跳变叫<b>涌现</b>（emergence）。</>,
-    emgP1: <>为什么平均分平滑、单项却会跳？关键在于：损失是几十万道猜词题的<b>平均</b>成绩，平均分稳步上涨，完全不妨碍“某一类题”原地踏步很久再猛涨。把多步题想成<b>走钢丝</b>就懂了：四步推理，一步踩空、满盘皆输，而评测通常也只认“全对”。现在让模型平滑进步 —— 每一步的把握从五成涨到八成、再到九成五：每步五成时，四步连对的机会不到一成；每步八成，也才四成左右；每步九成五，四步连对一下子到了八成多。<b>单步能力在平滑爬坡，“全对率”却先趴在地板上很久，然后猛地起跳</b> —— 平滑的内功，配上“全对才得分”的考法，天然长出一条 S 形跳变曲线。被报告过涌现的能力还有不少：多位数算术、思维链推理（「让我们一步一步想」这句咒语只对足够大的模型有效，第 23 课细讲）、理解复杂的多重指令……</>,
+    emgP1: <>为什么平均分平滑、单项却会跳？关键在于：损失是几十万道猜词题的<b>平均</b>成绩，平均分稳步上涨，完全不妨碍“某一类题”原地踏步很久再猛涨。把多步题想成<b>走钢丝</b>就懂了：四步推理，一步踩空、满盘皆输，而评测通常也只认“全对”。现在让模型平滑进步 —— 每一步的把握从五成涨到八成、再到九成五：每步五成时，四步连对的机会不到一成；每步八成，也才四成左右；每步九成五，四步连对一下子到了八成多。<b>单步能力在平滑爬坡，“全对率”却先趴在地板上很久，然后猛地起跳</b> —— 平滑的内功，配上“全对才得分”的考法，天然长出一条 S 形跳变曲线。被报告过涌现的能力还有不少：多位数算术、思维链（chain-of-thought）推理（「让我们一步一步想」这句咒语只对足够大的模型有效，第 23 课细讲）、理解复杂的多重指令……</>,
     emgP2: <>不过要诚实补充一盆冷水。2023 年斯坦福的研究者发表了一篇标题就很挑衅的论文 ——《涌现能力是海市蜃楼吗？》：同一批模型、同一个任务，把“全对才得分”换成“按步骤给部分分”的平滑指标，<b>不少著名的陡峭跳变立刻变回平缓爬坡</b>。跳的可能不是能力，是量尺。学界至今争论：有些任务换了平滑指标依然陡峭，“真涌现”可能存在；但至少可以确定，一部分轰动一时的“涌现”是评分方式造出的视觉效果，而不是模型内部发生了什么神秘质变。</>,
     emgP3: <>对你真正重要的结论只有一条：<b>平均损失可以提前算，单项能力何时出现，至今没人能提前算。</b>幂律给军备竞赛上了保险，涌现（无论真假）给它留了悬念 —— 所以厂商训完新模型，还得跑几千个评测才知道这一代“突然会了”什么。可预测与不可预测，正好是本课交互演示的两张图。</>,
 
+    emgSourceNote: (
+      <>
+        “涌现能力”一词见 Wei 等 2022{' '}
+        <a href="https://arxiv.org/abs/2206.07682" target="_blank" rel="noreferrer">
+          Emergent Abilities of Large Language Models
+        </a>
+        ；“海市蜃楼”质疑见斯坦福 Schaeffer 等 2023{' '}
+        <a href="https://arxiv.org/abs/2304.15004" target="_blank" rel="noreferrer">
+          Are Emergent Abilities of Large Language Models a Mirage?
+        </a>
+        。
+      </>
+    ),
     demoSecTitle: '🎛️ 交互演示：Scaling 的两副面孔',
     demoSecLead: '图一是 Scaling Laws 的“保险单”：对数坐标纸上三条直线，左半段实心点是真实训过的小模型，右半段虚线是外推 —— 大模型还没训，成绩已写在线上。图二是涌现的“悬念”：同一时期平均损失平滑下降（灰色虚线），「多步算术全对率」却在临界规模处猛然蹿升。两张都是手绘示意图，重在形状，别抠数值。',
 
@@ -125,10 +155,13 @@ const C = {
     ],
     ceilP1: '于是从 2024 年起，前沿竞争转向了新轴线 —— 不是放弃 Scaling，而是换地方 Scaling：',
     ceilCards2: [
-      { label: '新轴线 ① · 第 23 课预告', en: <>测试时计算：<b>答题时多想</b></>, zh: '与其把算力全砸在训练上，不如让模型答题前多“思考”几步 —— 2024 年底 OpenAI 的 o 系列、2025 年初 DeepSeek-R1 把这条路线推成主流。规模竞赛没有结束，只是从“训练时堆”转向“回答时堆”。' },
+      { label: '新轴线 ① · 第 23 课预告', en: <>测试时计算（test-time compute）：<b>答题时多想</b></>, zh: '与其把算力全砸在训练上，不如让模型答题前多“思考”几步 —— 2024 年底 OpenAI 的 o 系列、2025 年初 DeepSeek-R1 把这条路线推成主流。规模竞赛没有结束，只是从“训练时堆”转向“回答时堆”。' },
       { label: '新轴线 ② · 数据墙的解法', en: <>数据质量与<b>合成数据</b></>, zh: '从“喂更多”转向“喂更好”：精筛、改写，甚至用强模型生成“教材级”训练数据再喂给下一代。同样的算力，一份好数据顶几份烂数据 —— 这是被数据墙逼出来的新工艺。' },
     ],
     ceilFootnote: '“Scaling 已死”和“Scaling 万岁”都是标题党。2025 年的公认现状是：大力仍然出奇迹，但奇迹的单价在飞涨；前沿实验室一边继续堆规模，一边把更多筹码押向新轴线 —— 力气还得使，关键变成了往哪使。',
+    bridgeTitle: '➡️ 下一课怎么接上',
+    bridgeLead: '到这里，“大模型篇”讲完了：你已经看懂一个大模型从生数据到 ChatGPT 的完整诞生史，也明白它为什么能越做越强。但前五阶段都在讲“模型是怎么造的”，下一阶段换个身份——你不再是旁观炼丹的人，而是要把这台炼好的模型用起来的人。第四阶段“应用篇”第一课就从最日常、却最被低估的技能开始：怎么把话说对，让模型给出你真正想要的答案——提示工程。',
+    bridgeSteps: ['大模型篇收官', '看懂模型怎么造、为何变强', '换身份：从造到用', '下一课：提示工程'],
 
     pitfallsTitle: '⚠️ 常见误区',
     pitfalls: [
@@ -251,6 +284,23 @@ const C = {
     chinP3: <>Same money, a different split, free performance gained — and from then on every frontier lab\'s training recipe was rewritten. As for why the 2020 math was off, the post-mortem is fairly technical (some training settings weren\'t tuned with scale, leading to underestimating data\'s value); what matters to us is the lesson: <b>Scaling isn\'t mindlessly piling on one axis — all three axes must be scaled up in balance.</b></>,
     chinP4: 'But the story has a twist: 20 : 1 is the optimum under a "fixed training budget"; people later realized the real account to compute is a different one — once trained, a model gets called hundreds of millions of times, and a small model is far cheaper per call. So vendors started deliberately "over-feeding": feeding a few-billion-parameter small model tens of trillions of tokens (thousands per parameter, far beyond 20 : 1), recouping the extra training cost through the cheap calls that follow. Those small models that can run offline on your phone are mostly fed this way. This isn\'t Chinchilla being wrong; it\'s the optimization goal shifting from "cheapest to train" to "cheapest on the train + serve total account" — the law didn\'t change, the ledger did.',
 
+    chinSourceNote: (
+      <>
+        Scaling laws were first laid out systematically in OpenAI's Kaplan et al. 2020,{' '}
+        <a href="https://arxiv.org/abs/2001.08361" target="_blank" rel="noreferrer">
+          Scaling Laws for Neural Language Models
+        </a>
+        ; the parameter-data balancing correction comes from DeepMind's Chinchilla, Hoffmann et al. 2022,{' '}
+        <a href="https://arxiv.org/abs/2203.15556" target="_blank" rel="noreferrer">
+          Training Compute-Optimal Large Language Models
+        </a>
+        ; GPT-4's prediction of final loss via small-model extrapolation is in the{' '}
+        <a href="https://arxiv.org/abs/2303.08774" target="_blank" rel="noreferrer">
+          GPT-4 Technical Report (2023)
+        </a>
+        .
+      </>
+    ),
     emgTitle: '📖 Emergence: average scores rise smoothly, yet certain problems are suddenly solved',
     emgLead: 'Anyone who has used different generations of models knows the feeling: give a previous-generation model a multi-step word problem and it confidently talks nonsense; switch to the next generation and it suddenly works through it step by step. Ability seems not to "gradually improve" but to "suddenly click one day." Does this contradict the "smoothness" of power laws? First, the scene:',
     exampleEnC: 'Question: a basket has 23 apples; take away 7, then split the rest evenly among 4 people — how many does each get?',
@@ -259,6 +309,19 @@ const C = {
     emgP2: <>But an honest splash of cold water is in order. In 2023, Stanford researchers published a paper with a deliberately provocative title — "Are Emergent Abilities a Mirage?": for the same set of models and the same task, switching "score only if fully correct" to a smooth "partial credit per step" metric, <b>many famous steep jumps immediately turned back into gentle climbs</b>. What jumped may not be the ability but the yardstick. The field still debates: some tasks stay steep even under a smooth metric, so "true emergence" may exist; but at least it\'s certain that some of the once-sensational "emergence" is a visual effect created by the scoring method, not some mysterious qualitative change inside the model.</>,
     emgP3: <>There\'s only one conclusion that really matters to you: <b>average loss can be computed in advance; when a single ability appears, no one can compute in advance to this day.</b> Power laws insure the arms race; emergence (real or not) leaves it with suspense — so after a vendor finishes a new model, they still have to run thousands of evaluations to learn what this generation "suddenly got." Predictable and unpredictable are exactly the two figures in this lesson\'s interactive demo.</>,
 
+    emgSourceNote: (
+      <>
+        The term "emergent abilities" is from Wei et al. 2022,{' '}
+        <a href="https://arxiv.org/abs/2206.07682" target="_blank" rel="noreferrer">
+          Emergent Abilities of Large Language Models
+        </a>
+        ; the "mirage" challenge is from Stanford's Schaeffer et al. 2023,{' '}
+        <a href="https://arxiv.org/abs/2304.15004" target="_blank" rel="noreferrer">
+          Are Emergent Abilities of Large Language Models a Mirage?
+        </a>
+        .
+      </>
+    ),
     demoSecTitle: '🎛️ Interactive Demo: the two faces of Scaling',
     demoSecLead: 'Figure 1 is Scaling Laws\' "insurance policy": three straight lines on log graph paper, with solid dots on the left half being small models actually trained and the dashed line on the right half being extrapolation — the big model isn\'t trained yet, but its score is already on the line. Figure 2 is emergence\'s "suspense": over the same period average loss falls smoothly (gray dashed line), yet the "multi-step arithmetic full-correct rate" suddenly shoots up at the critical scale. Both are hand-drawn schematics; focus on the shape, don\'t fuss over the numbers.',
 
@@ -275,6 +338,9 @@ const C = {
       { label: 'New axis ② · The data-wall fix', en: <>Data quality and <b>synthetic data</b></>, zh: 'Shifting from "feed more" to "feed better": careful filtering, rewriting, even using strong models to generate "textbook-grade" training data to feed the next generation. With the same compute, one batch of good data is worth several batches of bad — a new craft forced into being by the data wall.' },
     ],
     ceilFootnote: '"Scaling is dead" and "long live Scaling" are both clickbait. The consensus reality in 2025 is: scale still makes miracles, but the unit price of a miracle is soaring; frontier labs keep piling on scale while placing more chips on the new axes — effort is still needed, the key has become where to spend it.',
+    bridgeTitle: '➡️ How This Leads to Lesson 16',
+    bridgeLead: 'With this, the "large models" stage is done: you can now trace a large model\'s full birth from raw data to ChatGPT, and you understand why it keeps getting stronger. But the first five stages were all about "how the model is made"; the next stage changes your role — you\'re no longer watching the furnace, you\'re the one putting the finished model to work. Stage 4, "Applications," opens with the most everyday yet most underrated skill: how to phrase things right so the model gives you the answer you actually want — prompt engineering.',
+    bridgeSteps: ['Large-models stage wraps up', 'You get how models are made & scale', 'New role: from making to using', 'Next: Prompt Engineering'],
 
     pitfallsTitle: '⚠️ Common Misconceptions',
     pitfalls: [
@@ -475,6 +541,7 @@ export default function L15() {
         </div>
         <p className="lead mt14">{c.chinP3}</p>
         <p className="lead">{c.chinP4}</p>
+        <p className="footnote source-note">{c.chinSourceNote}</p>
       </Lsec>
 
       <Lsec
@@ -488,6 +555,7 @@ export default function L15() {
         <p className="lead mt14">{c.emgP1}</p>
         <p className="lead">{c.emgP2}</p>
         <p className="lead">{c.emgP3}</p>
+        <p className="footnote source-note">{c.emgSourceNote}</p>
       </Lsec>
 
       <Lsec
@@ -533,6 +601,20 @@ export default function L15() {
         <div className="card quiz row-list">
           {c.quiz.map((qz, i) => (
             <QuizItem key={i} q={qz.q}>{qz.a}</QuizItem>
+          ))}
+        </div>
+      </Lsec>
+
+      <Lsec title={c.bridgeTitle} lead={c.bridgeLead}>
+        <div className="bridge-flow">
+          {c.bridgeSteps.map((step, i) => (
+            <span className="bridge-flow-item" key={step}>
+              <span className="bridge-flow-step">
+                <b>{i + 1}</b>
+                {step}
+              </span>
+              {i < c.bridgeSteps.length - 1 && <span className="bridge-flow-arrow">→</span>}
+            </span>
           ))}
         </div>
       </Lsec>
