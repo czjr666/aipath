@@ -339,19 +339,40 @@ const C = {
     weirdCards: [
       { label: '怪现象 ①', en: <>数不清 strawberry 里有几个 <b>r</b></>, zh: <>它看到的不是 10 个字母，而是 <Mini c={0}>str</Mini><Mini c={1}>aw</Mini><Mini c={2}>berry</Mini> 三个编号块。问它字母数，就像隔着电话问你“我刚才那句话一共多少笔画”。</> },
       { label: '怪现象 ②', en: <>认为 9.11 比 9.9 <b>大</b></>, zh: <>切块后是 <Mini c={0}>9</Mini><Mini c={1}>.</Mini><Mini c={2}>11</Mini> 对 <Mini c={0}>9</Mini><Mini c={1}>.</Mini><Mini c={3}>9</Mini>。逐块对照时「11」压过「9」—— 像版本号、像日期，就是不像小数。数字被切块后，比较并不天然按数值进行。</> },
-      { label: '怪现象 ③', en: <>为什么按 <b>token</b> 计费</>, zh: <>token 是模型每一步计算的基本单位：吃进多少块、吐出多少块，算力就花多少。所以 API 按 token 收费，模型的“工作记忆”上限（上下文窗口）也按 token 数 —— 第 17 课细讲。</> },
+      { label: '怪现象 ③', en: <>为什么按 <b>token</b> 计费</>, zh: <>token 是模型每一步计算的基本单位：吃进多少块、吐出多少块，算力就花多少。所以 API 按 token 收费，模型的“工作记忆”上限（上下文窗口，context window）也按 token 数 —— 第 17 课细讲。</> },
     ],
     forensicTitle: '📖 深入展开 · 现象反查：你在 ChatGPT / Claude 里见过的这些事',
     forensicLead: '学会了机制，就能反过来“破案”。下面每一条你大概率亲眼见过 —— 左边是现象，右边是 token 层面的真相。',
     forensicHead: ['你看到的现象', '背后的 token 机制'],
     forensicRows: [
-      { ph: '回答一小段一小段地“蹦”，偶尔先蹦出半个词', ex: '模型一步只算出一个 token，系统算完立刻发给你（流式输出）。蹦出的最小单位是块不是字，半个词（一个子词块）先露面再正常不过。' },
+      { ph: '回答一小段一小段地“蹦”，偶尔先蹦出半个词', ex: '模型一步只算出一个 token，系统算完立刻发给你（流式输出，streaming）。蹦出的最小单位是块不是字，半个词（一个子词块）先露面再正常不过。' },
       { ph: '同样的内容，中文对话比英文“烧”额度烧得快', ex: '中文 token 密度低：一个字常花 1 到 2 块，而英文一块能装大半个词。计费和上下文额度都按块数算，中文天然要交“语言税”。' },
       { ph: '让它倒着拼单词、数笔画、写藏头诗，常常翻车', ex: '字母和笔画在切块时就被“封进”块里了，模型看不见块的内部 —— 它靠训练时的统计印象在猜，不是在看。新一代模型常调用代码工具来绕过这个盲区。' },
       { ph: '聊得太长，它开始忘记你开头说过什么', ex: '模型的工作记忆（上下文窗口）按 token 数设上限，挤不下的部分会被截掉。也因此“长文档问答”贵且难 —— 第 17 课展开。' },
       { ph: '个别奇怪的字符串能让它当场胡言乱语', ex: '“故障 token”：编号在词表里、训练语料中却几乎没出现过，模型对这个编号毫无经验。早年著名的 SolidGoldMagikarp（一个论坛用户名）就是这样一块“幽灵积木”。' },
     ],
     forensicOutro: <>这套“现象 → token”的破案思路值得记住：以后再看到大模型犯莫名其妙的错，先问一句 ——<b>“它看到的块，和我看到的字，是一回事吗？”</b>多数谜团到这里就解开了。</>,
+    forensicSourceNote: (
+      <>
+        “故障 token（glitch token）”里最著名的 SolidGoldMagikarp，由 Rumbelow 与 Watkins 2023 在{' '}
+        <a href="https://www.lesswrong.com/posts/aPeJE8bSo6rAFoLqg/solidgoldmagikarp-plus-prompt-generation" target="_blank" rel="noreferrer">
+          SolidGoldMagikarp (plus, prompt generation)
+        </a>
+        中记录。
+      </>
+    ),
+    bpeSourceNote: (
+      <>
+        BPE 最早是 Gage 1994 提出的数据压缩算法；把它用于神经网络分词的是 Sennrich、Haddow、Birch 2016{' '}
+        <a href="https://arxiv.org/abs/1508.07909" target="_blank" rel="noreferrer">
+          Neural Machine Translation of Rare Words with Subword Units
+        </a>
+        。
+      </>
+    ),
+    bridgeTitle: '➡️ 下一课怎么接上',
+    bridgeLead: '这一课把你打的字拆成了一串 token 编号，模型门口的“翻译官”就位了。但模型本身现在还是一张白纸——它怎么从这些编号里学到知识？下一课进入预训练：把整个互联网切成 token，让模型反复玩“预测下一个 token”的文字接龙，玩上万亿次，九成的能力就是这么长出来的。',
+    bridgeSteps: ['文字已切成 token', '把整个互联网都切成 token', '反复预测下一个 token', '下一课：预训练'],
     guessTitle: '🧩 猜猜切几块',
     guessLead: '检验一下手感：下面这些词在典型分词器里会被切成几块？先在心里报个数，再点卡片揭晓。块数因分词器而异，对上数量级就算赢。',
     pitfallsTitle: '⚠️ 常见误区',
@@ -483,6 +504,27 @@ const C = {
       { ph: 'A few odd strings can make it spout gibberish on the spot', ex: '"Glitch tokens": the ID is in the vocabulary but barely appeared in the training corpus, so the model has no experience with it at all. The famously early SolidGoldMagikarp (a forum username) was exactly such a "ghost brick".' },
     ],
     forensicOutro: <>This "phenomenon → token" detective approach is worth remembering: next time you see a large model make an inexplicable mistake, first ask — <b>"Are the blocks it sees the same thing as the characters I see?"</b> Most mysteries are solved right there.</>,
+    forensicSourceNote: (
+      <>
+        The most famous "glitch token", SolidGoldMagikarp, was documented by Rumbelow and Watkins, 2023, in{' '}
+        <a href="https://www.lesswrong.com/posts/aPeJE8bSo6rAFoLqg/solidgoldmagikarp-plus-prompt-generation" target="_blank" rel="noreferrer">
+          SolidGoldMagikarp (plus, prompt generation)
+        </a>
+        .
+      </>
+    ),
+    bpeSourceNote: (
+      <>
+        BPE was originally a data-compression algorithm from Gage 1994; applying it to neural tokenization was Sennrich, Haddow & Birch 2016,{' '}
+        <a href="https://arxiv.org/abs/1508.07909" target="_blank" rel="noreferrer">
+          Neural Machine Translation of Rare Words with Subword Units
+        </a>
+        .
+      </>
+    ),
+    bridgeTitle: '➡️ How This Leads to Lesson 12',
+    bridgeLead: 'This lesson split your text into a string of token IDs — the "interpreter" at the model\'s door is now in place. But the model itself is still a blank slate: how does it learn knowledge from these IDs? The next lesson enters pretraining: slice the entire internet into tokens and have the model play "predict the next token" over and over, trillions of times — and that is where ninety percent of its ability grows from.',
+    bridgeSteps: ['Text split into tokens', 'Slice the whole internet into tokens', 'Predict the next token, repeatedly', 'Next: Pretraining'],
     guessTitle: '🧩 Guess the Block Count',
     guessLead: 'Test your instinct: how many blocks do the words below split into in a typical tokenizer? Call out a number in your head first, then tap the card to reveal. The count varies by tokenizer; getting the order of magnitude right counts as a win.',
     pitfallsTitle: '⚠️ Common Misconceptions',
@@ -589,6 +631,7 @@ export default function L11() {
             <div className="card use-card" key={i}><div className="label">{u.label}</div><div className="en">{u.en}</div><div className="zh">{u.zh}</div></div>
           ))}
         </div>
+        <p className="footnote source-note">{c.bpeSourceNote}</p>
       </Lsec>
 
       <Lsec
@@ -621,6 +664,7 @@ export default function L11() {
           </table>
         </div>
         <p className="lead" style={{ marginTop: 18 }}>{c.forensicOutro}</p>
+        <p className="footnote source-note">{c.forensicSourceNote}</p>
       </Lsec>
 
       <Lsec
@@ -650,6 +694,20 @@ export default function L11() {
         <div className="card quiz row-list">
           {c.quiz.map((qz, i) => (
             <QuizItem key={i} q={qz.q}>{qz.a}</QuizItem>
+          ))}
+        </div>
+      </Lsec>
+
+      <Lsec title={c.bridgeTitle} lead={c.bridgeLead}>
+        <div className="bridge-flow">
+          {c.bridgeSteps.map((step, i) => (
+            <span className="bridge-flow-item" key={step}>
+              <span className="bridge-flow-step">
+                <b>{i + 1}</b>
+                {step}
+              </span>
+              {i < c.bridgeSteps.length - 1 && <span className="bridge-flow-arrow">→</span>}
+            </span>
           ))}
         </div>
       </Lsec>
