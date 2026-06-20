@@ -86,6 +86,15 @@ const C = {
       { p: <b>同一道难题，推理模式更慢、更贵，但确实更准</b>, m: '草稿 token 也要逐个生成、也按 token 计费 —— 延迟和账单，换的就是答对率' },
     ],
     cotIntro: '既然难题败在“思考预算恒定”，最朴素的解法就摆在眼前：能不能让模型像人一样，先打草稿再作答？2022 年，研究者发现答案是 —— 能，而且只要一句话。',
+    conceptSourceNote: (
+      <>
+        “系统 1 / 系统 2”与开头那道“球拍和球”题，出自心理学家 Daniel Kahneman 2011 年的著作{' '}
+        <a href="https://en.wikipedia.org/wiki/Thinking,_Fast_and_Slow" target="_blank" rel="noreferrer">
+          《思考，快与慢》
+        </a>
+        。
+      </>
+    ),
     cotTitle: '📖 思维链：一句话，把心算变笔算',
     cotLead: '谷歌的研究者 2022 年发现：不动模型一个参数，只在提问时让它“把步骤写出来”—— 给几个带步骤的范例，或干脆加一句「让我们一步一步想」—— 大模型在数学应用题上的答对率立刻大涨，部分测试集上翻了两三倍。这招被命名为思维链（Chain of Thought，CoT），就是第 16 课技法③的本尊。先看它长什么样：',
     cotEx1En: '直答：「外套先涨价一成、再降价一成，比原价贵还是便宜？」→「一样。」✗',
@@ -99,6 +108,15 @@ const C = {
       { label: '第三层 · 大题化小', en: <>一道大题 = <b>多次小前向</b></>, zh: '四步的题拆成四次“只走一步”的生成，每一步的难度都落回一次前向能稳吃的范围 —— 一串系统 1，接力模拟出了系统 2。' },
     ],
     cotSummary: <>一句话总结思维链：<b>它没有让模型变聪明，只是让每一步都退回系统 1 能稳吃的难度。</b>但作为 prompt 层面的技巧，它有三个天生软肋：第一，<b>得靠你提醒</b> —— 忘了这句“咒语”，模型就回到抢答模式；第二，<b>一条道走到黑</b> —— 接龙生成不回头（第 12 课），第二步写错了它极少主动擦掉重来，后面整条链跟着错；第三，<b>不会换思路</b> —— 一条路走进死胡同，它不会退回岔口试另一条。“会打草稿”和“草稿打得好”是两回事。把后者也教给模型的，是 2024 年开始的下一幕。</>,
+    cotSourceNote: (
+      <>
+        “一句话让模型先写步骤”出自 Wei 等 2022{' '}
+        <a href="https://arxiv.org/abs/2201.11903" target="_blank" rel="noreferrer">
+          Chain-of-Thought Prompting Elicits Reasoning
+        </a>
+        。
+      </>
+    ),
     rmTitle: '📖 推理模型：把打草稿炼成本能',
     rmLead: '2024 年 9 月，OpenAI 发布 o1：第一个不用任何提醒、自己先写长草稿再作答的主流模型。2025 年 1 月，DeepSeek-R1 跟上，并把训练方法连同模型权重一起摊开给所有人。如果你在 DeepSeek 里勾过“深度思考”，对这一幕不会陌生：',
     rmEx1En: <>提问后先滚出一大段灰色小字：「嗯，用户问的是排期冲突……先试着按依赖排序……<span className="hl">等等，这里不对</span>，A 和 B 不能并行，我重新算一下……」</>,
@@ -126,6 +144,22 @@ const C = {
     ],
     footnote: '不少产品已经把这条直觉做成了开关甚至自动分诊：简单问题走快路，难题才进慢思考。你手动选型的判断力，正在变成系统里的路由逻辑。',
     practiceLead: '纸上谈兵不如练一把。下面 6 个任务，该不该开“慢思考”？先自己判断，再点卡片对答案：',
+    rmSourceNote: (
+      <>
+        DeepSeek-R1 把“纯靠强化学习自发学会推理”的方法与权重一并公开，见 DeepSeek 2025{' '}
+        <a href="https://arxiv.org/abs/2501.12948" target="_blank" rel="noreferrer">
+          DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning
+        </a>
+        ；OpenAI o1 见{' '}
+        <a href="https://openai.com/index/learning-to-reason-with-llms/" target="_blank" rel="noreferrer">
+          Learning to Reason with LLMs（2024）
+        </a>
+        。
+      </>
+    ),
+    bridgeTitle: '➡️ 下一课怎么接上',
+    bridgeLead: '从提示工程到 RAG、工具调用、agent，再到这一课的推理模型——这些零件不会各自孤立地存在，它们要被拼装成真实的产品。可每家工具、每个数据源接口都不一样，开发者重复造轮子。下一课讲 MCP 与 AI 工程生态：一个想当“AI 应用 USB 接口”的开放协议，外加一张把这一阶段所有名词串起来的工程全景图。',
+    bridgeSteps: ['推理是又一块拼图', '零件要拼成产品', '但接口五花八门', '下一课：MCP 与工程生态'],
     demoSecTitle: '🎛️ 交互演示：同一道题，两种答法',
     demoSecLead: '把全课收进一道经典题。先看“直答模式”怎么翻车，再切到“慢思考模式”逐行播放草稿 —— 盯住两件事：每一行如何踩着上一行往前走；以及第 ⑤ 行那个推理模型的招牌动作 —— 验算。',
     pitfallsTitle: '⚠️ 常见误区',
@@ -239,6 +273,15 @@ const C = {
       { p: <b>On the same hard problem, reasoning mode is slower and pricier, but genuinely more accurate</b>, m: 'Draft tokens are also generated one by one and billed per token — what the latency and the bill buy is accuracy' },
     ],
     cotIntro: 'Since hard problems fail because the "thinking budget is constant," the most naive fix is right in front of us: can we make the model draft before answering, like a human does? In 2022, researchers found the answer is — yes, and it takes just one sentence.',
+    conceptSourceNote: (
+      <>
+        "System 1 / System 2" and the opening "bat and ball" puzzle come from psychologist Daniel Kahneman's 2011 book{' '}
+        <a href="https://en.wikipedia.org/wiki/Thinking,_Fast_and_Slow" target="_blank" rel="noreferrer">
+          Thinking, Fast and Slow
+        </a>
+        .
+      </>
+    ),
     cotTitle: '📖 Chain-of-Thought: one sentence turns mental math into pen-and-paper math',
     cotLead: 'Google researchers found in 2022 that without touching a single model parameter, just making it "write out the steps" when asked — giving a few worked examples, or simply adding "let\'s think step by step" — sends a large model\'s accuracy on math word problems soaring, doubling or tripling on some test sets. This trick was named chain-of-thought (CoT), and it\'s the very technique ③ from Lesson 16. First, see what it looks like:',
     cotEx1En: 'Direct answer: "A coat\'s price rises 10% then falls 10% — is it more expensive or cheaper than the original?" → "The same." ✗',
@@ -252,6 +295,15 @@ const C = {
       { label: 'Layer 3 · big problem made small', en: <>One big problem = <b>many small forward passes</b></>, zh: 'A four-step problem splits into four "single-step" generations, each step\'s difficulty falling back into the range one forward pass can handle cleanly — a chain of System 1s relays to simulate System 2.' },
     ],
     cotSummary: <>Chain-of-thought in one sentence: <b>it didn\'t make the model smarter, it just pushed every step back to a difficulty System 1 can handle cleanly.</b> But as a prompt-level trick, it has three built-in weaknesses: first, <b>it depends on you reminding it</b> — forget the "incantation" and the model reverts to buzz-in mode; second, <b>it commits to one path</b> — next-token generation doesn\'t look back (Lesson 12), so if step two is wrong it rarely erases and redoes it, and the rest of the chain follows the error; third, <b>it won\'t switch approaches</b> — walk into a dead end and it won\'t back up to the fork to try another route. "Able to draft" and "drafts well" are two different things. Teaching the model the latter, too, is the next act that began in 2024.</>,
+    cotSourceNote: (
+      <>
+        "One sentence to make the model write out steps" comes from Wei et al. 2022,{' '}
+        <a href="https://arxiv.org/abs/2201.11903" target="_blank" rel="noreferrer">
+          Chain-of-Thought Prompting Elicits Reasoning
+        </a>
+        .
+      </>
+    ),
     rmTitle: '📖 Reasoning Models: forging drafting into instinct',
     rmLead: 'In September 2024, OpenAI released o1: the first mainstream model that, without any prompting, writes a long draft on its own before answering. In January 2025, DeepSeek-R1 followed, and laid the training method bare — along with the model weights — for everyone. If you\'ve ever ticked "deep thinking" in DeepSeek, this scene will be familiar:',
     rmEx1En: <>After the question, a big block of gray small text first scrolls out: "Hmm, the user is asking about a scheduling conflict... let me try ordering by dependencies first... <span className="hl">wait, this isn\'t right</span>, A and B can\'t run in parallel, let me recompute..."</>,
@@ -279,6 +331,22 @@ const C = {
     ],
     footnote: 'Many products have already turned this intuition into a switch, or even automatic triage: simple questions take the fast lane, hard ones go to slow thinking. The judgment you exercise picking by hand is becoming routing logic inside the system.',
     practiceLead: 'Talk is cheap — let\'s practice. For the 6 tasks below, should slow thinking be turned on? Decide for yourself first, then tap a card to check the answer:',
+    rmSourceNote: (
+      <>
+        DeepSeek-R1 released both the method ("reasoning learned purely via reinforcement learning") and the weights, see DeepSeek 2025,{' '}
+        <a href="https://arxiv.org/abs/2501.12948" target="_blank" rel="noreferrer">
+          DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning
+        </a>
+        ; OpenAI o1 is described in{' '}
+        <a href="https://openai.com/index/learning-to-reason-with-llms/" target="_blank" rel="noreferrer">
+          Learning to Reason with LLMs (2024)
+        </a>
+        .
+      </>
+    ),
+    bridgeTitle: '➡️ How This Leads to Lesson 24',
+    bridgeLead: 'From prompt engineering to RAG, tool calling, agents, and this lesson\'s reasoning models — these parts don\'t exist in isolation; they get assembled into real products. But every tool and every data-source interface is different, and developers keep reinventing the wheel. The next lesson covers MCP and the AI engineering ecosystem: an open protocol aiming to be the "USB port for AI apps," plus a panorama that ties together every term from this stage.',
+    bridgeSteps: ['Reasoning is one more piece', 'Parts assemble into products', 'But interfaces vary wildly', 'Next: MCP & the ecosystem'],
     demoSecTitle: '🎛️ Interactive Demo: one problem, two ways to answer',
     demoSecLead: 'The whole lesson distilled into one classic problem. First watch "direct-answer mode" crash, then switch to "slow-thinking mode" and play the draft line by line — watch two things: how each line steps forward off the line above; and that signature reasoning-model move on line ⑤ — verification.',
     pitfallsTitle: '⚠️ Common Misconceptions',
@@ -436,6 +504,7 @@ export default function L23() {
           </table>
         </div>
         <p className="lead mt14">{c.cotIntro}</p>
+        <p className="footnote source-note">{c.conceptSourceNote}</p>
       </Lsec>
 
       <Lsec title={c.cotTitle} lead={c.cotLead}>
@@ -454,6 +523,7 @@ export default function L23() {
           ))}
         </div>
         <p className="lead mt14">{c.cotSummary}</p>
+        <p className="footnote source-note">{c.cotSourceNote}</p>
       </Lsec>
 
       <Lsec title={c.rmTitle} lead={c.rmLead}>
@@ -494,6 +564,7 @@ export default function L23() {
         <div className="flip-grid">
           {c.flips.map((f, i) => <FlipCard key={i} q={f.q} pill={f.pill} why={f.why} />)}
         </div>
+        <p className="footnote source-note">{c.rmSourceNote}</p>
       </Lsec>
 
       <Lsec title={c.demoSecTitle} lead={c.demoSecLead}>
@@ -518,6 +589,20 @@ export default function L23() {
         <div className="card quiz row-list">
           {c.quiz.map((qz, i) => (
             <QuizItem key={i} q={qz.q}>{qz.a}</QuizItem>
+          ))}
+        </div>
+      </Lsec>
+
+      <Lsec title={c.bridgeTitle} lead={c.bridgeLead}>
+        <div className="bridge-flow">
+          {c.bridgeSteps.map((step, i) => (
+            <span className="bridge-flow-item" key={step}>
+              <span className="bridge-flow-step">
+                <b>{i + 1}</b>
+                {step}
+              </span>
+              {i < c.bridgeSteps.length - 1 && <span className="bridge-flow-arrow">→</span>}
+            </span>
           ))}
         </div>
       </Lsec>
