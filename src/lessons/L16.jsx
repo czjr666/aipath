@@ -118,7 +118,7 @@ const C = {
       {
         bad: '「帮商品起名，要高级感但不浮夸、朗朗上口、有记忆点、最好带点东方意境……」（形容词堆到第十个，输出依然各凭运气）',
         good: '「帮商品起名。参考两个我满意的：山茶序（护手霜）、栖云盏（香薰蜡烛）。现在给一款檀香木梳起 3 个名字。」',
-        why: <><b>技法 ② 给示例（few-shot）。</b>与其描述要求，不如给两个范本：形容词人人理解不同，范例没有歧义。模型最强的本事恰恰是<b>模式延续</b> —— 上文出现几个风格一致的“输入 → 输出”对，续写时它会自动沿用同一套隐含规则。这叫 few-shot / 上下文内学习，是 GPT-3 论文最重要的发现之一。</>,
+        why: <><b>技法 ② 给示例（few-shot）。</b>与其描述要求，不如给两个范本：形容词人人理解不同，范例没有歧义。模型最强的本事恰恰是<b>模式延续</b> —— 上文出现几个风格一致的“输入 → 输出”对，续写时它会自动沿用同一套隐含规则。这叫 few-shot / 上下文内学习（in-context learning），是 GPT-3 论文最重要的发现之一。</>,
       },
       {
         bad: '「这道行程应用题，直接告诉我答案。」',
@@ -137,6 +137,19 @@ const C = {
       },
     ],
 
+    fiveSourceNote: (
+      <>
+        few-shot / 上下文内学习出自 GPT-3 论文，Brown 等 2020{' '}
+        <a href="https://arxiv.org/abs/2005.14165" target="_blank" rel="noreferrer">
+          Language Models are Few-Shot Learners
+        </a>
+        ；思维链见 Wei 等 2022{' '}
+        <a href="https://arxiv.org/abs/2201.11903" target="_blank" rel="noreferrer">
+          Chain-of-Thought Prompting Elicits Reasoning
+        </a>
+        。
+      </>
+    ),
     sysTitle: '📖 system 提示词：导演递给演员的人物小传',
     sysLead: '打开任何一个大模型 API（第 26 课你会亲手调），你会发现发给模型的消息分成三种角色：system、user、assistant。一个比喻就够了：这是一出戏 —— system 是开拍前导演递给演员的人物小传（你是谁、什么性格、哪些事绝不能做），user 是开拍后观众递上来的一句句台词。',
     sysCards: [
@@ -165,6 +178,15 @@ const C = {
     },
     longFootnote: '注意最后一行 —— 把最在乎的要求在结尾重申一遍，这就是“重点放两头”。这份模板眼熟吗？它就是把五大技法装进了一个有秩序的容器里。',
 
+    longSourceNote: (
+      <>
+        “模型对长上下文中间部分利用最差（lost in the middle）”见 Liu 等 2023{' '}
+        <a href="https://arxiv.org/abs/2307.03172" target="_blank" rel="noreferrer">
+          Lost in the Middle: How Language Models Use Long Contexts
+        </a>
+        。
+      </>
+    ),
     practiceTitle: '🛠️ 实战改造：从「帮我写点东西」到能直接交付',
     practiceLead: '把全课串起来。真实场景：你帮一家咖啡馆运营公众号，想让 AI 写新品推送。看一个烂 prompt 如何四步进化 —— 每一步只用本课讲过的技法，没有一句咒语。',
     steps: [
@@ -193,6 +215,15 @@ const C = {
     rulerTitle: '🧪 检验尺上手：工程还是玄学？',
     rulerLead: '开课时发的那把检验尺，现在拿出来用：下面 6 条网上流传的提示技巧，先自己判断 —— 它有没有把分布推向想要的区域？有没有增加真实的信息？想好了再点卡片对答案。',
 
+    rulerSourceNote: (
+      <>
+        那个著名的“深呼吸（Take a deep breath）”提示词出自 Google DeepMind 的 Yang 等 2023{' '}
+        <a href="https://arxiv.org/abs/2309.03409" target="_blank" rel="noreferrer">
+          Large Language Models as Optimizers
+        </a>
+        —— 它是模型自动搜出来的措辞，并非人凭直觉想出的“咒语”。
+      </>
+    ),
     pitfallsTitle: '⚠️ 常见误区',
     pitfalls: [
       {
@@ -207,6 +238,9 @@ const C = {
       },
     ],
 
+    bridgeTitle: '➡️ 下一课怎么接上',
+    bridgeLead: '这一课你学会了用 prompt 给模型“圈地”，还留了个尾巴：续写条件不只是你刚打的那行字，整段对话历史都算数。可历史不能无限堆 —— 它装在一个有上限的“工作记忆”里，叫上下文窗口。为什么聊久了 AI 会突然“失忆”？为什么贴一份长文档会变贵变慢？“重点放两头”又是被什么机制逼出来的？下一课就把这个窗口拆开看。',
+    bridgeSteps: ['学会用 prompt 圈地', '对话历史也是续写条件', '但记忆有上限', '下一课：上下文窗口'],
     quizTitle: '✍️ 小练习',
     quiz: [
       {
@@ -353,6 +387,19 @@ const C = {
       },
     ],
 
+    fiveSourceNote: (
+      <>
+        few-shot / in-context learning comes from the GPT-3 paper, Brown et al. 2020,{' '}
+        <a href="https://arxiv.org/abs/2005.14165" target="_blank" rel="noreferrer">
+          Language Models are Few-Shot Learners
+        </a>
+        ; chain-of-thought is from Wei et al. 2022,{' '}
+        <a href="https://arxiv.org/abs/2201.11903" target="_blank" rel="noreferrer">
+          Chain-of-Thought Prompting Elicits Reasoning
+        </a>
+        .
+      </>
+    ),
     sysTitle: '📖 The system Prompt: the character bio the director hands the actor',
     sysLead: 'Open any large-model API (you\'ll call one yourself in Lesson 26) and you\'ll find the messages sent to the model split into three roles: system, user, assistant. One metaphor is enough: this is a play — system is the character bio the director hands the actor before shooting (who you are, what your personality is, what you must never do), and user is the lines the audience passes up one by one after shooting starts.',
     sysCards: [
@@ -381,6 +428,15 @@ const C = {
     },
     longFootnote: 'Note the last line — restating the requirement you care about most at the end is exactly "key points at both ends." Does this template look familiar? It simply packs the five techniques into an orderly container.',
 
+    longSourceNote: (
+      <>
+        The finding that models use the middle of a long context worst ("lost in the middle") is from Liu et al. 2023,{' '}
+        <a href="https://arxiv.org/abs/2307.03172" target="_blank" rel="noreferrer">
+          Lost in the Middle: How Language Models Use Long Contexts
+        </a>
+        .
+      </>
+    ),
     practiceTitle: '🛠️ Hands-on Makeover: from "write me something" to ready-to-deliver',
     practiceLead: 'Let\'s tie the whole lesson together. A real scenario: you run a coffee shop\'s social-media account and want AI to write a new-product post. Watch a bad prompt evolve in four steps — each step uses only the techniques from this lesson, not a single spell.',
     steps: [
@@ -409,6 +465,15 @@ const C = {
     rulerTitle: '🧪 Using the Test Ruler: engineering or superstition?',
     rulerLead: 'The test ruler handed out at the start of the course — now put it to use: for the 6 prompting tricks circulating online below, judge for yourself first — does it push the distribution toward the region you want? Does it add real information? Decide, then tap a card to check the answer.',
 
+    rulerSourceNote: (
+      <>
+        The famous "Take a deep breath" prompt comes from Google DeepMind's Yang et al. 2023,{' '}
+        <a href="https://arxiv.org/abs/2309.03409" target="_blank" rel="noreferrer">
+          Large Language Models as Optimizers
+        </a>
+        — it was a phrasing the model itself searched out, not a "spell" dreamed up by human intuition.
+      </>
+    ),
     pitfallsTitle: '⚠️ Common Misconceptions',
     pitfalls: [
       {
@@ -423,6 +488,9 @@ const C = {
       },
     ],
 
+    bridgeTitle: '➡️ How This Leads to Lesson 17',
+    bridgeLead: 'This lesson taught you to "claim territory" with a prompt, and left one loose end: the continuation condition isn\'t just the line you typed — the whole conversation history counts. But history can\'t pile up forever — it sits in a capped "working memory" called the context window. Why does AI suddenly "lose its memory" in a long chat? Why does pasting a long document make it slower and pricier? And what mechanism forced the "put key points at both ends" rule? The next lesson opens up this window.',
+    bridgeSteps: ['Learned to claim territory with prompts', 'History is also a continuation condition', 'But memory is capped', 'Next: The Context Window'],
     quizTitle: '✍️ Quick Quiz',
     quiz: [
       {
@@ -682,6 +750,7 @@ export default function L16() {
             </div>
           ))}
         </div>
+        <p className="footnote source-note">{c.fiveSourceNote}</p>
       </Lsec>
 
       <Lsec
@@ -721,6 +790,7 @@ export default function L16() {
           <span className="sec">{c.docPrompt.secEmphasis}</span>{c.docPrompt.textEmphasis}
         </div>
         <p className="footnote mt14">{c.longFootnote}</p>
+        <p className="footnote source-note">{c.longSourceNote}</p>
       </Lsec>
 
       <Lsec
@@ -745,6 +815,7 @@ export default function L16() {
         <div className="flip-grid">
           {c.ruler.map((r, i) => <FlipCard key={i} q={r.q} pill={r.pill} why={r.why} />)}
         </div>
+        <p className="footnote source-note">{c.rulerSourceNote}</p>
       </Lsec>
 
       <Lsec title={c.pitfallsTitle}>
@@ -765,6 +836,20 @@ export default function L16() {
         <div className="card quiz row-list">
           {c.quiz.map((qz, i) => (
             <QuizItem key={i} q={qz.q}>{qz.a}</QuizItem>
+          ))}
+        </div>
+      </Lsec>
+
+      <Lsec title={c.bridgeTitle} lead={c.bridgeLead}>
+        <div className="bridge-flow">
+          {c.bridgeSteps.map((step, i) => (
+            <span className="bridge-flow-item" key={step}>
+              <span className="bridge-flow-step">
+                <b>{i + 1}</b>
+                {step}
+              </span>
+              {i < c.bridgeSteps.length - 1 && <span className="bridge-flow-arrow">→</span>}
+            </span>
           ))}
         </div>
       </Lsec>
