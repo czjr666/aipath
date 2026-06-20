@@ -103,6 +103,23 @@ const C = {
     routeLead: '学完地图，下一步往哪走取决于你想成为什么样的人。先点一个最像你的描述，看看推荐路线 —— 路线之间不互斥，也随时可以换。',
     bagTitle: '🎒 行囊：五篇论文与五个项目',
     bagLead: <>读论文不是从第一个字啃到最后一个字。正确姿势：<b>先读摘要（abstract），再把每张图看懂</b> —— 一篇论文八成的信息在这两处；公式留到最后，啃不动也不影响主线。下面五篇按时间排序，串起来正好是大模型的进化史。</>,
+    papersSourceNote: (
+      <>
+        五篇论文原文：{' '}
+        <a href="https://arxiv.org/abs/1706.03762" target="_blank" rel="noreferrer">Attention Is All You Need</a>
+        、{' '}
+        <a href="https://arxiv.org/abs/2001.08361" target="_blank" rel="noreferrer">Scaling Laws</a>
+        、{' '}
+        <a href="https://arxiv.org/abs/2005.14165" target="_blank" rel="noreferrer">GPT-3</a>
+        、{' '}
+        <a href="https://arxiv.org/abs/2203.02155" target="_blank" rel="noreferrer">InstructGPT</a>
+        、{' '}
+        <a href="https://arxiv.org/abs/2201.11903" target="_blank" rel="noreferrer">Chain-of-Thought</a>
+        ；正文提到的 Karpathy 课程见{' '}
+        <a href="https://karpathy.ai/zero-to-hero.html" target="_blank" rel="noreferrer">Neural Networks: Zero to Hero</a>
+        。
+      </>
+    ),
     projectsLead: '看十个教程，不如跑通一个项目。下面五个由易到难，每完成一个，就把它写进你的作品集。',
     confusionTitle: '⚠️ 常见迷茫：三个最常被问到的问题',
     confusions: [
@@ -220,6 +237,23 @@ const C = {
     routeLead: 'Now that you\'ve learned the map, where to go next depends on who you want to become. Click the description that most sounds like you and see the recommended track — the tracks aren\'t mutually exclusive, and you can switch anytime.',
     bagTitle: '🎒 Your Pack: Five Papers and Five Projects',
     bagLead: <>Reading a paper isn't gnawing from the first word to the last. The right way: <b>read the abstract first, then make sense of every figure</b> — eighty percent of a paper's information is in these two places; save the formulas for last, and not getting through them won't break the main thread. The five below are in chronological order; strung together they are exactly the evolution of large models.</>,
+    papersSourceNote: (
+      <>
+        The five papers:{' '}
+        <a href="https://arxiv.org/abs/1706.03762" target="_blank" rel="noreferrer">Attention Is All You Need</a>
+        ,{' '}
+        <a href="https://arxiv.org/abs/2001.08361" target="_blank" rel="noreferrer">Scaling Laws</a>
+        ,{' '}
+        <a href="https://arxiv.org/abs/2005.14165" target="_blank" rel="noreferrer">GPT-3</a>
+        ,{' '}
+        <a href="https://arxiv.org/abs/2203.02155" target="_blank" rel="noreferrer">InstructGPT</a>
+        ,{' '}
+        <a href="https://arxiv.org/abs/2201.11903" target="_blank" rel="noreferrer">Chain-of-Thought</a>
+        ; the Karpathy course mentioned in the text is{' '}
+        <a href="https://karpathy.ai/zero-to-hero.html" target="_blank" rel="noreferrer">Neural Networks: Zero to Hero</a>
+        .
+      </>
+    ),
     projectsLead: 'Watching ten tutorials is worth less than getting one project running. The five below go from easy to hard; each time you finish one, write it into your portfolio.',
     confusionTitle: '⚠️ Common Confusion: The Three Most-Asked Questions',
     confusions: [
@@ -419,6 +453,7 @@ export default function L30() {
             </div>
           ))}
         </div>
+        <p className="footnote source-note">{c.papersSourceNote}</p>
         <p className="lead" style={{ marginTop: 28 }}>{c.projectsLead}</p>
         <div className="card goals">
           {c.projects.map((p, i) => (
