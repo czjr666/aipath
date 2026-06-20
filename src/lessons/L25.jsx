@@ -69,6 +69,15 @@ const C = {
     conceptExEn: <>开放权重 = 给你<span className="hl">做好的菜</span>，不给菜谱</>,
     conceptExZh: <>能加热（部署）、能改刀（微调），但厨房不让进。为什么大家都藏菜谱？训练数据既是商业公司最贵的底牌，又埋着版权地雷 —— “开放权重”正是商业利益与开放精神之间的折中。本课从此统一用语：<b>开放权重 vs 闭源 API</b>。</>,
 
+    conceptSourceNote: (
+      <>
+        真·全开源（权重 + 代码 + 数据）的代表是 Allen AI 的 OLMo，Groeneveld 等 2024{' '}
+        <a href="https://arxiv.org/abs/2402.00838" target="_blank" rel="noreferrer">
+          OLMo: Accelerating the Science of Language Models
+        </a>
+        。
+      </>
+    ),
     tableTitle: '📖 两条路线，五个维度',
     tableLead: '闭源 API 像点外卖：随点随吃、按量付费，但厨房在别人家；开放权重像自己开伙：菜（模型）免费拿，但锅碗瓢盆（GPU）、水电（运维）全得自己置办。五个维度一张表：',
     tableHead: ['维度', '闭源 API', '开放权重'],
@@ -92,7 +101,7 @@ const C = {
       { label: '开放权重 · 美国', en: <>Meta <b>Llama</b></>, zh: '把“开放权重”变成行业惯例的带头人，衍生模型与工具生态最庞大；注意其许可证带商用条款，并非传统开源协议。' },
       { label: '开放权重 · 中国', en: <>阿里 <b>Qwen</b></>, zh: '通义千问家族：尺寸谱系最全、迭代最勤的开放权重系列之一，在全球开发者社区的采用量名列前茅。' },
       { label: '开放权重 · 中国', en: <>DeepSeek <b>深度求索</b></>, zh: '以极致工程效率著称的“性价比之王”，R1 一夜改写了“开放权重永远慢半拍”的叙事（见下一节）。' },
-      { label: '开放权重 · 欧洲', en: <>Mistral <b>米斯特拉尔</b></>, zh: '欧洲的独苗级代表，以“小而高效”起家（MoE 路线的早期推手），开放权重与商业 API 两条腿走路。' },
+      { label: '开放权重 · 欧洲', en: <>Mistral <b>米斯特拉尔</b></>, zh: '欧洲的独苗级代表，以“小而高效”起家（MoE，Mixture of Experts 混合专家路线的早期推手），开放权重与商业 API 两条腿走路。' },
       { label: '开放权重 · 中国', en: <>月之暗面 <b>Kimi</b></>, zh: '以超长上下文出圈的明星创业公司，2025 年携 K2 系列加入开放权重阵营。' },
       { label: '开放权重 · 中国', en: <>智谱 <b>GLM</b></>, zh: '清华系出身，国内最早一批做中英双语大模型的团队，GLM 系列持续开放迭代。' },
     ],
@@ -104,6 +113,18 @@ const C = {
     r1Before: { tag: 'R1 之前的默认假设', big: <>开放权重永远落后闭源<span className="gap">一到两年</span></>, note: '前沿能力先出现在闭源旗舰，开放阵营追着复刻。于是选型逻辑很粗暴：要最强，就得交钱、交数据。' },
     r1After: { tag: 'R1 之后的新共识', big: <>差距可以被<span className="hl">急剧压缩</span></>, note: '两条路线的距离不再是“代差”，而是会被随时拉近的“身位”。选型问题从“哪个最强”，变成“哪个最合适”—— 下一节给你四问。' },
 
+    r1SourceNote: (
+      <>
+        DeepSeek-R1 的开放权重与方法见 DeepSeek 2025{' '}
+        <a href="https://arxiv.org/abs/2501.12948" target="_blank" rel="noreferrer">
+          DeepSeek-R1
+        </a>
+        ；训练成本的具体数字至今有争议，正文只取“便宜得多”这一共识。
+      </>
+    ),
+    bridgeTitle: '➡️ 下一课怎么接上',
+    bridgeLead: '前 25 课，你已经把 AI 从直觉、原理、大模型、应用一路看到前沿，也学会了在“开放权重 vs 闭源 API”之间按需选型。从下一阶段“实战篇”起，身份再变一次——从读者变成构建者。第一课就最朴素也最关键：申请一个 key、发出你的第一个 API 请求、读懂流式输出。你和“AI 应用开发者”之间，只隔着 30 行代码。',
+    bridgeSteps: ['前沿篇收官', '学会按需选型', '从读者变构建者', '下一课：第一次调用 API'],
     gaugeTitle: '🎛️ 选型四问：拨一拨方向仪',
     gaugeLead: '真实项目里不需要背榜单，只需要回答四个问题。点右侧选项，看方向仪往哪边摆 —— 注意第一问是一票否决项：数据不能出网时，其余三问只决定“怎么落地”，不再决定“选哪边”。',
 
@@ -193,6 +214,15 @@ const C = {
     conceptExEn: <>Open weights = giving you the <span className="hl">finished dish</span>, not the recipe</>,
     conceptExZh: <>You can reheat it (deploy) and recut it (fine-tune), but the kitchen is off-limits. Why does everyone hide the recipe? Training data is both a commercial company’s most expensive trump card and a copyright minefield — “open weights” is exactly the compromise between commercial interest and the open spirit. From here on this lesson uses one consistent vocabulary: <b>open weights vs closed API</b>.</>,
 
+    conceptSourceNote: (
+      <>
+        The representative of truly fully-open models (weights + code + data) is Allen AI's OLMo, Groeneveld et al. 2024,{' '}
+        <a href="https://arxiv.org/abs/2402.00838" target="_blank" rel="noreferrer">
+          OLMo: Accelerating the Science of Language Models
+        </a>
+        .
+      </>
+    ),
     tableTitle: '📖 Two Routes, Five Dimensions',
     tableLead: 'A closed API is like ordering takeout: order and eat anytime, pay as you go, but the kitchen is in someone else’s house; open weights is like cooking your own: the dish (the model) is free to take, but the pots and pans (GPUs) and the water and electricity (ops) are all yours to provide. Five dimensions in one table:',
     tableHead: ['Dimension', 'Closed API', 'Open weights'],
@@ -216,7 +246,7 @@ const C = {
       { label: 'Open weights · USA', en: <>Meta <b>Llama</b></>, zh: 'The leader who made “open weights” an industry norm, with the largest ecosystem of derivative models and tools; note its license carries commercial terms and is not a traditional open-source license.' },
       { label: 'Open weights · China', en: <>Alibaba <b>Qwen</b></>, zh: 'The Tongyi Qianwen family: one of the most complete size lineups and most frequently iterated open-weights series, with adoption among the world’s top in the global developer community.' },
       { label: 'Open weights · China', en: <>DeepSeek <b>深度求索</b></>, zh: 'The “king of cost-performance,” known for extreme engineering efficiency; R1 rewrote the narrative that “open weights are always a step behind” overnight (see the next section).' },
-      { label: 'Open weights · Europe', en: <>Mistral <b>米斯特拉尔</b></>, zh: 'Europe’s flagship lone wolf, which started out “small and efficient” (an early champion of the MoE route), walking on two legs of open weights and a commercial API.' },
+      { label: 'Open weights · Europe', en: <>Mistral <b>米斯特拉尔</b></>, zh: 'Europe’s flagship lone wolf, which started out “small and efficient” (an early champion of the MoE — Mixture of Experts — route), walking on two legs of open weights and a commercial API.' },
       { label: 'Open weights · China', en: <>Moonshot <b>Kimi</b></>, zh: 'A star startup that broke out with ultra-long context, joining the open-weights camp in 2025 with the K2 series.' },
       { label: 'Open weights · China', en: <>Zhipu <b>GLM</b></>, zh: 'Born of the Tsinghua lineage, one of the earliest teams in China to build bilingual Chinese-English large models, with the GLM series continually open and iterating.' },
     ],
@@ -228,6 +258,18 @@ const C = {
     r1Before: { tag: 'The default assumption before R1', big: <>Open weights always trail closed by <span className="gap">one to two years</span></>, note: 'Frontier capabilities appear first in the closed flagships, and the open camp chases to replicate them. So the selection logic was crude: to get the strongest, you had to pay up and hand over data.' },
     r1After: { tag: 'The new consensus after R1', big: <>The gap can be <span className="hl">sharply compressed</span></>, note: 'The distance between the two routes is no longer a “generation gap” but a “lead” that can be closed at any time. The selection question shifts from “which is strongest” to “which fits best” — the next section gives you four questions.' },
 
+    r1SourceNote: (
+      <>
+        DeepSeek-R1's open weights and method are in DeepSeek 2025,{' '}
+        <a href="https://arxiv.org/abs/2501.12948" target="_blank" rel="noreferrer">
+          DeepSeek-R1
+        </a>
+        ; the exact training cost remains disputed — the text only takes the consensus "much cheaper."
+      </>
+    ),
+    bridgeTitle: '➡️ How This Leads to Lesson 26',
+    bridgeLead: 'Over 25 lessons you\'ve followed AI from intuition to principles to large models to applications to the frontier, and learned to choose between "open weights vs. closed API" as needed. From the next stage, "Hands-On," your role shifts once more — from reader to builder. The first lesson is the plainest and most pivotal: get a key, send your first API request, and read streaming output. Only 30 lines of code stand between you and "AI app developer."',
+    bridgeSteps: ['Frontier stage wraps up', 'Learned to choose as needed', 'From reader to builder', 'Next: Your first API call'],
     gaugeTitle: '🎛️ The Four Selection Questions: nudge the compass',
     gaugeLead: 'Real projects don’t require memorizing leaderboards, only answering four questions. Click the options on the right and watch which way the compass swings — note that the first question is a veto: when data can’t go off-network, the other three only decide “how to implement,” no longer “which side to choose.”',
 
@@ -393,6 +435,7 @@ export default function L25() {
           <div className="en">{c.conceptExEn}</div>
           <div className="zh">{c.conceptExZh}</div>
         </div>
+        <p className="footnote source-note">{c.conceptSourceNote}</p>
       </Lsec>
 
       <Lsec title={c.tableTitle} lead={c.tableLead}>
@@ -439,6 +482,7 @@ export default function L25() {
             <p className="note">{c.r1After.note}</p>
           </div>
         </div>
+        <p className="footnote source-note">{c.r1SourceNote}</p>
       </Lsec>
 
       <Lsec title={c.gaugeTitle} lead={c.gaugeLead}>
@@ -469,6 +513,20 @@ export default function L25() {
         <div className="card quiz row-list">
           {c.quiz.map((qz, i) => (
             <QuizItem key={i} q={qz.q}>{qz.a}</QuizItem>
+          ))}
+        </div>
+      </Lsec>
+
+      <Lsec title={c.bridgeTitle} lead={c.bridgeLead}>
+        <div className="bridge-flow">
+          {c.bridgeSteps.map((step, i) => (
+            <span className="bridge-flow-item" key={step}>
+              <span className="bridge-flow-step">
+                <b>{i + 1}</b>
+                {step}
+              </span>
+              {i < c.bridgeSteps.length - 1 && <span className="bridge-flow-arrow">→</span>}
+            </span>
           ))}
         </div>
       </Lsec>
