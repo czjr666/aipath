@@ -63,6 +63,15 @@ const C = {
     mcpIntro: <>这就是 <b>MCP（Model Context Protocol，模型上下文协议）</b>要解决的问题：2024 年底由 Anthropic 开源，2025 年起 OpenAI、Google 等主流玩家相继跟进，如今已是行业事实标准之一。它做的事一句话 —— <b>在 AI 应用与外部世界之间，定义一个统一插口。</b></>,
     exampleEn: <>MCP 之于 AI 应用，就像 <span className="hl">USB-C</span> 之于电子设备</>,
     exampleZh: '插口统一之前，每台设备配专属充电器和数据线；统一之后，设备方和配件方各自适配一次 USB-C，互相即插即用。MCP 同理：工具方按协议写一次 MCP server，所有支持 MCP 的应用都能直接用 —— 不需要认识彼此，只需要认识插口。',
+    conceptSourceNote: (
+      <>
+        MCP 由 Anthropic 于 2024 年 11 月开源，规范与文档见{' '}
+        <a href="https://modelcontextprotocol.io/" target="_blank" rel="noreferrer">
+          modelcontextprotocol.io
+        </a>
+        。
+      </>
+    ),
     capTitle: '📖 拆开一个 MCP server：三种能力，三个角色',
     capLead: '统一插口里到底流过什么？MCP 规定 server 可以向应用提供三类东西 —— 第一类你其实已经认识了：',
     caps: [
@@ -102,6 +111,9 @@ const C = {
         why: <><b>病因：</b>把“接口打通”误当“权限全开”。回忆第 19 课的安全边界：模型只开申请单，执行前有宿主把关 —— MCP 没有改变这一点。server 只暴露被允许的目录和动作，host 对危险操作仍要弹窗让你确认，两道闸缺一不可。真正要警惕的是装来路不明的 server —— 就像别把捡来的 U 盘往电脑上插。</>,
       },
     ],
+    bridgeTitle: '➡️ 下一课怎么接上',
+    bridgeLead: '生态地图的地基是“模型层”——可这层里其实挤着两条路线完全不同的玩家：GPT、Claude、Gemini 这样闭源、只给 API 的，和 Llama、Qwen、DeepSeek 这样把权重开源、能下载自部署的。它们各自适合什么场景、怎么按需选型？这正是“前沿篇”最后一课要回答的：开源与闭源的大模型版图。',
+    bridgeSteps: ['MCP 站在协议层', '地基是模型层', '模型层有两条路线', '下一课：开源与闭源版图'],
     quizTitle: '✍️ 小练习',
     quiz: [
       {
@@ -177,6 +189,15 @@ const C = {
     mcpIntro: <>This is the problem <b>MCP (Model Context Protocol)</b> sets out to solve: open-sourced by Anthropic in late 2024, with major players like OpenAI and Google following suit from 2025, it is now one of the industry\'s de facto standards. What it does, in one sentence — <b>it defines a unified port between AI apps and the outside world.</b></>,
     exampleEn: <>MCP is to AI apps what <span className="hl">USB-C</span> is to electronic devices</>,
     exampleZh: 'Before ports were unified, every device came with its own charger and cable; once unified, device makers and accessory makers each adapt to USB-C once, and everything plugs and plays. MCP is the same: a tool provider writes one MCP server per the protocol, and every MCP-supporting app can use it directly — they don\'t need to know each other, only the port.',
+    conceptSourceNote: (
+      <>
+        MCP was open-sourced by Anthropic in November 2024; spec and docs at{' '}
+        <a href="https://modelcontextprotocol.io/" target="_blank" rel="noreferrer">
+          modelcontextprotocol.io
+        </a>
+        .
+      </>
+    ),
     capTitle: '📖 Inside an MCP server: Three Capabilities, Three Roles',
     capLead: 'What actually flows through the unified port? MCP specifies three kinds of things a server can offer an app — and you already know the first one:',
     caps: [
@@ -216,6 +237,9 @@ const C = {
         why: <><b>Cause:</b> mistaking "the interface is connected" for "all permissions are open." Recall the safety boundary from Lesson 19: the model only files a request, and the host gates it before execution — MCP did not change this. A server only exposes the allowed directories and actions, and the host still pops up a confirmation for dangerous operations; both gates are essential. What you really need to watch out for is installing a server of unknown origin — just like not plugging a found USB stick into your computer.</>,
       },
     ],
+    bridgeTitle: '➡️ How This Leads to Lesson 25',
+    bridgeLead: 'The foundation of the ecosystem map is the "model layer" — but that layer actually holds two very different kinds of players: closed, API-only ones like GPT, Claude, and Gemini, and open-weight ones like Llama, Qwen, and DeepSeek that you can download and self-host. What is each suited for, and how do you choose? That is exactly what the final lesson of the "Frontier" stage answers: the landscape of open vs. closed large models.',
+    bridgeSteps: ['MCP sits at the protocol layer', 'The foundation is the model layer', 'Two routes inside it', 'Next: Open vs. Closed landscape'],
     quizTitle: '✍️ Quick Quiz',
     quiz: [
       {
@@ -402,6 +426,7 @@ export default function L24() {
           <div className="en">{c.exampleEn}</div>
           <div className="zh">{c.exampleZh}</div>
         </div>
+        <p className="footnote source-note">{c.conceptSourceNote}</p>
       </Lsec>
 
       <Lsec
@@ -467,6 +492,20 @@ export default function L24() {
         <div className="card quiz row-list">
           {c.quiz.map((qz, i) => (
             <QuizItem key={i} q={qz.q}>{qz.a}</QuizItem>
+          ))}
+        </div>
+      </Lsec>
+
+      <Lsec title={c.bridgeTitle} lead={c.bridgeLead}>
+        <div className="bridge-flow">
+          {c.bridgeSteps.map((step, i) => (
+            <span className="bridge-flow-item" key={step}>
+              <span className="bridge-flow-step">
+                <b>{i + 1}</b>
+                {step}
+              </span>
+              {i < c.bridgeSteps.length - 1 && <span className="bridge-flow-arrow">→</span>}
+            </span>
           ))}
         </div>
       </Lsec>
