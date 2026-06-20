@@ -116,6 +116,19 @@ const C = {
       <><b>长大：</b>上线后把每个翻车的真实案例补进评测集，它会成为你最值钱的资产之一</>,
     ],
 
+    evalSourceNote: (
+      <>
+        MMLU 基准见 Hendrycks 等 2021{' '}
+        <a href="https://arxiv.org/abs/2009.03300" target="_blank" rel="noreferrer">
+          Measuring Massive Multitask Language Understanding
+        </a>
+        ；真人盲投的“竞技场”见 LMSYS Chatbot Arena，Chiang 等 2024{' '}
+        <a href="https://arxiv.org/abs/2403.04132" target="_blank" rel="noreferrer">
+          Chatbot Arena
+        </a>
+        。
+      </>
+    ),
     knightsTitle: '🚨 安全四骑士：上线后等着你的四种事故',
     knightsLead: '能力过关只是及格线，下面四位"骑士"才是真正的红线。每一位都配了一个真实风格的事故现场 ——',
     knightCards: [
@@ -149,6 +162,19 @@ const C = {
     demoSecTitle: '🎛️ 交互演示：提示注入小剧场',
     demoSecLead: <>一个"帮我总结网页"的 agent，撞上一个藏了恶意指令的网页。同一场戏演两遍：先看<b>无防护</b>版怎么翻车，再切到<b>有防护</b>版看三层防御如何兜底。</>,
 
+    knightsSourceNote: (
+      <>
+        “提示注入（prompt injection）”一词由 Simon Willison 2022 年提出{' '}
+        <a href="https://simonwillison.net/2022/Sep/12/prompt-injection/" target="_blank" rel="noreferrer">
+          Prompt injection attacks against GPT-3
+        </a>
+        ；针对 agent 读外部内容的“间接注入”系统研究见 Greshake 等 2023{' '}
+        <a href="https://arxiv.org/abs/2302.12173" target="_blank" rel="noreferrer">
+          Not what you've signed up for
+        </a>
+        。
+      </>
+    ),
     checklistTitle: '🛡️ 上线前的防御清单',
     checklistLead: '把演示里的三层防御推广开，就是这份清单 —— 上线前逐条打钩，缺一条都别急着发布。',
     defenseList: [
@@ -156,7 +182,7 @@ const C = {
       <><b>工具最小权限 + 敏感操作确认：</b>agent 用不到的工具一个都别给；删除、发送、支付类操作必须弹窗等真人点头</>,
       <><b>输出过滤与引用核查：</b>关键事实要求模型给出处，条款号、链接、案号用程序自动核验，对不上就拦下</>,
       <><b>敏感数据脱敏：</b>身份证号、手机号、密码、合同金额 —— 能不进 prompt 就不进，要进就先打码替换</>,
-      <><b>上线前红队测试一轮：</b>找同事扮演攻击者，用注入、越狱、刁钻问题轰炸一遍，修完漏洞再发布</>,
+      <><b>上线前红队测试一轮：</b>找同事扮演攻击者（业内叫红队，red team），用注入、越狱、刁钻问题轰炸一遍，修完漏洞再发布</>,
     ],
 
     pitfallsTitle: '⚠️ 常见误区',
@@ -173,6 +199,9 @@ const C = {
       },
     ],
 
+    bridgeTitle: '➡️ 下一课怎么接上',
+    bridgeLead: '会评估、懂安全，你已经具备把 AI 应用真正推上线的底气——前 29 课，从直觉到原理、从大模型到亲手构建，整条路你都走完了。但 AI 这条路没有终点：模型几个月一代，论文、框架、社区每天在变。最后一课不教新知识，而是给你一张“进阶学习地图”：论文怎么读、社区在哪里、方向怎么选——把这门课变成你 AI 之旅的第一级台阶，而不是终点。',
+    bridgeSteps: ['会评估、懂安全', '应用能上线了', '但 AI 没有终点', '下一课：进阶学习地图'],
     quizTitle: '✍️ 小练习',
     quiz: [
       {
@@ -294,6 +323,19 @@ const C = {
       <><b>Grow:</b> after launch, add every real-world failure case into the eval set; it\'ll become one of your most valuable assets</>,
     ],
 
+    evalSourceNote: (
+      <>
+        The MMLU benchmark is from Hendrycks et al. 2021,{' '}
+        <a href="https://arxiv.org/abs/2009.03300" target="_blank" rel="noreferrer">
+          Measuring Massive Multitask Language Understanding
+        </a>
+        ; the human-vote "arena" is LMSYS Chatbot Arena, Chiang et al. 2024,{' '}
+        <a href="https://arxiv.org/abs/2403.04132" target="_blank" rel="noreferrer">
+          Chatbot Arena
+        </a>
+        .
+      </>
+    ),
     knightsTitle: '🚨 The Four Knights of Safety: Four Incidents Awaiting You After Launch',
     knightsLead: 'Passing on capability is only the passing line; the four "knights" below are the real red lines. Each comes with a realistic incident scene ——',
     knightCards: [
@@ -327,6 +369,19 @@ const C = {
     demoSecTitle: '🎛️ Interactive Demo: The Prompt-Injection Playhouse',
     demoSecLead: <>A "summarize this page for me" agent runs into a page hiding a malicious instruction. The same scene plays twice: first watch the <b>unprotected</b> version crash, then switch to the <b>protected</b> version to see three layers of defense catch it.</>,
 
+    knightsSourceNote: (
+      <>
+        The term "prompt injection" was coined by Simon Willison in 2022,{' '}
+        <a href="https://simonwillison.net/2022/Sep/12/prompt-injection/" target="_blank" rel="noreferrer">
+          Prompt injection attacks against GPT-3
+        </a>
+        ; the systematic study of "indirect injection" against agents reading external content is Greshake et al. 2023,{' '}
+        <a href="https://arxiv.org/abs/2302.12173" target="_blank" rel="noreferrer">
+          Not what you've signed up for
+        </a>
+        .
+      </>
+    ),
     checklistTitle: '🛡️ The Pre-Launch Defense Checklist',
     checklistLead: 'Generalize the demo\'s three layers of defense and you get this checklist — tick each item off before launch, and don\'t rush to ship if even one is missing.',
     defenseList: [
@@ -351,6 +406,9 @@ const C = {
       },
     ],
 
+    bridgeTitle: '➡️ How This Leads to Lesson 30',
+    bridgeLead: 'Able to evaluate and aware of safety, you now have what it takes to truly ship an AI app — over 29 lessons, from intuition to principles, from large models to building by hand, you\'ve walked the whole path. But the AI road has no finish line: a new model generation every few months, papers, frameworks, and communities changing every day. The final lesson teaches no new knowledge — it hands you a "map for going further": how to read papers, where the communities are, how to choose a direction — making this course the first step of your AI journey, not the last.',
+    bridgeSteps: ['Can evaluate, aware of safety', 'Apps can ship', 'But AI has no finish line', 'Next: A map for going further'],
     quizTitle: '✍️ Quick Quiz',
     quiz: [
       {
@@ -470,6 +528,7 @@ export default function L29() {
             <div className="goal-item" key={i}><span className="tick">✓</span><span>{g}</span></div>
           ))}
         </div>
+        <p className="footnote source-note">{c.evalSourceNote}</p>
       </Lsec>
 
       <Lsec
@@ -490,6 +549,7 @@ export default function L29() {
         <div className="flip-grid l29-flip-grid">
           {c.knightsQuiz.map((k, i) => <FlipCard key={i} q={k.q} pill={k.pill} why={k.why} />)}
         </div>
+        <p className="footnote source-note">{c.knightsSourceNote}</p>
       </Lsec>
 
       <Lsec
@@ -528,6 +588,20 @@ export default function L29() {
         <div className="card quiz row-list">
           {c.quiz.map((qz, i) => (
             <QuizItem key={i} q={qz.q}>{qz.a}</QuizItem>
+          ))}
+        </div>
+      </Lsec>
+
+      <Lsec title={c.bridgeTitle} lead={c.bridgeLead}>
+        <div className="bridge-flow">
+          {c.bridgeSteps.map((step, i) => (
+            <span className="bridge-flow-item" key={step}>
+              <span className="bridge-flow-step">
+                <b>{i + 1}</b>
+                {step}
+              </span>
+              {i < c.bridgeSteps.length - 1 && <span className="bridge-flow-arrow">→</span>}
+            </span>
           ))}
         </div>
       </Lsec>
