@@ -122,8 +122,25 @@ Sure! "The weather is nice today."`,
       { be: 'GGUF', plain: '本地推理通用的模型文件格式', ex: '你下载的那个几 GB 的文件就是它。源自 llama.cpp 生态，Ollama、LM Studio 都认 —— 模型界的"通用集装箱"。' },
       { be: '上下文 32K', plain: '能记多长的对话 —— 这也吃内存', ex: '聊得越长，KV cache（第 17 课）越大，内存占用在模型本体之上继续涨。内存吃紧时，调小上下文是隐藏的省内存开关。' },
     ],
-    jargonP: <>四个黑话里，<b>量化</b>最值得亲眼看一遍。模型出厂时每个参数都是一个 16 位的小数；量化就是"砍位数"—— 位数减半，整个模型体积就减半。点下面的按钮，把一个 7B 模型从原版一路压到 Q4：</>,
+    jargonP: <>四个黑话里，<b>量化（quantization）</b>最值得亲眼看一遍。模型出厂时每个参数都是一个 16 位的小数；量化就是"砍位数"—— 位数减半，整个模型体积就减半。点下面的按钮，把一个 7B 模型从原版一路压到 Q4：</>,
     jargonFootnote: '为什么敢砍？因为模型的"知识"分摊在几十亿个参数的整体分布里，单个参数粗一点，大局几乎不受影响 —— 和 mp3 砍掉人耳不敏感的细节是同一种聪明。',
+    jargonSourceNote: (
+      <>
+        本地推理工具：{' '}
+        <a href="https://ollama.com/" target="_blank" rel="noreferrer">
+          Ollama
+        </a>
+        、图形界面 {' '}
+        <a href="https://lmstudio.ai/" target="_blank" rel="noreferrer">
+          LM Studio
+        </a>
+        ，底层多基于{' '}
+        <a href="https://github.com/ggml-org/llama.cpp" target="_blank" rel="noreferrer">
+          llama.cpp
+        </a>
+        （GGUF 格式与量化方案的来源）。
+      </>
+    ),
 
     calcTitle: '🎛️ 交互演示：我的电脑能跑哪个模型？',
     calcLead: <>本地跑模型的第一道门槛不是显卡多强，而是<b>模型能不能整个装进内存</b>。好消息：看名字就能口算。本课唯一的式子 ——</>,
@@ -155,6 +172,9 @@ Sure! "The weather is nice today."`,
       },
     ],
 
+    bridgeTitle: '➡️ 下一课怎么接上',
+    bridgeLead: '现在你手里有了两把武器：会调云端 API（第 26 课），也会跑本地模型（这一课）。但模型再强，也只知道训练数据里的世界，答不了“我们公司的文档里写了什么”。下一课把第 18 课那张 RAG 流程图变成真代码：读文档、切块、向量化、检索、拼进 prompt——亲手搭一个能用的私人知识库问答应用。',
+    bridgeSteps: ['会调云端、也会跑本地', '但模型不懂你的私有文档', '把 RAG 流程图变真代码', '下一课：实战 RAG'],
     quizTitle: '✍️ 小练习',
     quizLead: '前两题口算就行，第三题留给你的终端。',
     quiz: [
@@ -284,6 +304,23 @@ Sure! "The weather is nice today."`,
     ],
     jargonP: <>Of the four bits of jargon, <b>quantization</b> is the one most worth seeing with your own eyes. As it ships, every parameter is a 16-bit decimal; quantization is just "cutting bits" — halve the bits, and the whole model halves in size. Click the buttons below to compress a 7B model all the way from original down to Q4:</>,
     jargonFootnote: 'Why dare to cut? Because a model\'s "knowledge" is spread across the overall distribution of billions of parameters; making a single parameter coarser barely affects the big picture — the same kind of cleverness as mp3 cutting the details human ears aren\'t sensitive to.',
+    jargonSourceNote: (
+      <>
+        Local inference tools:{' '}
+        <a href="https://ollama.com/" target="_blank" rel="noreferrer">
+          Ollama
+        </a>
+        , GUI{' '}
+        <a href="https://lmstudio.ai/" target="_blank" rel="noreferrer">
+          LM Studio
+        </a>
+        , most built on{' '}
+        <a href="https://github.com/ggml-org/llama.cpp" target="_blank" rel="noreferrer">
+          llama.cpp
+        </a>
+        (the origin of the GGUF format and quantization schemes).
+      </>
+    ),
 
     calcTitle: '🎛️ Interactive: which model can my computer run?',
     calcLead: <>The first hurdle to running a model locally isn\'t how strong your GPU is, but <b>whether the model fits entirely into memory</b>. Good news: you can estimate it from the name. The lesson\'s one and only formula ——</>,
@@ -315,6 +352,9 @@ Sure! "The weather is nice today."`,
       },
     ],
 
+    bridgeTitle: '➡️ How This Leads to Lesson 28',
+    bridgeLead: 'You now hold two weapons: calling a cloud API (Lesson 26) and running a model locally (this lesson). But no matter how strong the model, it only knows the world in its training data — it can\'t answer "what do our company\'s documents say." The next lesson turns Lesson 18\'s RAG flowchart into real code: read documents, chunk, embed, retrieve, stitch into the prompt — and build a working private knowledge-base Q&A app with your own hands.',
+    bridgeSteps: ['Can call cloud & run local', 'But it doesn\'t know your private docs', 'Turn the RAG flowchart into code', 'Next: RAG in practice'],
     quizTitle: '✍️ Quick Quiz',
     quizLead: 'The first two you can do in your head; the third is left to your terminal.',
     quiz: [
@@ -568,6 +608,7 @@ export default function L27() {
         <p style={{ marginTop: 20 }}>{c.jargonP}</p>
         <QaDemo c={c} lang={lang} />
         <p className="footnote" style={{ marginTop: 10 }}>{c.jargonFootnote}</p>
+        <p className="footnote source-note">{c.jargonSourceNote}</p>
       </Lsec>
 
       <Lsec
@@ -620,6 +661,20 @@ export default function L27() {
         <div className="card quiz row-list">
           {c.quiz.map((qz, i) => (
             <QuizItem key={i} q={qz.q}>{qz.a}</QuizItem>
+          ))}
+        </div>
+      </Lsec>
+
+      <Lsec title={c.bridgeTitle} lead={c.bridgeLead}>
+        <div className="bridge-flow">
+          {c.bridgeSteps.map((step, i) => (
+            <span className="bridge-flow-item" key={step}>
+              <span className="bridge-flow-step">
+                <b>{i + 1}</b>
+                {step}
+              </span>
+              {i < c.bridgeSteps.length - 1 && <span className="bridge-flow-arrow">→</span>}
+            </span>
           ))}
         </div>
       </Lsec>
