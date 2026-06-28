@@ -31,6 +31,9 @@ const REGISTRY = {
   '16-prompt-engineering': lazy(() => import('../lessons/L16.jsx')),
   '17-context-window': lazy(() => import('../lessons/L17.jsx')),
   '18-rag': lazy(() => import('../lessons/L18.jsx')),
+  'rag-advanced-retrieval': lazy(() => import('../lessons/LRag1.jsx')),
+  'rag-chunking-and-eval': lazy(() => import('../lessons/LRag2.jsx')),
+  'rag-advanced-architecture': lazy(() => import('../lessons/LRag3.jsx')),
   '19-function-calling': lazy(() => import('../lessons/L19.jsx')),
   '20-agents': lazy(() => import('../lessons/L20.jsx')),
   '21-diffusion-models': lazy(() => import('../lessons/L21.jsx')),
@@ -86,7 +89,7 @@ export default function LessonPage({ lesson }) {
           <div className="crumb">
             <Link to="/">{t.lesson.crumbHome}</Link> /{' '}
             <span>{pick(stage.num, lang)} · {pick(stage.title, lang).split(' · ')[0]}</span> /{' '}
-            <span>{t.lesson.lessonN(lesson.id)}</span>
+            <span>{lesson.no ?? t.lesson.lessonN(lesson.id)}</span>
           </div>
           <h1>{title}</h1>
           <p className="subhead">{pick(lesson.desc, lang)}</p>

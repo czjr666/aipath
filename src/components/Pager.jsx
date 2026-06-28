@@ -1,12 +1,11 @@
 import { Link } from 'react-router-dom'
-import { lessonById } from '../data/lessons.js'
+import { lessonNeighbors, lessonNo } from '../data/lessons.js'
 import { useLang, useUI } from '../i18n/LangContext.jsx'
 import { pick } from '../i18n/pick.js'
 
 // 上下课导航。首课的“上一课”指向课程目录。
 export default function Pager({ lesson }) {
-  const prev = lessonById(lesson.id - 1)
-  const next = lessonById(lesson.id + 1)
+  const { prev, next } = lessonNeighbors(lesson)
   const { lang } = useLang()
   const t = useUI()
 
@@ -16,7 +15,7 @@ export default function Pager({ lesson }) {
         <Link className="card prev" to={`/lesson/${prev.slug}`}>
           <div className="dir">{t.pager.prevDir}</div>
           <div className="name">
-            <span className="pager-no">{String(prev.id).padStart(2, '0')}</span>
+            <span className="pager-no">{lessonNo(prev)}</span>
             <span className="pager-title">{pick(prev.title, lang)}</span>
           </div>
         </Link>
@@ -32,7 +31,7 @@ export default function Pager({ lesson }) {
         <Link className="card next" to={`/lesson/${next.slug}`}>
           <div className="dir">{t.pager.nextDir}</div>
           <div className="name">
-            <span className="pager-no">{String(next.id).padStart(2, '0')}</span>
+            <span className="pager-no">{lessonNo(next)}</span>
             <span className="pager-title">{pick(next.title, lang)}</span>
           </div>
         </Link>

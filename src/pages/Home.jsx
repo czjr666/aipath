@@ -3,14 +3,14 @@ import Nav from "../components/Nav.jsx";
 import Footer from "../components/Footer.jsx";
 import { Pill, Dots } from "../components/ui.jsx";
 import LLMHero from "../lessons/viz/LLMHero.jsx";
-import { stages, lessons } from "../data/lessons.js";
+import { stages, lessons, lessonNo } from "../data/lessons.js";
 import { useLang, useUI } from "../i18n/LangContext.jsx";
 import { pick } from "../i18n/pick.js";
 
 // 四项统计的数值（与语言无关，标签来自字典 t.home.statLabels）
 const STAT_NUMS = [
   "7",
-  "34",
+  "37",
   (
     <>
       10–30<span style={{ fontSize: 15 }}>min</span>
@@ -20,7 +20,7 @@ const STAT_NUMS = [
 ];
 
 function LessonRow({ lesson, lang }) {
-  const no = String(lesson.id).padStart(2, "0");
+  const no = lessonNo(lesson);
   return (
     <Link className="lesson" to={`/lesson/${lesson.slug}`}>
       <span className="lesson-no">{no}</span>

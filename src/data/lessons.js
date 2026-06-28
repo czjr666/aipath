@@ -1,6 +1,6 @@
 // ============================================================
 // AI 通识课 · 课程数据层（中英双语）
-// 7 阶段 × 34 课的目录元数据。首页、课程页、上下课导航均由此驱动。
+// 7 阶段 × 37 课的目录元数据。首页、课程页、上下课导航均由此驱动。
 // 文本字段为 { zh, en }；消费端用 i18n/pick.js 的 pick(field, lang) 取值。
 // tags 用语义色药丸；dots 为难度（1-3）；ready=true 表示已迁移到 React 组件。
 // ============================================================
@@ -36,7 +36,7 @@ export const stages = [
   {
     num: { zh: '第四阶段', en: 'Stage 4' },
     title: { zh: '应用篇 · 把大模型用起来', en: 'Applications · Putting Large Models to Work' },
-    count: 5,
+    count: 8,
     goal: {
       zh: '目标：掌握 LLM 应用层的完整技术栈 —— 从写好提示词，到给 AI 外挂知识库和工具，再到搭出智能体。',
       en: 'Goal: master the full LLM application stack — from writing good prompts, to giving AI external knowledge and tools, to building agents.',
@@ -145,6 +145,17 @@ export const lessons = [
   { id: 18, slug: '18-rag', stage: 3, level: lv.adv, dots: 3, tags: [terra, sky], ready: true, minutes: 19,
     title: { zh: 'RAG：给 AI 外挂知识库', en: 'RAG: Bolting a Knowledge Base onto AI' },
     desc: { zh: '大模型不知道你公司的文档怎么办？切块 → 向量化 → 检索 → 注入上下文，动画演示完整流程。', en: 'What if a large model doesn’t know your company’s docs? Chunk → embed → retrieve → inject into context: see the full flow animated.' } },
+
+  // ---------- RAG 进阶三部曲（插在 L18 之后，自定义编号 RAG 1/2/3，不重编号其它课）----------
+  { id: 35, no: 'RAG 1', slug: 'rag-advanced-retrieval', stage: 3, level: lv.adv, dots: 3, tags: [sky, terra], ready: true, minutes: 18,
+    title: { zh: 'RAG 进阶①：为什么查不准，怎么查准', en: 'Advanced RAG ①: Why Retrieval Misses, and How to Fix It' },
+    desc: { zh: '混合检索、重排序、查询改写——三件套补上 RAG 最关键却最缺的一环：把对的资料真正捞上来。', en: 'Hybrid search, reranking, query rewriting — the trio that fixes RAG’s most critical missing link: actually retrieving the right material.' } },
+  { id: 36, no: 'RAG 2', slug: 'rag-chunking-and-eval', stage: 3, level: lv.adv, dots: 3, tags: [sky, terra], ready: true, minutes: 18,
+    title: { zh: 'RAG 进阶②：切得好，量得出', en: 'Advanced RAG ②: Chunk Well, Measure Well' },
+    desc: { zh: '进阶切分（语义/父文档/上下文化检索）决定检索上限；分检索与生成两层量化评估，告别盲调。', en: 'Advanced chunking (semantic / parent-document / contextual retrieval) sets the ceiling; two-layer evaluation ends blind tuning.' } },
+  { id: 37, no: 'RAG 3', slug: 'rag-advanced-architecture', stage: 3, level: lv.adv, dots: 3, tags: [sky, terra], ready: true, minutes: 19,
+    title: { zh: 'RAG 进阶③：单次检索不够时', en: 'Advanced RAG ③: When One Retrieval Isn’t Enough' },
+    desc: { zh: 'Agentic RAG、多跳检索、GraphRAG，以及“长上下文会取代 RAG 吗”之辩——单次检索答不了时怎么办。', en: 'Agentic RAG, multi-hop, GraphRAG, and the “will long context replace RAG?” debate — what to do when one retrieval can’t answer.' } },
   { id: 19, slug: '19-function-calling', stage: 3, level: lv.adv, dots: 2, tags: [], ready: true, minutes: 18,
     title: { zh: 'Function Calling：AI 长出双手', en: 'Function Calling: AI Grows Hands' },
     desc: { zh: '让大模型学会查天气、订机票、跑代码 —— 工具调用是 AI 从“会说”到“会做”的关键跨越。', en: 'Teach a large model to check the weather, book flights, run code — tool calling is AI’s key leap from “talking” to “doing.”' } },
@@ -208,3 +219,17 @@ export const lessons = [
 export const lessonBySlug = (slug) => lessons.find((l) => l.slug === slug)
 export const lessonById = (id) => lessons.find((l) => l.id === id)
 export const stageOf = (lesson) => stages[lesson.stage]
+
+// 显示编号：优先用自定义 no（如 'RAG 1'），否则用补零 id。
+// 这样可在不重编号既有课的前提下，插入带专属编号的子系列。
+export const lessonNo = (l) => l.no ?? String(l.id).padStart(2, '0')
+
+// 上下课相邻项：按课程数组顺序（而非 id±1）取，便于插入非连续 id 的课。
+// 数组本就按阅读顺序排列，对既有课行为与旧的 id±1 完全一致。
+export const lessonNeighbors = (l) => {
+  const i = lessons.findIndex((x) => x.id === l.id)
+  return {
+    prev: i > 0 ? lessons[i - 1] : null,
+    next: i >= 0 && i < lessons.length - 1 ? lessons[i + 1] : null,
+  }
+}

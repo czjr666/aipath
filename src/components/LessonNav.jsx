@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { stages, lessons } from '../data/lessons.js'
+import { stages, lessons, lessonNo } from '../data/lessons.js'
 import { useLang, useUI } from '../i18n/LangContext.jsx'
 import { pick } from '../i18n/pick.js'
 
@@ -78,7 +78,7 @@ export default function LessonNav({ currentSlug }) {
                         to={`/lesson/${l.slug}`}
                         onClick={() => setOpen(false)}
                       >
-                        <span className="toc-no">{String(l.id).padStart(2, '0')}</span>
+                        <span className="toc-no">{lessonNo(l)}</span>
                         <span className="toc-name">{pick(l.title, lang)}</span>
                       </Link>
                     </li>
