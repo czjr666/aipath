@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import Nav from '../components/Nav.jsx'
 import LessonNav from '../components/LessonNav.jsx'
@@ -72,6 +72,7 @@ export default function LessonPage({ lesson }) {
   const { lang } = useLang()
   const t = useUI()
   const title = pick(lesson.title, lang)
+  const [tocCollapsed, setTocCollapsed] = useState(false)
 
   // 课程页标题带课名：「<课题> | <品牌>」（zh→AI 通识课 / en→AI Essentials），随语言切换更新（在 LangProvider 的全站 title 之后覆写）
   useEffect(() => {
@@ -83,47 +84,55 @@ export default function LessonPage({ lesson }) {
   return (
     <>
       <Nav />
-      <LessonNav currentSlug={lesson.slug} />
-      <main className="container-narrow">
-        <header className="lesson-hero">
-          <div className="crumb">
-            <Link to="/">{t.lesson.crumbHome}</Link> /{' '}
-            <span>{pick(stage.num, lang)} · {pick(stage.title, lang).split(' · ')[0]}</span> /{' '}
-            <span>{lesson.no ?? t.lesson.lessonN(lesson.id)}</span>
-          </div>
-          <h1>{title}</h1>
-          <p className="subhead">{pick(lesson.desc, lang)}</p>
-          <div className="meta">
-            <Pill type="ink">{pick(lesson.level, lang)}</Pill>
-            <Dots n={lesson.dots} />
-            {lesson.tags.map((tag, i) => (
-              <Pill key={i} type={tag.type}>{pick(tag.text, lang)}</Pill>
-            ))}
-            <span className="footnote">{t.lesson.minutes(lesson.minutes ?? 20)}</span>
-          </div>
-        </header>
-
-        {Body ? (
-          <LessonErrorBoundary
-            resetKey={lesson.slug}
-            fallback={
-              <div className="card card-pad" style={{ marginTop: 32 }}>
-                <p className="lead" style={{ marginBottom: 12 }}>{t.lesson.bodyError}</p>
-                <button className="btn" onClick={() => window.location.reload()}>{t.lesson.reload}</button>
+      <div className={`lesson-layout${tocCollapsed ? ' toc-collapsed' : ''}`}>
+        <LessonNav
+          currentSlug={lesson.slug}
+          collapsed={tocCollapsed}
+          onToggleCollapsed={() => setTocCollapsed((v) => !v)}
+        />
+        <div className="lesson-content">
+          <main className="container-narrow lesson-main">
+            <header className="lesson-hero">
+              <div className="crumb">
+                <Link to="/">{t.lesson.crumbHome}</Link> /{' '}
+                <span>{pick(stage.num, lang)} · {pick(stage.title, lang).split(' · ')[0]}</span> /{' '}
+                <span>{lesson.no ?? t.lesson.lessonN(lesson.id)}</span>
               </div>
-            }
-          >
-            <Suspense key={lesson.slug} fallback={<div className="footnote" style={{ marginTop: 32 }}>{t.lesson.loading}</div>}>
-              <Body />
-            </Suspense>
-          </LessonErrorBoundary>
-        ) : (
-          <Placeholder lesson={lesson} t={t} />
-        )}
+              <h1>{title}</h1>
+              <p className="subhead">{pick(lesson.desc, lang)}</p>
+              <div className="meta">
+                <Pill type="ink">{pick(lesson.level, lang)}</Pill>
+                <Dots n={lesson.dots} />
+                {lesson.tags.map((tag, i) => (
+                  <Pill key={i} type={tag.type}>{pick(tag.text, lang)}</Pill>
+                ))}
+                <span className="footnote">{t.lesson.minutes(lesson.minutes ?? 20)}</span>
+              </div>
+            </header>
 
-        <Pager lesson={lesson} />
-      </main>
-      <Footer />
+            {Body ? (
+              <LessonErrorBoundary
+                resetKey={lesson.slug}
+                fallback={
+                  <div className="card card-pad" style={{ marginTop: 32 }}>
+                    <p className="lead" style={{ marginBottom: 12 }}>{t.lesson.bodyError}</p>
+                    <button className="btn" onClick={() => window.location.reload()}>{t.lesson.reload}</button>
+                  </div>
+                }
+              >
+                <Suspense key={lesson.slug} fallback={<div className="footnote" style={{ marginTop: 32 }}>{t.lesson.loading}</div>}>
+                  <Body />
+                </Suspense>
+              </LessonErrorBoundary>
+            ) : (
+              <Placeholder lesson={lesson} t={t} />
+            )}
+
+            <Pager lesson={lesson} />
+          </main>
+          <Footer />
+        </div>
+      </div>
     </>
   )
 }

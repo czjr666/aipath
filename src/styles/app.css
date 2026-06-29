@@ -108,17 +108,46 @@ pre.code .str { color: var(--sage); }
 /* ============================================================
    课程页左侧固定目录（宽屏显示，窄屏隐藏，回落到顶栏 + 上下课导航）
    ============================================================ */
+.lesson-layout {
+  --lesson-toc-width: 264px;
+}
+.lesson-content {
+  min-width: 0;
+}
+
 .lesson-toc {
-  position: fixed; top: 60px; left: 0; bottom: 0; width: 264px; z-index: 40;
+  position: fixed; top: 60px; left: 0; bottom: 0; width: var(--lesson-toc-width); z-index: 40;
   display: flex; flex-direction: column;
   padding: 8px 12px 40px; overflow-y: auto;
   background: var(--bg-card); border-right: 1px solid var(--hairline);
+  transition: transform 0.24s cubic-bezier(0.4, 0, 0.2, 1);
 }
+.lesson-toc.collapsed { transform: translateX(-100%); }
 .toc-head {
   font-size: 11px; font-weight: 700; letter-spacing: 0.08em; color: var(--fg-2);
   padding: 12px 10px 10px; border-bottom: 1px solid var(--hairline);
-  display: flex; align-items: center; justify-content: space-between;
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
 }
+.toc-title {
+  min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.toc-shortcut {
+  flex: none; padding: 2px 7px; border-radius: var(--r-pill);
+  border: 1px solid var(--hairline-strong); background: var(--bg-inset);
+  color: var(--fg-2); font-size: 10px; line-height: 1.4; font-weight: 700;
+  letter-spacing: 0; text-transform: none;
+  opacity: 0; transform: translateY(2px);
+  transition: opacity 0.16s ease, transform 0.16s ease;
+}
+.lesson-toc:hover .toc-shortcut,
+.lesson-toc:focus-within .toc-shortcut { opacity: 1; transform: translateY(0); }
+.toc-toggle {
+  display: inline-flex; align-items: center; justify-content: center;
+  flex: none; width: 28px; height: 28px; margin: -5px -4px -5px 0; padding: 0;
+  border: none; background: none; color: var(--fg-1); cursor: pointer; border-radius: var(--r-sm);
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.toc-toggle:hover { background: var(--bg-inset); color: var(--fg-0); }
 .toc-close { display: none; }
 .toc-stage { margin-top: 14px; }
 .toc-stage-title { font-size: 12px; font-weight: 700; color: var(--fg-1); padding: 4px 10px 6px; }
@@ -136,7 +165,22 @@ pre.code .str { color: var(--sage); }
 .toc-item.active .toc-no { color: var(--on-accent); }
 
 /* 窄屏唤出按钮 / 抽屉遮罩：宽屏隐藏 */
-.toc-fab, .toc-backdrop { display: none; }
+.toc-fab, .toc-backdrop, .toc-peek { display: none; }
+
+@media (min-width: 1340px) {
+  .toc-peek {
+    display: inline-flex; align-items: center; gap: 7px;
+    position: fixed; top: 74px; left: 12px; z-index: 45;
+    height: 38px; padding: 0 13px 0 11px; border: 1px solid var(--hairline-strong);
+    border-radius: var(--r-pill); background: var(--bg-card); color: var(--fg-1);
+    font-size: 13px; font-weight: 600; cursor: pointer;
+    box-shadow: var(--shadow-card);
+    opacity: 0; pointer-events: none; transform: translateX(-8px);
+    transition: opacity 0.18s ease, transform 0.18s ease, color 0.15s ease, border-color 0.15s ease;
+  }
+  .toc-peek.show { opacity: 1; pointer-events: auto; transform: translateX(0); }
+  .toc-peek:hover { color: var(--fg-0); border-color: var(--fg-2); }
+}
 
 /* ---- 窄屏（≤1339px）：侧栏改为右下角按钮 + 滑出抽屉 ---- */
 @media (max-width: 1339px) {
@@ -147,6 +191,7 @@ pre.code .str { color: var(--sage); }
     box-shadow: 0 0 40px rgba(0, 0, 0, 0.18);
   }
   .lesson-toc.open { transform: translateX(0); }
+  .toc-toggle { display: none; }
   .toc-close {
     display: inline-flex; align-items: center; justify-content: center;
     width: 30px; height: 30px; margin: -6px -4px -6px 0; padding: 0;
