@@ -114,6 +114,14 @@ pre.code .str { color: var(--sage); }
 .lesson-content {
   min-width: 0;
 }
+/* 宽屏：目录展开时正文避让侧栏、在右侧空间居中；折叠时去掉避让，正文占满并回到全视口居中 */
+@media (min-width: 1340px) {
+  .lesson-content {
+    padding-left: var(--lesson-toc-width);
+    transition: padding-left 0.24s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .lesson-layout.toc-collapsed .lesson-content { padding-left: 0; }
+}
 
 .lesson-toc {
   position: fixed; top: 60px; left: 0; bottom: 0; width: var(--lesson-toc-width); z-index: 40;
