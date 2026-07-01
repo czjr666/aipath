@@ -124,6 +124,20 @@ table.match td.ex { color: var(--fg-1); }
 .slider-row label { font-size: 13px; font-weight: 600; color: var(--fg-1); min-width: 88px; }
 .slider-row input[type="range"] { flex: 1; accent-color: var(--fg-0); }
 .slider-row .val { font-size: 13px; font-weight: 700; min-width: 44px; text-align: right; font-variant-numeric: tabular-nums; }
+.slider-row label .wl-dot { margin-right: 7px; }
+
+/* L29 工作量真相：堆叠条 + 滑块 + 结论 */
+.wl-bars { display: grid; gap: 14px; margin: 2px 0 16px; }
+.wl-bar-label { font-size: 12px; font-weight: 600; color: var(--fg-2); margin-bottom: 6px; }
+.wl-bar { display: flex; height: 38px; border-radius: 8px; overflow: hidden; background: var(--bg-inset); }
+.wl-seg { display: flex; align-items: center; justify-content: center; min-width: 0; overflow: hidden; white-space: nowrap; transition: width 0.35s cubic-bezier(.4, 0, .2, 1); }
+.wl-seg span { font-size: 11px; font-weight: 700; color: #fff; padding: 0 6px; text-shadow: 0 1px 2px rgba(0, 0, 0, .28); }
+.wl-legend { display: flex; flex-wrap: wrap; gap: 8px 18px; margin: 10px 0 4px; }
+.wl-legend span { display: inline-flex; align-items: center; font-size: 12px; font-weight: 600; color: var(--fg-1); font-variant-numeric: tabular-nums; }
+.wl-dot { width: 11px; height: 11px; border-radius: 3px; display: inline-block; flex: none; margin-right: 6px; }
+.wl-verdict { margin-top: 14px; padding: 12px 14px; border-radius: 8px; font-size: 13.5px; line-height: 1.62; border-left: 3px solid var(--fg-2); background: var(--bg-inset); transition: background 0.25s ease, border-color 0.25s ease; }
+.wl-verdict.warn { border-color: var(--terracotta); background: var(--terracotta-bg); }
+.wl-verdict.good { border-color: var(--sky); background: var(--sky-bg); }
 
 /* 点击揭晓卡（分类小游戏） */
 .flip-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }

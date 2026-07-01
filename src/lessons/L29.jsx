@@ -84,6 +84,27 @@ const C = {
     noteSafe: '编造事实、被恶意网页劫持、把用户数据泄露出去 —— demo 阶段没人在意的事，上线后每一件都是事故，而且账都算在你头上。',
     conceptTail: <>这两问，一问管<b>能力的下限</b>（够不够好用），一问管<b>风险的上限</b>（最坏会出什么事）。会做 demo 的人很多，敢上生产的人很少 —— 差距就在这两问上。下面逐一拆解。</>,
 
+    workload: {
+      title: '🧮 先纠个错觉：训练其实是最小的那块',
+      lead: <>正式拆解评估前，先破一个流行误解。很多人以为做一个 AI 项目<b>九成精力花在训练模型</b>上；但在真实工程里，训练往往是<b>最小</b>的一块，大头压在<b>评估</b>和<b>数据清洗</b>上 —— 这也正是本课为什么值得单开一讲。下面是一种常见的经验配比，<b>拖动滑块</b>，亲手掂量四块活的轻重。</>,
+      mythLabel: '🧊 新手的想象',
+      realLabel: '🛠 真实项目（拖动下方滑块）',
+      phases: [
+        { key: 'eval', name: '评估', color: 'var(--sky)', def: 50 },
+        { key: 'data', name: '数据清洗', color: 'var(--amber)', def: 40 },
+        { key: 'integ', name: '集成', color: 'var(--fg-2)', def: 8 },
+        { key: 'train', name: '训练', color: 'var(--terracotta)', def: 2 },
+      ],
+      reset: '↺ 恢复真实配比',
+      verdictWarn: <><b>⚠ 危险配方。</b>你把大半精力押在了训练 / 调模型上 —— 这正是「demo 惊艳、上线翻车」的经典剧本。模型再花哨，也补不回脏数据和没做评估埋下的雷。</>,
+      verdictGood: <><b>✓ 成熟团队的样子。</b>数据和评估吃掉了绝大部分精力 —— 它们决定了系统能达到的上限，训练只是来逼近这条上限的最后一步。</>,
+      verdictMid: <>把滑块往两端拖试试：<b>训练占比越高越危险</b>，<b>数据 + 评估占比越高越稳</b>。真实项目的重心，几乎总落在后两者。</>,
+      notes: [
+        { t: '📉 为什么数据决定上限', d: <>数据和标签里有多少噪声，就给模型的表现划了一条<b>无法逾越的下限</b>（统计学叫<b>贝叶斯误差 / 噪声下限</b>）。换模型、调参数，都只能在这条线<i>之上</i>腾挪；想真正把线往下压，只有一条路 —— 把数据和标注做得更干净。这就是「数据决定上限，模型只是逼近它」的由来。</> },
+        { t: '🏷 标签会过期，要持续复审', d: <>数据清洗不是做完一次就完事的前置步骤。业务在变，类别的定义（本体 / ontology）也跟着变 —— 三个月前打的标签，今天可能已经自相矛盾。成熟团队会<b>不断回头复审旧标签</b>，它和评测集一样，是需要养一辈子的资产。</> },
+      ],
+    },
+
     evalTitle: '🩺 评估：给 AI 体检的四种方法',
     evalLead: '"哪个模型更强？"这个问题没有唯一答案，只有四种不同的"体检"方式 —— 越往后，离你的真实场景越近。',
     evalCards: [
@@ -291,6 +312,27 @@ const C = {
     noteSafe: 'Making up facts, getting hijacked by a malicious page, leaking user data — things nobody cares about at the demo stage become incidents once you\'re live, and the bill all lands on you.',
     conceptTail: <>Of these two, one governs the <b>floor of capability</b> (is it good enough to use), the other the <b>ceiling of risk</b> (what\'s the worst that can happen). Plenty of people can build a demo; few dare ship to production — the gap lies in these two questions. Let\'s unpack each below.</>,
 
+    workload: {
+      title: '🧮 First, a Myth: Training Is Actually the Smallest Slice',
+      lead: <>Before unpacking evaluation, let\'s bust a popular misconception. Many people imagine an AI project is <b>90% training the model</b>; but in real engineering, training is often the <b>smallest</b> slice, with the bulk going to <b>evaluation</b> and <b>data cleaning</b> — which is exactly why this lesson deserves its own chapter. Below is a common rule-of-thumb split; <b>drag the sliders</b> and weigh the four kinds of work yourself.</>,
+      mythLabel: '🧊 The Beginner\'s Imagination',
+      realLabel: '🛠 A Real Project (drag the sliders below)',
+      phases: [
+        { key: 'eval', name: 'Evaluation', color: 'var(--sky)', def: 50 },
+        { key: 'data', name: 'Data cleaning', color: 'var(--amber)', def: 40 },
+        { key: 'integ', name: 'Integration', color: 'var(--fg-2)', def: 8 },
+        { key: 'train', name: 'Training', color: 'var(--terracotta)', def: 2 },
+      ],
+      reset: '↺ Reset to the real split',
+      verdictWarn: <><b>⚠ A dangerous recipe.</b> You\'ve bet most of your effort on training / tuning the model — the classic script for "dazzling demo, crash in production." However fancy the model, it can\'t patch the landmines left by dirty data and skipped evaluation.</>,
+      verdictGood: <><b>✓ What a mature team looks like.</b> Data and evaluation eat up the lion\'s share — they set the ceiling the system can reach, and training is just the final step that approaches it.</>,
+      verdictMid: <>Drag the sliders to the extremes: <b>the higher training\'s share, the riskier</b>; <b>the higher data + evaluation\'s share, the steadier</b>. A real project\'s center of gravity almost always sits in the latter two.</>,
+      notes: [
+        { t: '📉 Why data sets the ceiling', d: <>However much noise lives in your data and labels draws an <b>unbreakable floor</b> on the model\'s performance (statistics calls it the <b>Bayes error / noise floor</b>). Switching models or tuning parameters only lets you maneuver <i>above</i> that line; the only way to truly push the line down is to make your data and labels cleaner. That\'s where "data sets the ceiling, the model only approaches it" comes from.</> },
+        { t: '🏷 Labels expire and need constant review', d: <>Data cleaning isn\'t a one-and-done prerequisite. Business changes, and so do category definitions (the ontology) — labels you applied three months ago may already contradict each other today. Mature teams <b>keep revisiting old labels</b>; like your eval set, it\'s an asset you tend for a lifetime.</> },
+      ],
+    },
+
     evalTitle: '🩺 Evaluation: Four Ways to Give Your AI a Checkup',
     evalLead: '"Which model is stronger?" has no single answer, only four different kinds of "checkup" — and the further along you go, the closer it gets to your real scenario.',
     evalCards: [
@@ -476,6 +518,88 @@ function InjectionDemo({ c }) {
   )
 }
 
+const MYTH_VALS = { eval: 2, data: 3, integ: 1, train: 94 }
+
+function WorkloadBar({ phases, vals, myth }) {
+  const total = phases.reduce((s, p) => s + (vals[p.key] || 0), 0) || 1
+  return (
+    <div className={`wl-bar${myth ? ' wl-myth' : ''}`}>
+      {phases.map((p) => {
+        const share = ((vals[p.key] || 0) / total) * 100
+        if (share <= 0) return null
+        return (
+          <div key={p.key} className="wl-seg" style={{ width: share + '%', background: p.color }}>
+            {share >= 12 && <span>{p.name} {Math.round(share)}%</span>}
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
+function WorkloadTruth({ c }) {
+  const w = c.workload
+  const [vals, setVals] = useState(() =>
+    w.phases.reduce((o, p) => ({ ...o, [p.key]: p.def }), {})
+  )
+  const total = w.phases.reduce((s, p) => s + vals[p.key], 0) || 1
+  const pct = (k) => Math.round((vals[k] / total) * 100)
+  const trainShare = (vals.train / total) * 100
+  const dataEvalShare = ((vals.eval + vals.data) / total) * 100
+  const kind = trainShare >= 30 ? 'warn' : dataEvalShare >= 75 ? 'good' : 'mid'
+  const verdict = kind === 'warn' ? w.verdictWarn : kind === 'good' ? w.verdictGood : w.verdictMid
+  const reset = () => setVals(w.phases.reduce((o, p) => ({ ...o, [p.key]: p.def }), {}))
+
+  return (
+    <div className="card">
+      <div className="wl-bars">
+        <div>
+          <div className="wl-bar-label">{w.mythLabel}</div>
+          <WorkloadBar phases={w.phases} vals={MYTH_VALS} myth />
+        </div>
+        <div>
+          <div className="wl-bar-label">{w.realLabel}</div>
+          <WorkloadBar phases={w.phases} vals={vals} />
+        </div>
+      </div>
+
+      <div className="wl-legend">
+        {w.phases.map((p) => (
+          <span key={p.key}><i className="wl-dot" style={{ background: p.color }} />{p.name} · {pct(p.key)}%</span>
+        ))}
+      </div>
+
+      <div className="wl-sliders">
+        {w.phases.map((p) => (
+          <div className="slider-row" key={p.key}>
+            <label><i className="wl-dot" style={{ background: p.color }} />{p.name}</label>
+            <input
+              type="range" min="0" max="100" value={vals[p.key]}
+              onChange={(e) => setVals((v) => ({ ...v, [p.key]: +e.target.value }))}
+            />
+            <span className="val">{pct(p.key)}%</span>
+          </div>
+        ))}
+      </div>
+
+      <div className={`wl-verdict ${kind}`}>{verdict}</div>
+
+      <div className="chips" style={{ marginTop: 14 }}>
+        <button className="chip" onClick={reset}>{w.reset}</button>
+      </div>
+
+      <div className="use-grid cols-2" style={{ marginTop: 18 }}>
+        {w.notes.map((n, i) => (
+          <div className="card use-card" key={i}>
+            <div className="label">{n.t}</div>
+            <div className="zh">{n.d}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 export default function L29() {
   const { lang } = useLang()
   const c = C[lang] || C.zh
@@ -507,6 +631,13 @@ export default function L29() {
           </div>
         </div>
         <p>{c.conceptTail}</p>
+      </Lsec>
+
+      <Lsec
+        title={c.workload.title}
+        lead={c.workload.lead}
+      >
+        <WorkloadTruth c={c} />
       </Lsec>
 
       <Lsec
