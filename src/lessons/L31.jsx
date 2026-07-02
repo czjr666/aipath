@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Lsec, QuizItem } from '../components/ui.jsx'
+import { Lsec, QuizItem, DeepDive } from '../components/ui.jsx'
 import { useLang } from '../i18n/LangContext.jsx'
 
 // ============================================================
@@ -51,13 +51,16 @@ const C = {
     lessons: [
       { n: '01', term: '围绕 KV-Cache 设计:前缀要稳', tag: '省钱',
         body: <>Agent 每一轮都要把越滚越长的上下文整个重读一遍。模型有个「缓存」:只要上下文开头<b>一字不变</b>,已读的部分能跳读、便宜十倍。所以 Manus 让前缀<b>逐字稳定、只追加不修改</b> —— 连在开头放个当前时间戳都坚决不干,因为一个 token 的变化就会让整段缓存作废。</>,
-        analogy: <><b>类比:</b>让助理一次次重读同一本卷宗。封面一个字没改,他就能从上次读到的地方接着看;你要是在封面盖个实时时间戳,他每次都得从第一页重头逐字读 —— 又慢又贵。</> },
+        analogy: <><b>类比:</b>让助理一次次重读同一本卷宗。封面一个字没改,他就能从上次读到的地方接着看;你要是在封面盖个实时时间戳,他每次都得从第一页重头逐字读 —— 又慢又贵。</>,
+        dig: { t: '再挖一铲:这个「缓存」里存的到底是什么?', body: <>大模型生成是<b>自回归(autoregressive)</b>的:每吐一个新 token,都要对前面全部内容重算一遍注意力。好在每个 token 算出的中间结果(K 和 V,可以理解成它的「读书笔记」)<b>只取决于它自己和它前面的内容,与后面无关</b> —— 所以只要前缀逐字不变,这份笔记就能原样复用,新一轮只需为新增的部分做计算。这就是命中价便宜 10 倍的物理来源。反过来,第 100 个字变了,第 100 个字之后<b>所有</b> token 的笔记全部作废、重算。</> } },
       { n: '02', term: 'Mask,而不是删除工具', tag: '稳缓存',
         body: <>任务中途想「临时禁用某个工具」,直觉是把它从工具列表里删掉。Manus 偏不 —— 工具定义就在上下文靠前的位置,一删就击穿后面全部缓存,还会让模型困惑(历史里还引用着这个刚消失的工具)。它的做法是在模型选词时<b>对该工具的 token 打掩码(masking)</b>,工具列表本身一字不动。</>,
-        analogy: <><b>类比:</b>菜单印好就别撕页 —— 撕一页整本要重排重印。想暂时不让点某道菜,就在点单时把它划掉,而不是把它从菜单里抹除。</> },
+        analogy: <><b>类比:</b>菜单印好就别撕页 —— 撕一页整本要重排重印。想暂时不让点某道菜,就在点单时把它划掉,而不是把它从菜单里抹除。</>,
+        dig: { t: '再挖一铲:「划掉」在技术上是怎么实现的?', body: <>模型每一步其实是给词表里<b>所有候选 token 打分</b>(这组分数叫 logits),分高的更容易被选中。所谓掩码,就是在打分之后、选词之前,把被禁用工具对应的 token 分数<b>直接压到负无穷</b> —— 模型物理上选不出它,而工具列表一字未动。Manus 还有个配套小设计:工具名统一带前缀,如 <code>browser_xxx</code>、<code>shell_xxx</code>,这样不用逐个点名,按前缀一刀切就能表达「这一步只准用浏览器类工具」—— 一台简单的状态机就能管住整个 Agent 的行为边界。</> } },
       { n: '03', term: '把文件系统当上下文', tag: '扩容',
         body: <>上下文窗口再大也有上限,长网页、长文档很快就把它撑爆。Manus 把<b>文件系统当成无限大、永久、可直接读写的外部记忆</b>:大段内容落盘,上下文里只留一个文件路径或 URL,要用时再读回来 —— 这叫<b>可恢复的压缩</b>(只丢内容、留指针)。</>,
-        analogy: <><b>类比:</b>你不会把整份报告背在脑子里,而是记一句「在 D 盘 report.md」,要用再翻。脑容量有限,硬盘几乎无限。</> },
+        analogy: <><b>类比:</b>你不会把整份报告背在脑子里,而是记一句「在 D 盘 report.md」,要用再翻。脑容量有限,硬盘几乎无限。</>,
+        dig: { t: '再挖一铲:为什么强调「可恢复」,直接总结压缩不行吗?', body: <>更常见的省上下文办法是把历史「<b>总结</b>」成几句话,但总结是<b>有损压缩</b>:细节丢了就真没了,而 Agent 恰恰料不准哪个细节会在第 40 步突然变得关键 —— 一份被总结掉的报错信息,可能正是后面绕坑的钥匙。所以 Manus 只删「<b>凭指针能找回来的内容</b>」:网页正文可以丢,URL 还在;文档内容可以丢,路径还在,要用时读回来就是。压缩必须可逆,才敢放手给上下文瘦身。</> } },
       { n: '04', term: '用「复述」操纵注意力', tag: '不跑题',
         body: <>一个任务平均 ~50 步,最初的目标会被越来越长的足迹挤到上下文中段,模型「读着读着忘了要干嘛」(业内叫 lost-in-the-middle)。Manus 的招很朴素:维护一个 <code>todo.md</code>,<b>每完成一步就把待办清单重写一遍、推到上下文最末尾</b> —— 等于把全局目标反复「背诵」进模型的最近注意力。</>,
         analogy: <><b>类比:</b>长会议里,主持人每隔一阵就重念一遍「今天就定三件事」,免得大家越聊越偏。复述,是把目标拉回眼前最便宜的办法。</> },
@@ -100,6 +103,30 @@ const C = {
       verdictMutate: '✗ 中途动了工具列表 —— 它之后的缓存被击穿,命中率大跌,成本明显上扬。',
       verdictBoth: '✗✗ 前缀和工具都在变:缓存几乎全废,这是最烧钱的跑法。',
       multUnit: (x) => `${x}×`,
+      note: '(价格与命中率为教学示意,10 倍价差参考主流厂商的缓存定价;真实命中率随实现而变,但「前缀一变、缓存作废」的机制是通用的。)',
+    },
+    // ---- 交互演示 2:lost-in-the-middle ----
+    lostSecTitle: '🎛️ 交互演示 2:目标是怎么被「挤到中间」弄丢的',
+    lostSecLead: '再把第四条经验玩成手感。任务每跑一轮,足迹就往上下文里追加一段,最初的目标被越挤越深 —— 拖动轮数,看目标在注意力里怎么变淡;再打开「todo.md 复述」,看 Manus 怎么用最朴素的办法把它救回来。',
+    lost: {
+      title: '🎛️ lost-in-the-middle · 复述演示',
+      hint: '拖动轮数 · 开关复述,看目标注意力',
+      reciteLabel: 'todo.md 复述',
+      reciteOff: '✗ 不复述',
+      reciteOn: '✓ 每轮重写、推到末尾',
+      roundsLabel: (r) => `已跑轮数:${r}`,
+      sysBlock: '⚙️ 系统提示+工具',
+      goalBlock: '🎯 最初目标',
+      todoBlock: '📝 todo.md',
+      recentZone: '虚线框 = 最近注意力区 →',
+      statDepth: '目标距末尾',
+      statAttn: '目标注意力(示意)',
+      statRisk: '跑偏风险',
+      depthUnit: (n) => `${n} 段`,
+      verdictOk: '✓ 足迹还短,目标就在眼前,不复述也不容易偏。',
+      verdictDrift: '✗ 目标已被足迹挤向上下文中段 —— 模型对中段的注意力最弱,越往后越容易「读着读着忘了要干嘛」。',
+      verdictRecite: '✓ 每轮把 todo.md 重写、推到最末尾:目标的最新版本永远待在最近注意力区,50 轮也不跑丢。',
+      note: '(示意:真实注意力还有「开头较强、中间最弱」的 U 形效应,这里聚焦「离末尾越远越容易被忽略」这一面。)',
     },
     // ---- 常见误区 ----
     pitfallsTitle: '⚠️ 常见误区',
@@ -130,11 +157,15 @@ const C = {
         q: '3. todo.md 被反复重写、推到上下文末尾,究竟解决了什么问题?',
         a: <>解决<b>长任务里「目标被遗忘在中间」</b>的问题。一个任务平均 ~50 步,最初写下的目标会被越来越长的足迹挤到上下文中段,而模型对中段内容的注意力最弱(lost-in-the-middle),容易越走越偏。把待办清单不断重写、<b>推到上下文最末尾</b>,等于把全局目标反复「背诵」进模型的最近注意力,持续把它拉回正轨。</>,
       },
+      {
+        q: '4. 动手算一笔:一个任务跑 50 轮,每轮新增约 2000 token(第 n 轮要重读前面全部)。按演示里的价格(命中 $0.30 / 未命中 $3.00 每百万 token),「前缀稳定,命中率 90%」和「开头放时间戳,命中率 0」各花多少钱?',
+        a: <>累计输入 token ≈ (1+2+…+50)×2000 = 1275×2000 = <b>255 万</b>。前缀稳定:有效单价 = 3.0 − 0.9×(3.0−0.3) = <b>$0.57</b>/百万,总价 ≈ 2.55 × 0.57 ≈ <b>$1.45</b>;开头放时间戳:全按未命中价 $3.00/百万,总价 ≈ 2.55 × 3.0 = <b>$7.65</b> —— 一个任务贵 5 倍多。再乘上平台每天成千上万个任务,这就是「一个时间戳」能烧掉的钱。(把第一个演示的轮数滑到 50,你会看到同样的数字。)</>,
+      },
     ],
     // ---- 番外·第一篇收尾 ----
     finalTitle: '🔭 番外·第一篇:看懂上下文工程,你就看懂了下一个 Manus',
     finalP1: <>这是「番外篇」的第一篇 —— 主课 30 讲带你从一个神经元一路走到亲手构建应用,而番外要做的,是把这些原理放到真实世界的明星产品上验货。Manus 交出的第一个结论是:<b>当顶尖模型变成人人可用的公共电力,真正的差距,落在你怎么把上下文喂给它。</b></>,
-    finalP2: <>这正是 L20 那句洞察的工业级回响 —— <b>模型在自己的足迹上持续决策</b>,而上下文工程,就是经营这串足迹的手艺。往后你再看任何一个刷屏的 Agent 新品,都能一眼穿过营销话术,问出对的问题:它的前缀稳不稳?错误留不留?目标会不会被挤掉?番外篇还会陆续拆解更多真实系统 —— 下一个会是谁,我们路上见。</>,
+    finalP2: <>这正是 L20 那句洞察的工业级回响 —— <b>模型在自己的足迹上持续决策</b>,而上下文工程,就是经营这串足迹的手艺。往后你再看任何一个刷屏的 Agent 新品,都能一眼穿过营销话术,问出对的问题:它的前缀稳不稳?错误留不留?目标会不会被挤掉?番外篇下一站是 <b>Cursor</b> —— 那个天天帮无数人写代码的编辑器,看它怎么把 RAG、自研小模型和推理加速,拧成另一条「模型之外的护城河」。</>,
   },
 
   en: {
@@ -171,13 +202,16 @@ const C = {
     lessons: [
       { n: '01', term: 'Design around the KV-cache: keep the prefix stable', tag: 'cheaper',
         body: <>Every round, the agent has to re-read the whole, ever-growing context. The model has a "cache": as long as the start of the context is <b>byte-for-byte unchanged</b>, the already-read part can be skimmed — ten times cheaper. So Manus keeps the prefix <b>byte-stable and append-only</b> — it won't even put a current timestamp at the start, because a single changed token invalidates the entire cache.</>,
-        analogy: <><b>Analogy:</b> an assistant re-reading the same case file over and over. If the cover hasn't changed a word, he picks up where he left off; stamp a live timestamp on the cover and he must re-read from page one every time — slow and expensive.</> },
+        analogy: <><b>Analogy:</b> an assistant re-reading the same case file over and over. If the cover hasn't changed a word, he picks up where he left off; stamp a live timestamp on the cover and he must re-read from page one every time — slow and expensive.</>,
+        dig: { t: 'Dig deeper: what exactly does this "cache" store?', body: <>Generation is <b>autoregressive</b>: to emit each new token, the model recomputes attention over everything before it. Luckily each token's intermediate results (its K and V — think of them as its "reading notes") <b>depend only on itself and what comes before it, never on what comes after</b> — so as long as the prefix is byte-for-byte identical, those notes can be reused as-is, and only the newly appended part needs computing. That's the physical source of the 10x cheaper hit price. Flip it around: change token #100, and the notes of <b>every</b> token after #100 are invalidated and recomputed.</> } },
       { n: '02', term: 'Mask, don\'t remove tools', tag: 'cache-safe',
         body: <>To "temporarily disable a tool" mid-task, the instinct is to delete it from the tool list. Manus refuses — tool definitions sit near the front of the context, so deleting one shatters all the cache after it and confuses the model (the history still references the tool that just vanished). Instead, at decoding time it <b>masks the tokens for that tool</b>, leaving the tool list itself untouched.</>,
-        analogy: <><b>Analogy:</b> once the menu is printed, don't tear out a page — ripping one means resetting and reprinting the whole thing. To stop a dish from being ordered for now, cross it out at order time, don't erase it from the menu.</> },
+        analogy: <><b>Analogy:</b> once the menu is printed, don't tear out a page — ripping one means resetting and reprinting the whole thing. To stop a dish from being ordered for now, cross it out at order time, don't erase it from the menu.</>,
+        dig: { t: 'Dig deeper: how is "crossing out" actually implemented?', body: <>At each step the model actually <b>scores every candidate token</b> in the vocabulary (these scores are called logits); higher scores are likelier to be picked. Masking means, after scoring but before picking, <b>pushing the banned tool's token scores down to negative infinity</b> — the model physically cannot choose it, while the tool list stays untouched. Manus adds a companion trick: tool names share prefixes like <code>browser_xxx</code> and <code>shell_xxx</code>, so instead of naming tools one by one, a single prefix cut expresses "this step may only use browser tools" — a simple state machine fences the agent's entire action space.</> } },
       { n: '03', term: 'Use the file system as context', tag: 'scale-up',
         body: <>However large the context window, it has a ceiling, and long pages and documents blow past it fast. Manus treats the <b>file system as unlimited, persistent, directly read-writable external memory</b>: big content goes to disk, the context keeps only a file path or URL, read back when needed — a <b>restorable compression</b> (drop the content, keep the pointer).</>,
-        analogy: <><b>Analogy:</b> you don't memorize a whole report; you note "it's at D:\report.md" and open it when needed. Brain capacity is limited; the disk is nearly infinite.</> },
+        analogy: <><b>Analogy:</b> you don't memorize a whole report; you note "it's at D:\report.md" and open it when needed. Brain capacity is limited; the disk is nearly infinite.</>,
+        dig: { t: 'Dig deeper: why insist on "restorable" — wouldn\'t summarizing do?', body: <>The more common context-saver is to "<b>summarize</b>" the history into a few lines, but summarizing is <b>lossy compression</b>: a dropped detail is gone for good, and an agent can't predict which detail suddenly matters at step 40 — a summarized-away error message might be exactly the key to routing around a pit later. So Manus only drops what <b>a pointer can bring back</b>: page text can go while the URL stays; file contents can go while the path stays — read it back when needed. Only when compression is reversible do you dare slim the context down.</> } },
       { n: '04', term: 'Manipulate attention through recitation', tag: 'stay on track',
         body: <>A task averages ~50 steps, and the original goal gets squeezed into the middle of an ever-longer footprint, where the model "forgets what it was doing" (the industry calls it lost-in-the-middle). Manus's move is plain: keep a <code>todo.md</code> and, <b>after each step, rewrite the checklist and push it to the very end of the context</b> — reciting the global goal back into the model's recent attention.</>,
         analogy: <><b>Analogy:</b> in a long meeting, the chair re-reads "we're deciding just three things today" every so often, so the room doesn't drift. Recitation is the cheapest way to pull the goal back in front of everyone.</> },
@@ -220,6 +254,30 @@ const C = {
       verdictMutate: '✗ Touching the tool list mid-task shatters the cache after it, the hit rate drops, and cost climbs noticeably.',
       verdictBoth: '✗✗ Both prefix and tools changing: cache almost entirely wasted — the most expensive way to run.',
       multUnit: (x) => `${x}x`,
+      note: '(Prices and hit rates are illustrative; the 10x gap mirrors mainstream providers\' cache pricing. Real hit rates vary by implementation, but "prefix changes, cache dies" is universal.)',
+    },
+    // ---- Interactive demo 2: lost-in-the-middle ----
+    lostSecTitle: '🎛️ Interactive Demo 2: how the goal gets "squeezed into the middle" and lost',
+    lostSecLead: 'Now turn the fourth lesson into a feel. Every round appends another chunk of footprint to the context, burying the original goal deeper and deeper — drag the rounds and watch the goal fade in the model\'s attention; then switch on "todo.md recitation" and watch Manus rescue it with the plainest trick in the book.',
+    lost: {
+      title: '🎛️ Lost-in-the-Middle · Recitation Demo',
+      hint: 'drag rounds · toggle recitation, watch goal attention',
+      reciteLabel: 'todo.md recitation',
+      reciteOff: '✗ no recitation',
+      reciteOn: '✓ rewrite & push to the end each round',
+      roundsLabel: (r) => `Rounds run: ${r}`,
+      sysBlock: '⚙️ system prompt + tools',
+      goalBlock: '🎯 original goal',
+      todoBlock: '📝 todo.md',
+      recentZone: 'dashed box = recent attention zone →',
+      statDepth: 'Goal distance from end',
+      statAttn: 'Goal attention (illustrative)',
+      statRisk: 'Drift risk',
+      depthUnit: (n) => `${n} chunks`,
+      verdictOk: '✓ The footprint is still short and the goal is right there — hard to drift even without recitation.',
+      verdictDrift: '✗ The goal has been squeezed toward the middle of the context — where the model\'s attention is weakest; the longer it runs, the easier it "forgets what it was doing."',
+      verdictRecite: '✓ Rewriting todo.md and pushing it to the very end each round: the latest version of the goal always sits in recent attention — 50 rounds and it never gets lost.',
+      note: '(Illustrative: real attention also shows a U-shape — stronger at the start, weakest in the middle; here we focus on "the farther from the end, the easier to ignore.")',
     },
     // ---- Misconceptions ----
     pitfallsTitle: '⚠️ Common Misconceptions',
@@ -250,11 +308,15 @@ const C = {
         q: '3. What problem does rewriting todo.md and pushing it to the end of the context actually solve?',
         a: <>It solves <b>"the goal getting forgotten in the middle" on long tasks</b>. A task averages ~50 steps, and the goal written at the start gets squeezed into the middle of an ever-longer footprint — exactly where the model's attention is weakest (lost-in-the-middle), so it drifts. Continuously rewriting the checklist and <b>pushing it to the very end of the context</b> recites the global goal back into the model's recent attention, repeatedly pulling it back on track.</>,
       },
+      {
+        q: '4. Run the numbers: a task runs 50 rounds, each adding ~2000 tokens (round n re-reads everything before it). At the demo\'s prices (hit $0.30 / miss $3.00 per million tokens), what does "stable prefix, 90% hit rate" cost vs. "timestamp at the start, 0% hit"?',
+        a: <>Cumulative input ≈ (1+2+…+50)×2000 = 1275×2000 = <b>2.55M tokens</b>. Stable prefix: effective price = 3.0 − 0.9×(3.0−0.3) = <b>$0.57</b>/M, total ≈ 2.55 × 0.57 ≈ <b>$1.45</b>; timestamp at the start: everything at the miss price $3.00/M, total ≈ 2.55 × 3.0 = <b>$7.65</b> — over 5x more per task. Multiply by thousands of tasks a day, and that's what "one timestamp" burns. (Slide the first demo to 50 rounds and you'll see the same numbers.)</>,
+      },
     ],
     // ---- Extras · Part One closing ----
     finalTitle: '🔭 Extras · Part One: understand context engineering and you understand the next Manus',
     finalP1: <>This is the first piece of "Extras" — the main 30 lessons carried you from a single neuron all the way to building your own apps; what the extras do is stress-test those principles against real-world star products. Manus's first takeaway: <b>once top models become electricity anyone can use, the real gap lies in how you feed them context.</b></>,
-    finalP2: <>This is the industrial-grade echo of L20's insight — <b>the model keeps deciding on top of its own footprint</b>, and context engineering is the craft of curating that footprint. From now on, whenever some viral agent product appears, you can see straight through the marketing and ask the right questions: is its prefix stable? does it keep errors? can its goal get squeezed out? More real systems will be torn apart in the extras to come — see you on the road for whoever's next.</>,
+    finalP2: <>This is the industrial-grade echo of L20's insight — <b>the model keeps deciding on top of its own footprint</b>, and context engineering is the craft of curating that footprint. From now on, whenever some viral agent product appears, you can see straight through the marketing and ask the right questions: is its prefix stable? does it keep errors? can its goal get squeezed out? Next stop in the extras: <b>Cursor</b> — the editor that codes alongside millions every day — and how it winds RAG, in-house small models, and inference acceleration into another "moat outside the model."</>,
   },
 }
 
@@ -336,6 +398,95 @@ function KvCacheDemo({ c }) {
 
         {/* 结论 */}
         <p style={{ margin: 0, fontWeight: 600, lineHeight: 1.7, color: verdictClass === 'good' ? 'var(--sage)' : 'var(--terracotta)' }}>{verdict}</p>
+        {d.note && <p className="footnote" style={{ margin: 0 }}>{d.note}</p>}
+      </div>
+    </div>
+  )
+}
+
+// ---- lost-in-the-middle / todo.md 复述演示 ----
+function LostInMiddleDemo({ c }) {
+  const d = c.lost
+  const [rounds, setRounds] = useState(6)
+  const [recite, setRecite] = useState(false)
+
+  // 上下文「磁带」各段的相对宽度
+  const W_SYS = 2, W_GOAL = 1.2, W_TODO = 1.2
+  const total = W_SYS + W_GOAL + rounds + (recite ? W_TODO : 0)
+  const goalCenter = ((W_SYS + W_GOAL / 2) / total) * 100
+  // 注意力(示意):不复述时随距末尾的距离衰减;复述时 todo.md 替目标站在最近区
+  const attn = recite ? 95 : Math.max(12, Math.round(95 - rounds * 2.1))
+  const risk = 100 - attn
+
+  const verdict = recite ? d.verdictRecite : rounds <= 8 ? d.verdictOk : d.verdictDrift
+  const verdictColor = recite || rounds <= 8 ? 'var(--sage)' : 'var(--terracotta)'
+  const attnColor = attn >= 70 ? 'var(--sage)' : attn >= 40 ? 'var(--amber)' : 'var(--terracotta)'
+
+  const seg = (bg, border) => ({
+    background: bg, border: `1px solid ${border}`, borderRadius: 4,
+    display: 'flex', alignItems: 'center', justifyContent: 'center',
+    fontSize: 13, overflow: 'hidden', minWidth: 0,
+  })
+
+  return (
+    <div className="card demo">
+      <div className="demo-head">
+        <span className="demo-title">{d.title}</span>
+        <span className="demo-hint">{d.hint}</span>
+      </div>
+      <div style={{ padding: '24px', display: 'grid', gap: 22 }}>
+        {/* 控制区 */}
+        <div style={{ display: 'grid', gap: 14 }}>
+          <div>
+            <div className="label" style={{ marginBottom: 8 }}>{d.reciteLabel}</div>
+            <div className="chips">
+              <button className={`chip${!recite ? ' active' : ''}`} onClick={() => setRecite(false)}>{d.reciteOff}</button>
+              <button className={`chip${recite ? ' active' : ''}`} onClick={() => setRecite(true)}>{d.reciteOn}</button>
+            </div>
+          </div>
+          <div className="slider-row">
+            <label>{d.roundsLabel(rounds)}</label>
+            <input type="range" min={1} max={40} step={1} value={rounds} onChange={(e) => setRounds(parseInt(e.target.value, 10))} />
+            <span className="val">{rounds}</span>
+          </div>
+        </div>
+
+        {/* 上下文磁带 */}
+        <div>
+          <div className="footnote" style={{ textAlign: 'right', marginBottom: 6 }}>{d.recentZone}</div>
+          <div style={{ position: 'relative' }}>
+            <div style={{ display: 'flex', gap: 2, height: 34 }}>
+              <div style={{ flex: W_SYS, ...seg('var(--bg-inset)', 'var(--hairline)') }}>⚙️</div>
+              <div style={{ flex: W_GOAL, ...seg('var(--sky-bg)', 'var(--sky)'), opacity: recite ? 1 : Math.max(0.3, attn / 95), transition: 'opacity .3s ease' }}>🎯</div>
+              {Array.from({ length: rounds }, (_, i) => (
+                <div key={i} style={{ flex: 1, background: 'var(--bg-inset)', borderRadius: 4, opacity: 0.55 }} />
+              ))}
+              {recite && <div style={{ flex: W_TODO, ...seg('var(--sage-bg)', 'var(--sage)') }}>📝</div>}
+            </div>
+            <div style={{ position: 'absolute', top: -5, bottom: -5, right: -3, width: '23%', border: '2px dashed var(--sage)', borderRadius: 8, pointerEvents: 'none' }} />
+          </div>
+          <div style={{ position: 'relative', height: 20, marginTop: 6 }}>
+            <span className="footnote" style={{ position: 'absolute', left: `${goalCenter}%`, transform: 'translateX(-50%)', whiteSpace: 'nowrap' }}>▲ {d.goalBlock}</span>
+            {recite && <span className="footnote" style={{ position: 'absolute', right: 0, whiteSpace: 'nowrap' }}>▲ {d.todoBlock}</span>}
+          </div>
+        </div>
+
+        {/* 数字面板 */}
+        <div className="use-grid">
+          {[
+            { label: d.statDepth, value: d.depthUnit(rounds) },
+            { label: d.statAttn, value: `${attn}%`, color: attnColor },
+            { label: d.statRisk, value: `${risk}%`, color: risk > 50 ? 'var(--terracotta)' : 'var(--sage)' },
+          ].map((s, i) => (
+            <div key={i} style={{ border: '1px solid var(--hairline)', borderRadius: 12, background: 'var(--bg-inset)', padding: '16px 18px', minHeight: 88, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 8 }}>
+              <div style={{ fontSize: 12.5, color: 'var(--fg-2)', fontWeight: 600 }}>{s.label}</div>
+              <div style={{ fontSize: 23, fontWeight: 800, color: s.color || 'var(--fg-0)', lineHeight: 1 }}>{s.value}</div>
+            </div>
+          ))}
+        </div>
+
+        <p style={{ margin: 0, fontWeight: 600, lineHeight: 1.7, color: verdictColor }}>{verdict}</p>
+        {d.note && <p className="footnote" style={{ margin: 0 }}>{d.note}</p>}
       </div>
     </div>
   )
@@ -386,6 +537,7 @@ export default function L31() {
               </div>
               <div className="zh" style={{ marginTop: 6 }}>{l.body}</div>
               <div className="zh" style={{ marginTop: 6, color: 'var(--fg-2)' }}>{l.analogy}</div>
+              {l.dig && <DeepDive title={l.dig.t}>{l.dig.body}</DeepDive>}
             </div>
           ))}
         </div>
@@ -394,6 +546,10 @@ export default function L31() {
 
       <Lsec title={c.demoSecTitle} lead={c.demoSecLead}>
         <KvCacheDemo c={c} />
+      </Lsec>
+
+      <Lsec title={c.lostSecTitle} lead={c.lostSecLead}>
+        <LostInMiddleDemo c={c} />
       </Lsec>
 
       <Lsec title={c.pitfallsTitle}>

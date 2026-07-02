@@ -98,6 +98,16 @@ export function SliderRow({ label, min, max, step, value, onChange, format = (v)
   )
 }
 
+// 再挖一铲：机制条目下的进阶折叠段（默认收起，不打断主线阅读）
+export function DeepDive({ title, children }) {
+  return (
+    <details className="dig">
+      <summary>{title}</summary>
+      <div className="dig-body">{children}</div>
+    </details>
+  )
+}
+
 // 练习项（可展开答案）
 export function QuizItem({ q, children }) {
   const t = useUI()

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Lsec, QuizItem } from '../components/ui.jsx'
+import { Lsec, QuizItem, DeepDive } from '../components/ui.jsx'
 import { useLang } from '../i18n/LangContext.jsx'
 
 // ============================================================
@@ -49,7 +49,8 @@ const C = {
     sys: [
       { n: '01', term: 'MQA:多个"读头"共用一份 KV', tag: '压缓存',
         body: <>标准注意力里,每个注意力头都各存一份 Key/Value,缓存很臃肿。<b>MQA(多查询注意力)</b>让所有头<b>共用同一份 KV</b> —— 官方称由此把 KV cache 压到比常见做法(GQA)<b>还小 8 倍</b>。(有趣的是,MQA 正是创始人 Shazeer 本人 2019 年提出的。)</>,
-        analogy: <><b>类比:</b>一间办公室原本人手一份同样的资料,改成全组共享一份传阅 —— 信息没少,占的柜子却小得多。</> },
+        analogy: <><b>类比:</b>一间办公室原本人手一份同样的资料,改成全组共享一份传阅 —— 信息没少,占的柜子却小得多。</>,
+        dig: { t: '再挖一铲:为什么「搬数据」会比「算数据」还贵?', body: <>GPU 的算术单元快得惊人,但数据得先从显存搬进计算核心才能用,而搬运速度(<b>显存带宽,memory bandwidth</b>)远远追不上计算速度 —— 业内叫「<b>内存墙(memory wall)</b>」。生成阶段每吐一个字,都要把整份 KV cache 从显存过一遍,却对每字节数据只做很少几次运算:算术单元大部分时间在<b>等数据到货</b>。这类任务叫 <b>memory-bound</b>(受带宽限制):瓶颈在带宽,堆算力没用,把要搬的数据变小(压 KV、用 int8)才是对症下药 —— 这正是全课四招共同的物理依据。</> } },
       { n: '02', term: '混合注意力:大多数层只看"附近"', tag: '降复杂度',
         body: <>让每个字都回看全部历史,代价随长度<b>平方级</b>暴涨。Character.AI 让<b>大多数层只用"滑动窗口"看附近一小段</b>(复杂度从 O(n²) 降到 O(n)),<b>每 6 层才留 1 层</b>纵观全局 —— 既省缓存又保住长程理解。</>,
         analogy: <><b>类比:</b>读长篇小说,你不会每读一句都从第一页重看一遍,多数时候只盯着眼前这页,偶尔才回顾全书脉络。</> },
@@ -58,7 +59,8 @@ const C = {
         analogy: <><b>类比:</b>楼上楼下几层共用一套档案室,而不是每层都建一间 —— 楼还是那栋楼,占地却省下一大截。</> },
       { n: '04', term: '轮间复用 + 原生 int8:不重算、用更少比特', tag: '再省一截',
         body: <>两个收尾招:① <b>轮间缓存</b> —— 你每发一句,前面对话的 KV 不必重算,直接从缓存取,<b>命中率约 95%</b>;② <b>原生 int8 训练</b> —— 不是事后把模型压成 int8(那会掉质量),而是<b>一开始就用 int8 精度训练</b>,让"省比特"和"不掉质量"兼得。</>,
-        analogy: <><b>类比:</b>① 老顾客来续聊,你不必把之前聊的重听一遍(缓存命中);② 记账一开始就用精简格式,而不是先记成长篇再压缩 —— 从源头就省。</> },
+        analogy: <><b>类比:</b>① 老顾客来续聊,你不必把之前聊的重听一遍(缓存命中);② 记账一开始就用精简格式,而不是先记成长篇再压缩 —— 从源头就省。</>,
+        dig: { t: '再挖一铲:int8 是什么,「原生」难在哪?', body: <>模型里的数字通常用 16 位精度(如 bf16)存,<b>int8 只用 8 位</b> —— 体积直接减半,同样的带宽能搬两倍的数。难点在精度:8 位能表示的数值「格子」粗得多,训练中误差容易累积发散。常见做法是「<b>训练后量化</b>」:先按 16 位训完、再压成 8 位,简单但常掉质量;Character.AI 选了更难的路 —— <b>从第一天就用 int8 训练</b>,让模型在低精度下学会稳定收敛。换来的是训练和推理用的是<b>同一个模型</b>,没有「压缩后走样」的质量折损。</> } },
     ],
     sysSourceNote: (
       <>
@@ -83,7 +85,25 @@ const C = {
       statCache: 'KV cache 体积',
       verdictNone: '未优化:每个用户的长对话都占满显存,一张卡服务不了几个人 —— 这正是陪聊烧钱的根。',
       verdictSome: (n) => `已叠加 ${n} 招,缓存在缩小、同样的卡能服务更多人。继续打开剩下的看看。`,
-      verdictAll: '四招全开:KV cache 压到约 1/48,同一张显卡能多服务几十倍的对话 —— 成本就是这样被工程榨下来的。',
+      verdictAll: '四招全开:KV cache 压到约 1/48 —— 前三招合计 ~24 倍,正对应官方「20 倍以上」的口径;原生 int8 把每个数字从 16 位砍到 8 位,再省一半。同一张卡能多服务几十倍的对话。',
+      note: '(倍数为教学示意:各招的真实倍率取决于模型结构,官方只给出「三招合计 20 倍以上」与「MQA 比 GQA 小 8 倍」两个口径,这里按 6×2×2(×int8 再 ×2)取整演示。)',
+    },
+    // ---- 交互演示 2:注意力账单 ----
+    attnSecTitle: '🎛️ 交互演示 2:注意力的账单,为什么随长度「平方级」爆炸',
+    attnSecLead: '再把第二招玩成手感。注意力的本性是「每个字都回看全部历史」,所以计算量随对话长度平方级上涨。拖动对话长度,对比三种方案 —— 全局注意力、纯滑动窗口、Character.AI 的混合(每 6 层留 1 层全局),看混合怎么既砍掉大头、又保住长程理解。',
+    attn: {
+      title: '🎛️ 注意力计算量 · 三方案对比',
+      hint: '拖动对话长度,看账单怎么分化',
+      lenLabel: (n) => `对话长度:${n.toLocaleString()} token`,
+      rows: {
+        full: '全局注意力(每层回看全部)',
+        hybrid: 'C.AI 混合(每 6 层 1 层全局)',
+        window: '纯滑动窗口(只看附近 512)',
+      },
+      rowNote: { full: '长程理解 ✓ · 最贵', hybrid: '长程理解 ✓ · 便宜', window: '长程理解 ✗ · 最便宜' },
+      relLabel: (p) => `相对全局 ${p}%`,
+      verdict: (p) => `这个长度下,混合方案的注意力计算量只有全局的约 ${p}%,却保住了每 6 层一次的「纵观全局」。纯窗口更便宜,但代价是彻底丢掉长程记忆 —— 角色会忘了你半小时前说过什么。对话拖得越长,三条账单的差距越夸张。`,
+      note: '(示意:按窗口宽 512、每 6 层 1 层全局估算;真实系统还叠加 MQA、跨层共享等,这里只看「注意力该看多远」这一个维度。)',
     },
     // ---- 误区 ----
     pitfallsTitle: '⚠️ 常见误区',
@@ -119,7 +139,23 @@ const C = {
         q: '3. "轮间缓存命中率约 95%"省下了什么?为什么对陪聊特别值钱?',
         a: <>省下的是<b>重复计算历史对话的开销</b>。你每发一句新消息,前面那一长串对话的 KV 本可以不必从头重算 —— 直接从上一轮的缓存里取(约 95% 能命中)。陪聊的特点正是<b>同一段对话被反复延续</b>,历史越积越长;若每轮都重算历史,成本会随轮数飙升。轮间复用让"历史"只算一次、反复用,这对长会话场景的省钱效果尤其明显。</>,
       },
+      {
+        q: '4. 迁移一下:一个「AI 客服」产品,用户平均只问 2~3 轮就走,但同时在线人数极高。照搬 Character.AI 的四招,哪几招收益会打折?为什么?',
+        a: <>打折最狠的是<b>轮间缓存</b>:它省的是「同一段对话被反复延续」时重算历史的钱,而客服对话只有 2~3 轮、历史很短,可复用的不多。<b>滑动窗口</b>的收益也有限 —— 对话本来就不长,O(n²) 还没来得及爆炸。而 <b>MQA、跨层共享、int8 依然全额有效</b>:它们压的是每个并发对话都要占的那份显存,在线人数越多越值钱。启示:招式没有万能的,先看你的负载「长」在哪 —— <b>长对话省历史,高并发压单个席位</b>。</>,
+      },
     ],
+    // ---- 对比总览 ----
+    recapTitle: '🧭 一张表带走番外第一辑',
+    recapLead: '四个产品、同一个母题,把各自的答案摆在一起看:',
+    recap: {
+      head: ['产品', '重新定义的瓶颈', '核心手段', '带走的尺子'],
+      rows: [
+        ['Manus', '上下文的成本与稳定', '稳前缀 + 文件外存 + 复述 + 留错误', '前缀稳不稳?错误留不留?'],
+        ['Cursor', '延迟敏感的子任务', '自研小模型 + 代码 RAG + 推测式解码', '为哪些子任务训了专用模型?'],
+        ['DeepSeek', '训练的每一分算力', 'MoE + MLA + FP8 + 纯 RL', '成本数字算了什么、没算什么?'],
+        ['Character.AI', '推理的 KV cache', 'MQA + 滑动窗口 + 跨层共享 + int8', '瓶颈是算力还是带宽?'],
+      ],
+    },
     // ---- 收尾 ----
     finalTitle: '🔭 番外·第四篇:四个产品,同一个母题',
     finalP1: <>到这里,番外篇第一辑四篇凑齐了,它们拼出同一句话:<b>当顶尖大模型变成大家都能调的公共电力,真正拉开差距的,是模型之外的工程。</b> Manus 拼上下文工程,Cursor 拼"把任务拆成可优化的子系统",DeepSeek 把"省"做成全栈系统工程,Character.AI 则把"陪聊的成本"重新定义到 KV cache 上、再一层层榨干。</>,
@@ -159,7 +195,8 @@ const C = {
     sys: [
       { n: '01', term: 'MQA: many "read heads" share one KV', tag: 'shrink cache',
         body: <>In standard attention, each head stores its own Key/Value, bloating the cache. <b>MQA (Multi-Query Attention)</b> has all heads <b>share one KV</b> — officially shrinking the KV cache <b>8x smaller than the common approach (GQA)</b>. (Fittingly, MQA was proposed by founder Shazeer himself in 2019.)</>,
-        analogy: <><b>Analogy:</b> an office where everyone kept their own copy of the same file switches to one shared circulating copy — no information lost, far less cabinet space used.</> },
+        analogy: <><b>Analogy:</b> an office where everyone kept their own copy of the same file switches to one shared circulating copy — no information lost, far less cabinet space used.</>,
+        dig: { t: 'Dig deeper: why is "moving data" pricier than "computing on it"?', body: <>A GPU's arithmetic units are astonishingly fast, but data must first be hauled from GPU memory into the compute cores — and hauling speed (<b>memory bandwidth</b>) lags far behind compute speed, the industry's "<b>memory wall</b>." During generation, every emitted character drags the entire KV cache through memory while doing only a few operations per byte: the arithmetic units spend most of their time <b>waiting for deliveries</b>. Such workloads are <b>memory-bound</b>: the bottleneck is bandwidth, so piling on compute is useless — shrinking what must be moved (compress the KV, use int8) is the actual cure. That's the shared physical basis of all four moves in this lesson.</> } },
       { n: '02', term: 'Hybrid attention: most layers only look "nearby"', tag: 'lower complexity',
         body: <>Having every character look back over all history costs grow <b>quadratically</b> with length. Character.AI has <b>most layers use a "sliding window" over a nearby span</b> (cutting complexity from O(n²) to O(n)), keeping only <b>1 in every 6 layers</b> global — saving cache while preserving long-range understanding.</>,
         analogy: <><b>Analogy:</b> reading a long novel, you don't re-read from page one for every sentence; mostly you watch the current page, occasionally reviewing the whole arc.</> },
@@ -168,7 +205,8 @@ const C = {
         analogy: <><b>Analogy:</b> several floors share one archive room instead of each building its own — same building, far less floor space used.</> },
       { n: '04', term: 'Inter-turn reuse + native int8: don\'t recompute, use fewer bits', tag: 'save more',
         body: <>Two finishing moves: ① <b>inter-turn caching</b> — each time you send a message, the prior conversation's KV needn't be recomputed, just fetched from cache, with a <b>~95% hit rate</b>; ② <b>native int8 training</b> — not compressing a trained model to int8 afterward (which loses quality), but <b>training in int8 precision from the start</b>, getting "fewer bits" and "no quality loss" at once.</>,
-        analogy: <><b>Analogy:</b> ① a regular returns to keep chatting — you needn't re-listen to everything said before (cache hit); ② keep the ledger in a compact format from the start, rather than writing it long then compressing — saved at the source.</> },
+        analogy: <><b>Analogy:</b> ① a regular returns to keep chatting — you needn't re-listen to everything said before (cache hit); ② keep the ledger in a compact format from the start, rather than writing it long then compressing — saved at the source.</>,
+        dig: { t: 'Dig deeper: what is int8, and what makes "native" hard?', body: <>Model numbers are usually stored in 16-bit precision (e.g. bf16); <b>int8 uses just 8 bits</b> — half the size, so the same bandwidth moves twice the data. The catch is precision: 8 bits offer much coarser numeric "notches," and training errors can accumulate and diverge. The common route is "<b>post-training quantization</b>" — train in 16-bit, compress afterward — simple but often lossy. Character.AI took the harder road: <b>train in int8 from day one</b>, teaching the model to converge stably at low precision. The reward: training and inference use <b>the very same model</b>, with no "warped after compression" quality tax.</> } },
     ],
     sysSourceNote: (
       <>
@@ -193,7 +231,25 @@ const C = {
       statCache: 'KV cache size',
       verdictNone: 'Unoptimized: each user\'s long conversation fills the memory, and one GPU serves few people — the root of why chat burns money.',
       verdictSome: (n) => `${n} move(s) stacked — the cache is shrinking and the same GPU serves more people. Turn on the rest.`,
-      verdictAll: 'All four on: the KV cache shrinks to ~1/48, and one GPU serves dozens of times more conversations — that\'s cost wrung out by engineering.',
+      verdictAll: 'All four on: the KV cache shrinks to ~1/48 — the first three moves stack to ~24x, matching the official "more than 20x"; native int8 then halves every number from 16 bits to 8. One GPU serves dozens of times more conversations.',
+      note: '(Multipliers are illustrative: true ratios depend on model structure; officially only "three moves, >20x combined" and "MQA is 8x smaller than GQA" are given. Here we demo with rounded 6×2×2, ×2 again for int8.)',
+    },
+    // ---- Interactive demo 2: attention bill ----
+    attnSecTitle: '🎛️ Interactive Demo 2: why the attention bill explodes "quadratically" with length',
+    attnSecLead: 'Now feel the second move. Attention\'s nature is "every character looks back at all history," so compute grows quadratically with conversation length. Drag the length and compare three schemes — full attention, pure sliding window, and Character.AI\'s hybrid (1 global layer in every 6) — and watch the hybrid cut the bulk while keeping long-range understanding.',
+    attn: {
+      title: '🎛️ Attention Compute · Three Schemes',
+      hint: 'drag the conversation length, watch the bills diverge',
+      lenLabel: (n) => `Conversation length: ${n.toLocaleString()} tokens`,
+      rows: {
+        full: 'Full attention (every layer sees all)',
+        hybrid: 'C.AI hybrid (1 global per 6 layers)',
+        window: 'Pure sliding window (nearby 512 only)',
+      },
+      rowNote: { full: 'long-range ✓ · priciest', hybrid: 'long-range ✓ · cheap', window: 'long-range ✗ · cheapest' },
+      relLabel: (p) => `${p}% of full`,
+      verdict: (p) => `At this length, the hybrid's attention compute is only about ${p}% of full attention — while keeping a "survey the whole" every 6 layers. Pure windowing is cheaper still, but at the cost of losing long-range memory entirely — the character forgets what you said half an hour ago. The longer the chat drags on, the wilder the three bills diverge.`,
+      note: '(Illustrative: assumes window 512, 1 global layer per 6; real systems stack MQA, cross-layer sharing, etc. — this looks at just one dimension: "how far should attention look.")',
     },
     // ---- Misconceptions ----
     pitfallsTitle: '⚠️ Common Misconceptions',
@@ -229,7 +285,23 @@ const C = {
         q: '3. What does a "~95% inter-turn cache hit rate" save, and why is it especially valuable for chat?',
         a: <>It saves the cost of <b>recomputing the conversation history</b>. Each time you send a new message, the long prior conversation's KV needn't be recomputed from scratch — it's fetched from the previous turn's cache (~95% of the time). Chat is precisely a case of <b>the same conversation being continued over and over</b>, with history piling up; recomputing it each turn would make cost soar with the turn count. Inter-turn reuse computes "history" once and reuses it, which pays off especially for long sessions.</>,
       },
+      {
+        q: '4. Transfer it: an "AI customer service" product — users ask 2-3 turns and leave, but concurrent users are enormous. Copying Character.AI\'s four moves, which ones pay off less? Why?',
+        a: <>The biggest discount hits <b>inter-turn caching</b>: it saves recomputing history when <b>the same conversation keeps getting extended</b>, but support chats last only 2-3 turns with little history to reuse. <b>Sliding windows</b> also help less — conversations are short, so O(n²) never gets to explode. Meanwhile <b>MQA, cross-layer sharing, and int8 still pay in full</b>: they shrink the slice of memory every concurrent conversation occupies, worth more the more users are online. The lesson: no move is universal — first see where your workload "grows": <b>long chats → save on history; high concurrency → shrink each seat</b>.</>,
+      },
     ],
+    // ---- Recap table ----
+    recapTitle: '🧭 The First Set of Extras, in One Table',
+    recapLead: 'Four products, one theme — their answers side by side:',
+    recap: {
+      head: ['Product', 'Redefined bottleneck', 'Core moves', 'The ruler you take away'],
+      rows: [
+        ['Manus', 'Context cost & stability', 'Stable prefix + file-system memory + recitation + kept errors', 'Is the prefix stable? Are errors kept?'],
+        ['Cursor', 'Latency-sensitive subtasks', 'In-house small models + RAG for code + speculative decoding', 'Which subtasks got dedicated models?'],
+        ['DeepSeek', 'Every unit of training compute', 'MoE + MLA + FP8 + pure RL', 'What does the cost figure count — and omit?'],
+        ['Character.AI', 'The inference KV cache', 'MQA + sliding window + cross-layer sharing + int8', 'Is the bottleneck compute or bandwidth?'],
+      ],
+    },
     // ---- Closing ----
     finalTitle: '🔭 Extras · Part Four: four products, one theme',
     finalP1: <>With this, the first set of four extras is complete, and they spell out one line: <b>once top models become electricity anyone can call, what truly opens a gap is the engineering outside the model.</b> Manus competes on context engineering, Cursor on "splitting the task into optimizable subsystems," DeepSeek made "saving" a full-stack discipline, and Character.AI redefined "the cost of chat" onto the KV cache and wrung it out layer by layer.</>,
@@ -289,6 +361,62 @@ function KvShrinkDemo({ c }) {
         </div>
 
         <p style={{ margin: 0, fontWeight: 600, lineHeight: 1.7, color: verdictColor }}>{verdict}</p>
+        {d.note && <p className="footnote" style={{ margin: 0 }}>{d.note}</p>}
+      </div>
+    </div>
+  )
+}
+
+// ---- 注意力计算量三方案对比 ----
+const ATTN_WINDOW = 512 // 滑动窗口宽度(token,示意)
+const GLOBAL_EVERY = 6 // 每 6 层留 1 层全局
+
+function AttnCostDemo({ c }) {
+  const d = c.attn
+  const [len, setLen] = useState(2048)
+
+  // 相对全局注意力(=1)的计算量占比
+  const winRel = Math.min(1, ATTN_WINDOW / len)
+  const hybRel = 1 / GLOBAL_EVERY + (1 - 1 / GLOBAL_EVERY) * winRel
+  const rows = [
+    { key: 'full', rel: 1, color: 'var(--terracotta)' },
+    { key: 'hybrid', rel: hybRel, color: 'var(--sage)' },
+    { key: 'window', rel: winRel, color: 'var(--sky)' },
+  ]
+
+  return (
+    <div className="card demo">
+      <div className="demo-head">
+        <span className="demo-title">{d.title}</span>
+        <span className="demo-hint">{d.hint}</span>
+      </div>
+      <div style={{ padding: '24px', display: 'grid', gap: 22 }}>
+        <div className="slider-row">
+          <label>{d.lenLabel(len)}</label>
+          <input type="range" min={512} max={8192} step={512} value={len} onChange={(e) => setLen(parseInt(e.target.value, 10))} />
+          <span className="val">{len.toLocaleString()}</span>
+        </div>
+
+        {/* 三条账单 */}
+        <div style={{ display: 'grid', gap: 16 }}>
+          {rows.map((r) => {
+            const pct = Math.round(r.rel * 100)
+            return (
+              <div key={r.key}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', gap: 10, marginBottom: 6, flexWrap: 'wrap' }}>
+                  <span style={{ fontSize: 13.5, fontWeight: 600 }}>{d.rows[r.key]}</span>
+                  <span className="footnote">{d.rowNote[r.key]} · {d.relLabel(pct)}</span>
+                </div>
+                <div style={{ height: 16, borderRadius: 8, background: 'var(--bg-inset)', border: '1px solid var(--hairline)', overflow: 'hidden' }}>
+                  <div style={{ width: `${Math.max(pct, 1.5)}%`, height: '100%', background: r.color, borderRadius: 6, transition: 'width .35s ease' }} />
+                </div>
+              </div>
+            )
+          })}
+        </div>
+
+        <p style={{ margin: 0, fontWeight: 600, lineHeight: 1.7, color: 'var(--fg-1)' }}>{d.verdict(Math.round(hybRel * 100))}</p>
+        {d.note && <p className="footnote" style={{ margin: 0 }}>{d.note}</p>}
       </div>
     </div>
   )
@@ -339,6 +467,7 @@ export default function L34() {
               </div>
               <div className="zh" style={{ marginTop: 6 }}>{l.body}</div>
               <div className="zh" style={{ marginTop: 6, color: 'var(--fg-2)' }}>{l.analogy}</div>
+              {l.dig && <DeepDive title={l.dig.t}>{l.dig.body}</DeepDive>}
             </div>
           ))}
         </div>
@@ -347,6 +476,10 @@ export default function L34() {
 
       <Lsec title={c.demoSecTitle} lead={c.demoSecLead}>
         <KvShrinkDemo c={c} />
+      </Lsec>
+
+      <Lsec title={c.attnSecTitle} lead={c.attnSecLead}>
+        <AttnCostDemo c={c} />
       </Lsec>
 
       <Lsec title={c.pitfallsTitle}>
@@ -368,6 +501,19 @@ export default function L34() {
           {c.quiz.map((qz, i) => (
             <QuizItem key={i} q={qz.q}>{qz.a}</QuizItem>
           ))}
+        </div>
+      </Lsec>
+
+      <Lsec title={c.recapTitle} lead={c.recapLead}>
+        <div className="card" style={{ overflowX: 'auto' }}>
+          <div style={{ minWidth: 680, display: 'grid', gridTemplateColumns: '120px 1.1fr 1.5fr 1.2fr' }}>
+            {c.recap.head.map((h, i) => (
+              <div key={`h${i}`} style={{ padding: '12px 16px', fontSize: 12.5, fontWeight: 700, color: 'var(--fg-2)', borderBottom: '1px solid var(--hairline-strong)' }}>{h}</div>
+            ))}
+            {c.recap.rows.map((row, ri) => row.map((cell, ci) => (
+              <div key={`${ri}-${ci}`} style={{ padding: '13px 16px', fontSize: 13.5, lineHeight: 1.55, borderBottom: ri < c.recap.rows.length - 1 ? '1px solid var(--hairline)' : 'none', fontWeight: ci === 0 ? 700 : 400 }}>{cell}</div>
+            )))}
+          </div>
         </div>
       </Lsec>
 

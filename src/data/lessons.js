@@ -198,19 +198,19 @@ export const lessons = [
     desc: { zh: '论文怎么读、社区在哪里、方向怎么选 —— 把这门课变成你 AI 之旅的第一级台阶，而非终点。', en: 'How to read papers, where the communities are, how to choose a direction — make this course the first step of your AI journey, not the last.' } },
 
   // ---------- 第七阶段 · 番外篇 ----------
-  { id: 31, slug: '31-inside-manus', stage: 6, level: lv.adv, dots: 3, tags: [sky, terra], ready: true, minutes: 18,
+  { id: 31, slug: '31-inside-manus', stage: 6, level: lv.adv, dots: 3, tags: [sky, terra], ready: true, minutes: 23,
     title: { zh: 'Manus 拆解：顶尖 Agent 的上下文工程', en: 'Inside Manus: The Context Engineering Behind a Top Agent' },
     desc: { zh: '它不靠秘密模型，而把“上下文工程”做到极致。六条来自官方博客的实战经验，看懂工业级 Agent 的真护城河。', en: 'It relies on no secret model, but pushes “context engineering” to the extreme. Six hands-on lessons from the official blog reveal the real moat of an industrial-grade agent.' } },
 
-  { id: 32, slug: '32-inside-cursor', stage: 6, level: lv.adv, dots: 3, tags: [sky, terra], ready: true, minutes: 18,
+  { id: 32, slug: '32-inside-cursor', stage: 6, level: lv.adv, dots: 3, tags: [sky, terra], ready: true, minutes: 22,
     title: { zh: 'Cursor 拆解：AI 怎么读懂你的整个代码库', en: 'Inside Cursor: How AI Reads Your Whole Codebase' },
     desc: { zh: '不是套壳 ChatGPT，而是一组自研小模型 + 代码版 RAG + 推理加速。看懂“模型之外的护城河”。', en: 'Not a ChatGPT wrapper, but an ensemble of in-house models + RAG for code + inference acceleration. Understand “the moat outside the model.”' } },
 
-  { id: 33, slug: '33-inside-deepseek', stage: 6, level: lv.adv, dots: 3, tags: [sky, terra], ready: true, minutes: 19,
+  { id: 33, slug: '33-inside-deepseek', stage: 6, level: lv.adv, dots: 3, tags: [sky, terra], ready: true, minutes: 24,
     title: { zh: 'DeepSeek 拆解：用几分之一的钱训出顶尖模型', en: 'Inside DeepSeek: A Top Model Trained for a Fraction of the Cost' },
     desc: { zh: '“560 万美元”究竟算了什么？看 MoE、MLA、FP8 与纯强化学习，如何把“省钱”做成系统工程。', en: 'What does “$5.6M” actually count? See how MoE, MLA, FP8, and pure RL turn frugality into a systems discipline.' } },
 
-  { id: 34, slug: '34-inside-character-ai', stage: 6, level: lv.adv, dots: 3, tags: [sky, terra], ready: true, minutes: 18,
+  { id: 34, slug: '34-inside-character-ai', stage: 6, level: lv.adv, dots: 3, tags: [sky, terra], ready: true, minutes: 23,
     title: { zh: 'Character.AI 拆解：海量陪聊的成本怎么压下来', en: 'Inside Character.AI: Keeping Mass Companion-Chat Cheap' },
     desc: { zh: '把推理瓶颈从“算力”重新定义为 KV cache，再用 MQA、滑动窗口、跨层共享一层层榨干成本。', en: 'Redefine the inference bottleneck from “compute” to the KV cache, then wring out cost with MQA, sliding windows, and cross-layer sharing.' } },
 ]

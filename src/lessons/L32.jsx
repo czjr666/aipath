@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Lsec, QuizItem } from '../components/ui.jsx'
+import { Lsec, QuizItem, DeepDive } from '../components/ui.jsx'
 import { useLang } from '../i18n/LangContext.jsx'
 
 // ============================================================
@@ -51,13 +51,16 @@ const C = {
     sys: [
       { n: '01', term: '读懂你的库:代码版 RAG', tag: '懂你',
         body: <>大模型的上下文窗口再大,也塞不下一个几十万行的仓库,硬塞既贵又稀释重点。Cursor 的办法是<b>给代码库建索引</b>:把代码切成有意义的块(函数、类),每块转成一个<b>向量(embedding)</b>存进向量库;你提问时,它把问题也转成向量,<b>只检索出最相关的几块</b>注入上下文。改动文件后,用 <b>Merkle 树</b>哈希精确找出变了哪些块、只重算这部分。</>,
-        analogy: <><b>类比:</b>你不会把整座图书馆搬到书桌上,而是查目录、只抽出相关的几本。代码库索引就是那本"语义目录"。</> },
+        analogy: <><b>类比:</b>你不会把整座图书馆搬到书桌上,而是查目录、只抽出相关的几本。代码库索引就是那本"语义目录"。</>,
+        dig: { t: '再挖一铲:Merkle 树是怎么做到「只重算变了的部分」的?', body: <>给每个代码块算一个<b>哈希</b>(内容的「指纹」,变一个字指纹就完全不同),再把指纹逐层两两合并,最后得到一个「<b>根指纹</b>」—— 这棵指纹树就是 Merkle 树。同步时先比根指纹:一样,说明整库没变,直接收工;不一样,就往下比两个分支,一路只沿着「指纹变了」的分支走,几步就能精确定位到改动的那几块,<b>只为它们重算 embedding</b>。几十万行的库改了一个文件,同步成本几乎只有那一个文件。</> } },
       { n: '02', term: 'Tab 补全:预测你的下一个编辑', tag: '快',
         body: <>普通补全只猜"下一个字符";Cursor 的 <b>Tab 是一个自研模型</b>,猜的是<b>"你下一步要做的整个编辑,以及光标该跳到哪"</b>。它在海量真实编辑上训练、还用<b>在线强化学习</b>每天滚动更新,所以越用越贴你的习惯 —— 它每天要处理<b>超 4 亿次</b>这样的预测。</>,
-        analogy: <><b>类比:</b>像一个看了你一整天代码的结对搭档,你刚改完一处,他已经指着下一处说"这里也得跟着改",而不是逐字帮你打字。</> },
+        analogy: <><b>类比:</b>像一个看了你一整天代码的结对搭档,你刚改完一处,他已经指着下一处说"这里也得跟着改",而不是逐字帮你打字。</>,
+        dig: { t: '再挖一铲:「在线强化学习」拿什么当奖励?', body: <>你每天用 Tab 的动作本身就是训练信号:补全<b>被你接受</b>(按下 Tab)是正反馈,<b>被你无视或删掉</b>是负反馈。Cursor 用这些真实的接受/拒绝数据滚动更新 Tab 模型 —— 官方称新模型给出的建议更少、接受率却明显更高。这正是 L14 讲过的 <b>RLHF</b> 思路,只是「人类反馈」不再靠雇人标注,而是来自亿万次日常按键;也因此它必须把「训练 → 上线」的循环压到<b>以天计</b>,而不是传统的以月计。</> } },
       { n: '03', term: 'Apply 套改:秒级把大段改动落地', tag: '更快',
         body: <>让大模型直接逐字重写整个文件又慢又容易抄错。Cursor 用一个<b>专门的"应用模型"</b>,配上自研的<b>推测式解码(speculative edits)</b>:因为它对"改完长什么样"已有强先验,可以跳着预测后续内容、再校验,把套用速度做到<b>约每秒 1000 个 token</b>(比常规推理快十几倍)。</>,
-        analogy: <><b>类比:</b>熟练编辑改稿,不会逐字重抄全文,而是扫一眼就知道哪几处要动、刷刷改完 —— 速度来自"我大概知道结果"。</> },
+        analogy: <><b>类比:</b>熟练编辑改稿,不会逐字重抄全文,而是扫一眼就知道哪几处要动、刷刷改完 —— 速度来自"我大概知道结果"。</>,
+        dig: { t: '再挖一铲:「推测式解码」是怎么跳着走的?', body: <>关键洞察:套改的输出里,<b>绝大部分就是原文件照抄</b>,真正的新内容只有几处。于是可以把原文件当「草稿」一次抛出一长段候选,模型只做一件事 —— <b>并行校验这段草稿</b>:对,整段一次通过(等于跳读);不对,才在分歧处逐字生成、然后继续抛草稿。逐字生成一次走一格,校验一次过一片,这就是十几倍吞吐的来源。这套思想的通用版叫<b>推测式解码(speculative decoding)</b>,如今已是各家推理加速的标配。</> } },
     ],
     sysSourceNote: (
       <>
@@ -82,11 +85,30 @@ const C = {
       tooBig: '✗ 装不下 / 又贵',
       justRight: '✓ 又准又便宜',
       note: (k) => `只把最相关的 ${k} 块喂给大模型,而不是整个仓库 —— 上下文又干净又省钱。`,
+      simNote: '(演示用「关键词重叠」示意打分;真实 Cursor 用的是向量语义匹配 —— 问「登录失败」也能找到只写着 signIn 的代码,不依赖字面相同。)',
       queries: [
         { q: '用户登录为什么总是失败?', keys: ['登录', '鉴权', 'token', '用户'] },
         { q: '给支付流程加一个退款功能', keys: ['支付', '退款', '订单'] },
         { q: '改一下注册成功后的欢迎邮件', keys: ['邮件', '通知', '用户', '发送'] },
       ],
+    },
+    // ---- 交互演示 2:Apply 速度赛跑 ----
+    raceSecTitle: '🎛️ 交互演示 2:同一份改动,Apply 凭什么快十几倍',
+    raceSecLead: '再把第三个子系统玩成手感。把改好的代码「套」回原文件:常规做法是逐字重新生成整个文件(约 50 token/秒),Apply 模型用推测式解码跳读校验、只在改动处真正动笔(约 1000 token/秒)。拖动文件大小,点「开始套改」,看两条进度条赛跑 —— 动画已按 20 倍加速,真实耗时看右侧数字。',
+    race: {
+      title: '🎛️ Apply 套改速度 · 赛跑演示',
+      hint: '动画压缩了 20 倍,真实耗时看数字',
+      linesLabel: (n, t) => `文件大小:${n} 行(≈ ${t.toLocaleString()} token)`,
+      start: '▶ 开始套改',
+      again: '↺ 再跑一次',
+      slowLabel: '常规逐字重写(~50 token/s)',
+      fastLabel: 'Apply 推测式解码(~1000 token/s)',
+      secs: (s) => `真实约 ${s} 秒`,
+      statTokens: '要重写的 token',
+      statSlow: '常规耗时',
+      statFast: 'Apply 耗时',
+      note: '(速度为量级示意:50 token/s 取常规大模型逐字生成的典型吞吐,1000 token/s 为 Cursor 官方公布的 Apply 吞吐。)',
+      verdict: '同一件事,拆出来单独建模、单独加速,就能快一个数量级 —— 这就是「延迟敏感的子任务值得专门优化」。等一分钟的功能没人用,等三秒的功能才活得下来。',
     },
     chunks: [
       { file: 'auth.js', desc: '登录与 JWT 鉴权', keys: ['登录', '鉴权', 'token', '密码'] },
@@ -132,6 +154,10 @@ const C = {
         q: '3. 为什么 Cursor 要专门训一个"Apply 模型"、还做推测式解码,而不直接让 GPT 把整个文件重写一遍?',
         a: <>让通用大模型逐字重写整个文件<b>又慢又容易抄错</b>(把没改的地方也改了)。Apply 这一步的特点是:<b>对"改完长什么样"已有很强的先验</b>(模型已经给出了要改的片段)。于是 Cursor 用专门的应用模型 + <b>推测式解码</b>——跳着预测后续 token 再校验,把吞吐做到约<b>每秒 1000 token</b>、比常规推理快十几倍。这是"延迟敏感的子任务值得专门优化"的典型例子。</>,
       },
+      {
+        q: '4. 动手算一笔:一个 300 行的文件约 3000 token。常规逐字重写(50 token/秒)和 Apply(1000 token/秒)各要多久?这个差距为什么是生死线?',
+        a: <>常规:3000 ÷ 50 = <b>60 秒</b>;Apply:3000 ÷ 1000 = <b>3 秒</b>。60 秒意味着你每接受一次 AI 的改动,都要盯着屏幕发呆一分钟 —— 这个功能基本没人会再用第二次;3 秒则几乎无感。很多 AI 产品的成败就差在这里:<b>模型能力一样,延迟差 20 倍,体验就是「离不开」和「用不下去」的区别</b>。(这也是第二个演示里那场赛跑的答案。)</>,
+      },
     ],
     // ---- 收尾 ----
     finalTitle: '🔭 番外·第二篇:看懂了 Cursor,你就看懂了"模型之外的护城河"',
@@ -176,13 +202,16 @@ const C = {
     sys: [
       { n: '01', term: 'Read your codebase: RAG for code', tag: 'knows you',
         body: <>However large the context window, it can't hold a repo of hundreds of thousands of lines; cramming it is expensive and dilutes focus. Cursor's approach is to <b>index the codebase</b>: cut code into meaningful chunks (functions, classes), turn each into a <b>vector (embedding)</b> in a vector store; when you ask, it vectorizes the question too and <b>retrieves only the most relevant chunks</b> into context. After edits, a <b>Merkle tree</b> of hashes pinpoints which chunks changed and recomputes only those.</>,
-        analogy: <><b>Analogy:</b> you don't move the whole library onto your desk; you check the catalog and pull out only the relevant books. The codebase index is that "semantic catalog."</> },
+        analogy: <><b>Analogy:</b> you don't move the whole library onto your desk; you check the catalog and pull out only the relevant books. The codebase index is that "semantic catalog."</>,
+        dig: { t: 'Dig deeper: how does a Merkle tree "recompute only what changed"?', body: <>Give every code chunk a <b>hash</b> (a "fingerprint" of its content — change one character and the fingerprint changes completely), then merge fingerprints pairwise, level by level, into one "<b>root fingerprint</b>" — that tree of fingerprints is the Merkle tree. To sync, compare root fingerprints first: identical means nothing changed, done; different means walk down, always following only the branch whose fingerprint changed, pinpointing the modified chunks in a few steps and <b>recomputing embeddings only for those</b>. Change one file in a repo of hundreds of thousands of lines, and the sync cost is roughly just that file.</> } },
       { n: '02', term: 'Tab completion: predict your next edit', tag: 'fast',
         body: <>Ordinary autocomplete only guesses the "next character"; Cursor's <b>Tab is an in-house model</b> that guesses <b>"the whole next edit you're about to make, and where the cursor should jump"</b>. Trained on huge amounts of real edits and updated daily with <b>online reinforcement learning</b>, it fits your habits better the more you use it — handling <b>400M+</b> such predictions a day.</>,
-        analogy: <><b>Analogy:</b> like a pair-programmer who's watched your code all day: the moment you change one spot, they point at the next saying "this needs to change too," rather than typing for you character by character.</> },
+        analogy: <><b>Analogy:</b> like a pair-programmer who's watched your code all day: the moment you change one spot, they point at the next saying "this needs to change too," rather than typing for you character by character.</>,
+        dig: { t: 'Dig deeper: what does "online reinforcement learning" use as reward?', body: <>Your daily Tab usage is itself the training signal: a completion <b>you accept</b> (pressing Tab) is positive feedback; one <b>you ignore or delete</b> is negative. Cursor uses this real accept/reject data to update the Tab model on a rolling basis — officially, the newer model makes fewer suggestions yet gets a clearly higher accept rate. This is the <b>RLHF</b> idea from L14, except the "human feedback" no longer comes from hired annotators but from billions of everyday keystrokes — which is also why the "train → ship" loop had to shrink to <b>days</b>, not the traditional months.</> } },
       { n: '03', term: 'Apply: land big edits in a snap', tag: 'faster',
         body: <>Having the big model rewrite a whole file character by character is slow and error-prone. Cursor uses a <b>dedicated "apply model"</b> with in-house <b>speculative edits</b>: because it already has a strong prior for "what the result looks like," it can predict ahead and verify, pushing apply speed to <b>~1000 tokens per second</b> (over 10x faster than vanilla inference).</>,
-        analogy: <><b>Analogy:</b> a seasoned editor doesn't re-copy the whole draft; one glance and they know which few spots to change, then do it fast — the speed comes from "I roughly know the result."</> },
+        analogy: <><b>Analogy:</b> a seasoned editor doesn't re-copy the whole draft; one glance and they know which few spots to change, then do it fast — the speed comes from "I roughly know the result."</>,
+        dig: { t: 'Dig deeper: how does "speculative decoding" skip ahead?', body: <>The key insight: in an apply, <b>most of the output is the original file copied verbatim</b>, with only a few spots of genuinely new content. So treat the original file as a "draft" and toss out a long candidate span at once; the model then does just one thing — <b>verify that draft in parallel</b>: if it checks out, the whole span passes in one go (skimming); if not, generate token by token only at the divergence, then toss the next draft. Generating moves one square at a time; verifying clears a whole stretch — that's where the 10x-plus throughput comes from. The general form, <b>speculative decoding</b>, is now standard kit in inference acceleration everywhere.</> } },
     ],
     sysSourceNote: (
       <>
@@ -207,11 +236,30 @@ const C = {
       tooBig: '✗ won\'t fit / costly',
       justRight: '✓ accurate & cheap',
       note: (k) => `Feed only the ${k} most relevant chunks to the model, not the whole repo — a clean, cheap context.`,
+      simNote: '(This demo scores relevance by keyword overlap for illustration; real Cursor uses vector semantic matching — asking about "login failures" also finds code that only says signIn, no literal match needed.)',
       queries: [
         { q: 'Why does user login keep failing?', keys: ['登录', '鉴权', 'token', '用户'] },
         { q: 'Add a refund feature to the payment flow', keys: ['支付', '退款', '订单'] },
         { q: 'Tweak the welcome email after signup', keys: ['邮件', '通知', '用户', '发送'] },
       ],
+    },
+    // ---- Interactive demo 2: Apply race ----
+    raceSecTitle: '🎛️ Interactive Demo 2: same edit — how is Apply 10x-plus faster?',
+    raceSecLead: 'Now feel the third subsystem. "Applying" edited code back into the original file: the vanilla way regenerates the whole file token by token (~50 tokens/s); the Apply model uses speculative decoding to skim-verify and only truly writes at the changed spots (~1000 tokens/s). Drag the file size, hit "Start applying," and watch the two bars race — the animation is sped up 20x; real times are in the numbers.',
+    race: {
+      title: '🎛️ Apply Speed · Race Demo',
+      hint: 'animation compressed 20x; real times in the numbers',
+      linesLabel: (n, t) => `File size: ${n} lines (≈ ${t.toLocaleString()} tokens)`,
+      start: '▶ Start applying',
+      again: '↺ Run again',
+      slowLabel: 'Vanilla token-by-token rewrite (~50 tok/s)',
+      fastLabel: 'Apply speculative decoding (~1000 tok/s)',
+      secs: (s) => `real ≈ ${s}s`,
+      statTokens: 'Tokens to rewrite',
+      statSlow: 'Vanilla time',
+      statFast: 'Apply time',
+      note: '(Order-of-magnitude illustration: 50 tok/s is typical token-by-token throughput for a large model; 1000 tok/s is Cursor\'s published Apply throughput.)',
+      verdict: 'Split the same job out, model it separately, accelerate it separately — and it gets an order of magnitude faster. That\'s "latency-sensitive subtasks deserve dedicated optimization." A feature that makes you wait a minute dies; one that takes three seconds lives.',
     },
     chunks: [
       { file: 'auth.js', desc: 'Login & JWT auth', keys: ['登录', '鉴权', 'token', '密码'] },
@@ -256,6 +304,10 @@ const C = {
       {
         q: '3. Why does Cursor train a dedicated "Apply model" and do speculative decoding, instead of just letting GPT rewrite the whole file?',
         a: <>Having a general model rewrite a whole file character by character is <b>slow and error-prone</b> (it changes parts that shouldn't change). The Apply step has a special trait: it already holds a <b>strong prior for "what the result looks like"</b> (the model already produced the snippet to change). So Cursor uses a dedicated apply model + <b>speculative decoding</b> — predicting ahead then verifying — to push throughput to <b>~1000 tokens/s</b>, over 10x faster than vanilla inference. A textbook case of "a latency-sensitive subtask is worth optimizing specially."</>,
+      },
+      {
+        q: '4. Run the numbers: a 300-line file is about 3000 tokens. How long does a vanilla token-by-token rewrite (50 tok/s) take vs. Apply (1000 tok/s)? Why is that gap life-or-death?',
+        a: <>Vanilla: 3000 ÷ 50 = <b>60 seconds</b>; Apply: 3000 ÷ 1000 = <b>3 seconds</b>. Sixty seconds means staring at the screen for a full minute every time you accept an AI edit — almost nobody uses that feature twice; three seconds is barely felt. Many AI products live or die right here: <b>same model capability, 20x latency gap — the difference between "can't live without it" and "can't stand using it."</b> (It's also the answer to the race in the second demo.)</>,
       },
     ],
     // ---- Closing ----
@@ -335,6 +387,81 @@ function CodebaseRetrievalDemo({ c }) {
           </div>
         </div>
         <p style={{ margin: 0, fontWeight: 600, lineHeight: 1.7, color: 'var(--fg-1)' }}>{d.note(retrievedFiles.size)}</p>
+        {d.simNote && <p className="footnote" style={{ margin: 0 }}>{d.simNote}</p>}
+      </div>
+    </div>
+  )
+}
+
+// ---- Apply 套改速度赛跑演示 ----
+const SPEED_SLOW = 50 // token/s,常规逐字生成
+const SPEED_FAST = 1000 // token/s,Apply 推测式解码
+const RACE_SCALE = 20 // 动画时间压缩倍率
+
+function ApplyRaceDemo({ c }) {
+  const d = c.race
+  const [lines, setLines] = useState(300)
+  const [run, setRun] = useState(0) // 每次递增触发重新赛跑
+
+  const tokens = lines * 10
+  const tSlow = tokens / SPEED_SLOW
+  const tFast = tokens / SPEED_FAST
+
+  const Bar = ({ label, seconds, color }) => (
+    <div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+        <span style={{ fontSize: 13.5, fontWeight: 600 }}>{label}</span>
+        <span className="footnote">{d.secs(seconds < 10 ? seconds.toFixed(1) : Math.round(seconds))}</span>
+      </div>
+      <div style={{ height: 16, borderRadius: 8, background: 'var(--bg-inset)', border: '1px solid var(--hairline)', overflow: 'hidden' }}>
+        {run > 0 && (
+          <div key={run} style={{ height: '100%', width: 0, background: color, borderRadius: 6, animation: `fillbar ${seconds / RACE_SCALE}s linear forwards` }} />
+        )}
+      </div>
+    </div>
+  )
+
+  return (
+    <div className="card demo">
+      <div className="demo-head">
+        <span className="demo-title">{d.title}</span>
+        <span className="demo-hint">{d.hint}</span>
+      </div>
+      <div style={{ padding: '24px', display: 'grid', gap: 22 }}>
+        {/* 控制区 */}
+        <div style={{ display: 'grid', gap: 14 }}>
+          <div className="slider-row">
+            <label>{d.linesLabel(lines, tokens)}</label>
+            <input type="range" min={100} max={800} step={50} value={lines} onChange={(e) => setLines(parseInt(e.target.value, 10))} />
+            <span className="val">{lines}</span>
+          </div>
+          <div className="chips">
+            <button className="chip active" onClick={() => setRun((r) => r + 1)}>{run === 0 ? d.start : d.again}</button>
+          </div>
+        </div>
+
+        {/* 赛道 */}
+        <div style={{ display: 'grid', gap: 16 }}>
+          <Bar label={d.slowLabel} seconds={tSlow} color="var(--terracotta)" />
+          <Bar label={d.fastLabel} seconds={tFast} color="var(--sage)" />
+        </div>
+
+        {/* 数字面板 */}
+        <div className="use-grid">
+          {[
+            { label: d.statTokens, value: tokens.toLocaleString() },
+            { label: d.statSlow, value: `${Math.round(tSlow)}s`, color: 'var(--terracotta)' },
+            { label: d.statFast, value: `${tFast < 10 ? tFast.toFixed(1) : Math.round(tFast)}s`, color: 'var(--sage)' },
+          ].map((s, i) => (
+            <div key={i} style={{ border: '1px solid var(--hairline)', borderRadius: 12, background: 'var(--bg-inset)', padding: '16px 18px', minHeight: 88, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 8 }}>
+              <div style={{ fontSize: 12.5, color: 'var(--fg-2)', fontWeight: 600 }}>{s.label}</div>
+              <div style={{ fontSize: 23, fontWeight: 800, color: s.color || 'var(--fg-0)', lineHeight: 1 }}>{s.value}</div>
+            </div>
+          ))}
+        </div>
+
+        <p style={{ margin: 0, fontWeight: 600, lineHeight: 1.7, color: 'var(--fg-1)' }}>{d.verdict}</p>
+        {d.note && <p className="footnote" style={{ margin: 0 }}>{d.note}</p>}
       </div>
     </div>
   )
@@ -385,6 +512,7 @@ export default function L32() {
               </div>
               <div className="zh" style={{ marginTop: 6 }}>{l.body}</div>
               <div className="zh" style={{ marginTop: 6, color: 'var(--fg-2)' }}>{l.analogy}</div>
+              {l.dig && <DeepDive title={l.dig.t}>{l.dig.body}</DeepDive>}
             </div>
           ))}
         </div>
@@ -393,6 +521,10 @@ export default function L32() {
 
       <Lsec title={c.demoSecTitle} lead={c.demoSecLead}>
         <CodebaseRetrievalDemo c={c} />
+      </Lsec>
+
+      <Lsec title={c.raceSecTitle} lead={c.raceSecLead}>
+        <ApplyRaceDemo c={c} />
       </Lsec>
 
       <Lsec title={c.pitfallsTitle}>

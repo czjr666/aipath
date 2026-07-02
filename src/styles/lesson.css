@@ -68,6 +68,18 @@ table.match td.ex { color: var(--fg-1); }
 .quiz-item .ans { font-size: 15px; margin-top: 6px; padding: 10px 14px; background: var(--bg-inset); border-radius: var(--r-md); }
 .quiz-item .ans b { color: var(--sage); }
 
+/* 演示用进度条填充动画（速度赛跑类 demo） */
+@keyframes fillbar { from { width: 0; } to { width: 100%; } }
+
+/* 再挖一铲：机制条目下的进阶折叠段 */
+.dig { margin-top: 10px; }
+.dig summary { font-size: 13px; font-weight: 600; color: var(--sky); cursor: pointer; list-style: none; }
+.dig summary::-webkit-details-marker { display: none; }
+.dig summary::before { content: "⛏ "; }
+.dig .dig-body { font-size: 14.5px; line-height: 1.8; margin-top: 6px; padding: 12px 16px; background: var(--bg-inset); border-radius: var(--r-md); color: var(--fg-1); }
+.dig .dig-body b { color: var(--fg-0); }
+.dig .dig-body code { font-size: 13px; }
+
 /* 上下课导航 */
 .pager { display: flex; gap: 14px; margin-top: 56px; }
 .pager a { flex: 1; min-width: 0; padding: 18px 22px; text-decoration: none; color: inherit; transition: border-color 0.15s ease; }

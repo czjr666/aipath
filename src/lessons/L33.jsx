@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Lsec, QuizItem } from '../components/ui.jsx'
+import { Lsec, QuizItem, DeepDive } from '../components/ui.jsx'
 import { useLang } from '../i18n/LangContext.jsx'
 
 // ============================================================
@@ -35,7 +35,7 @@ const C = {
       { label: '出身 · 幻方', term: <>量化基金<b>孵化</b></>, body: <>母公司是中国量化对冲基金<b>幻方量化(High-Flyer)</b>,创始人<b>梁文锋</b>。幻方早年为炒股囤下的大批 GPU,成了 DeepSeek 的算力底座 —— 一家"做研究"的机构,不急着商业化。</> },
       { label: '时刻 · 2025/1/27', term: <>英伟达 <b>-17%</b></>, body: <>R1 发布后那个周一,DeepSeek App <b>登顶美国 App Store</b>,英伟达单日收跌约 17%、市值<b>蒸发约 5,890 亿美元</b> —— 美股史上单家公司单日最大市值损失。</> },
       { label: '架构 · 省的根', term: <>671B / <b>激活 37B</b></>, body: <>V3 是<b>混合专家(MoE)</b>模型:总参数 671B,但每个 token <b>只激活 37B</b>(约 5.5%)。再加 MLA 压缩显存、FP8 低精度训练,在 <b>2048 张 H800</b>(被出口管制阉割过的卡)上训出。</> },
-      { label: '开放 · 可商用', term: <>R1 <b>MIT 许可</b></>, body: <>R1 权重与代码以 <b>MIT 许可</b>开放,免费商用,甚至明确允许拿它的输出去<b>蒸馏</b>训练别的模型 —— 与闭源大厂的姿态截然相反。</> },
+      { label: '开放 · 可商用', term: <>R1 <b>MIT 许可</b></>, body: <>R1 权重与代码以 <b>MIT 许可</b>开放,免费商用,甚至明确允许拿它的输出去做<b>蒸馏(distillation)</b>——即把它的答案当教材去训练别的模型 —— 与闭源大厂的姿态截然相反。</> },
     ],
     factsSourceNote: (
       <>
@@ -51,16 +51,19 @@ const C = {
     sys: [
       { n: '01', term: 'MoE 混合专家:参数很大,但每步只用一小撮', tag: '省算力',
         body: <>传统"稠密"模型每生成一个字,都要动用<b>全部</b>参数。MoE 把网络拆成很多个"专家",每个 token 只<b>路由到其中少数几个</b>:V3 总参数 <b>671B,每 token 只激活 37B</b>。容量(总参数)很大保证聪明,但单步计算量(激活参数)很小保证便宜。</>,
-        analogy: <><b>类比:</b>一家有几百名专科医生的大医院,每位病人只挂相关的两三个科,而不是让全院医生一起会诊 —— 医院很全能,单次看病却不贵。</> },
+        analogy: <><b>类比:</b>一家有几百名专科医生的大医院,每位病人只挂相关的两三个科,而不是让全院医生一起会诊 —— 医院很全能,单次看病却不贵。</>,
+        dig: { t: '再挖一铲:「路由器」怎么决定叫哪个专家?', body: <>路由器本身是个小网络:给每个 token 对每个专家<b>打分</b>,取分最高的几个上场(V3 有 <b>256 个路由专家</b>,每 token 选 <b>8 个</b>,另有 1 个人人都过的共享专家)。麻烦在于训练时容易「旱的旱死、涝的涝死」—— 热门专家挤爆、冷门专家学不到东西。常规解法是加一项「辅助损失」去惩罚不均衡,但它会干扰模型的主要学习目标;DeepSeek 改成给每个专家挂一个<b>动态偏置</b>:谁超载就自动调低谁的「中签率」,完全不碰主损失函数 —— 这就是报告里反复强调的「<b>无辅助损失负载均衡</b>」。</> } },
       { n: '02', term: 'MLA 潜在注意力:把"工作记忆"压缩着存', tag: '省显存',
         body: <>模型生成时要缓存之前每个 token 的 Key/Value(KV cache),长对话下它会撑爆显存。DeepSeek 自创的 <b>MLA(多头潜在注意力)</b>把 KV <b>压缩成一个低维潜向量</b>再缓存,显存占用大降,而效果与标准注意力相当。</>,
-        analogy: <><b>类比:</b>记笔记不抄全文,而是记压缩过的要点;要用时再展开。笔记本同样大,却能装下长得多的会议。</> },
+        analogy: <><b>类比:</b>记笔记不抄全文,而是记压缩过的要点;要用时再展开。笔记本同样大,却能装下长得多的会议。</>,
+        dig: { t: '再挖一铲:压缩过的 KV 怎么还原回去?', body: <>MLA 的思路接近「存压缩包」:训练时同时学两组变换 —— 一组把每个 token 的 KV <b>压缩成一个低维潜向量</b>存进缓存,另一组在要用时把它<b>投影展开</b>回各注意力头需要的形状。妙处在于展开用的矩阵可以和注意力计算<b>合并</b>,几乎不额外花时间。代价是多学一组「压缩/解压」参数,换来缓存只剩原来的零头 —— <b>用一点计算换大把显存</b>,在「显存决定能同时服务多少人」的推理时代,这笔账几乎总是划算的。</> } },
       { n: '03', term: 'FP8 + DualPipe:把阉割版显卡压榨到极致', tag: '抠硬件',
         body: <>因为出口管制,DeepSeek 只能用性能被砍过的 <b>H800</b>。它的对策是底层硬抠:用 <b>FP8 低精度</b>做大部分运算(数字更短、算得更快更省),用自研的 <b>DualPipe</b> 让计算和通信相互重叠、不让显卡空等,还用"无辅助损失"的负载均衡让每个专家都不闲着。</>,
         analogy: <><b>类比:</b>给你一辆被限了马力的车,你没法换车,只能把胎压、路线、换挡时机全调到最优 —— 硬件天花板低,就靠工程把利用率顶到天花板。</> },
       { n: '04', term: 'R1:不靠人教,纯靠"奖励"自己学会推理', tag: '反直觉',
         body: <>最震撼的一条:R1 的推理能力主要靠<b>强化学习(RL)</b>逼出来。实验版 <b>R1-Zero 甚至不做任何监督微调</b>,只给"答对有奖"的信号,模型就<b>自发涌现</b>出反思、自我验证、越想越长的思维链 —— 论文称之为"aha moment"。这套结果还登上了 <b>Nature</b> 封面、经过同行评审。</>,
-        analogy: <><b>类比:</b>没有老师手把手教解题套路,只告诉学生"答对给糖"。为了多拿糖,他自己摸索出"先检查再下笔"的习惯 —— 策略是被奖励逼出来的,不是被灌输的。</> },
+        analogy: <><b>类比:</b>没有老师手把手教解题套路,只告诉学生"答对给糖"。为了多拿糖,他自己摸索出"先检查再下笔"的习惯 —— 策略是被奖励逼出来的,不是被灌输的。</>,
+        dig: { t: '再挖一铲:它用的 GRPO,比常规做法省在哪?', body: <>常规 RLHF(L14 讲过)多用 PPO 算法,训练时旁边要再养一个跟主模型差不多大的「<b>价值模型(critic)</b>」来评估每一步的好坏 —— 显存和算力几乎翻倍。DeepSeek 的 <b>GRPO(组相对策略优化)</b>把这个陪练砍了:对同一道题一次采样<b>一组</b>答案(比如 16 个),用「这组答案的平均得分」当基准,谁比平均好就加强谁 —— 基准来自兄弟答案之间的互相比较,<b>不再需要单独的价值模型</b>。连「怎么做强化学习」这一层,它都在省。</> } },
     ],
     sysSourceNote: (
       <>
@@ -87,6 +90,29 @@ const C = {
       gridNote: '(示意:真实 V3 有 256 个路由专家,每 token 激活 8 个)',
       verdictDense: '稠密:每生成一个字都动用全部 671B 参数 —— 聪明,但每一步都很贵。',
       verdictMoe: 'MoE:容量仍是 671B,但每步只激活约 37B(5.5%)—— 一样聪明,单步便宜十几倍。',
+    },
+    // ---- 交互演示 2:成本口径 ----
+    costSecTitle: '🎛️ 交互演示 2:「560 万美元」在整本账里有多大',
+    costSecLead: '再把那条最著名的误读玩成手感。先看「新闻标题的算法」—— 一格 560 万,确实震撼;再点「把账本摊开」,看这一格在 DeepSeek 的真实投入里占多大位置。每个数字的口径都标在图里。',
+    cost: {
+      title: '🎛️ 成本口径 · 对比演示',
+      hint: '同一家公司,两种算法,差约 280 倍',
+      modeNews: '📰 新闻标题的算法',
+      modeLedger: '📒 把账本摊开',
+      newsBar: '最后一次训练运行的算力(官方自报)',
+      newsVerdict: '只看这一格,「几百万美元造出顶尖模型」当然震撼 —— 但这一格的口径是:假设 H800 租金 $2/卡时 × 最后一次正式训练的 GPU 工时,仅此而已。',
+      capexLabel: '服务器资本开支 ≈ $1.6B(SemiAnalysis 估算,含囤下的数万张 GPU)',
+      runLabel: '▲ 最后一次训练运行 $5.6M,占约 0.35%(图中已放大到最小可见宽度)',
+      hiddenTitle: '账本上还有两笔画不进条形图的:',
+      hiddenItems: [
+        { k: '前期研究、消融实验、失败的试错', v: '官方明说「不含」,金额未公开' },
+        { k: '研发团队人力', v: '未公开' },
+      ],
+      statNews: '新闻里的数字',
+      statCapex: '服务器资本开支(估算)',
+      statRatio: '前者 ÷ 后者',
+      ledgerVerdict: '摊开账本,560 万只是其中最小、口径最窄的一格 —— 数字本身是真的,但拿它去对冲大厂的「全部研发投入」,等于拿一次训练的电费去比别人整栋楼。',
+      srcNote: '($5.576M 据 V3 技术报告自报口径;$1.6B 为 SemiAnalysis 对其服务器资本开支的第三方估算(2025-01),非官方数字,量级仅供理解。)',
     },
     // ---- 误区 ----
     pitfallsTitle: '⚠️ 常见误区',
@@ -122,6 +148,10 @@ const C = {
         q: '3. R1-Zero "不做监督微调、纯靠强化学习就涌现出推理能力",这件事为什么反直觉、又为什么重要?',
         a: <>反直觉在于:我们默认"会推理"得靠人<b>手把手教</b>(喂海量标注好的思维链)。但 R1-Zero 表明,<b>只要给对激励信号(答对有奖),模型能自己摸索出</b>反思、自我验证、长思维链等高级策略 —— 策略是<b>涌现</b>的,不是灌输的。重要性在于:它大幅降低了对昂贵人工标注的依赖,指出一条"用 RL 让模型自学推理"的可扩展路径;而且这一结果经过了 Nature 同行评审,可信度更高。</>,
       },
+      {
+        q: '4. 动手算一笔:V3 每个 token 只激活 37B/671B ≈ 5.5% 的参数。假设同容量的稠密模型生成 1 个 token 花 1 份算力,那 V3 花多少?一篇 1000 token 的回答,两者各花多少?',
+        a: <>V3 每 token ≈ <b>0.055 份</b>;一篇 1000 token 的回答:稠密模型 <b>1000 份</b>,V3 约 <b>55 份</b> —— 同样的容量,单篇回答的计算量差约 <b>18 倍</b>。这就是「大容量保证聪明、稀疏激活保证便宜」落到账面上的样子。(理想化估算:真实推理还有注意力、通信等开销,MoE 也要为路由和更大的显存占用付代价,但量级方向就是如此。)</>,
+      },
     ],
     // ---- 收尾 ----
     finalTitle: '🔭 番外·第三篇:省钱,也是一种顶级能力',
@@ -148,7 +178,7 @@ const C = {
       { label: 'Origin · High-Flyer', term: <>Quant-fund <b>spinout</b></>, body: <>Owned by the Chinese quant hedge fund <b>High-Flyer</b>, founded by <b>Liang Wenfeng</b>. The GPUs High-Flyer once stockpiled for trading became DeepSeek's compute base — a research-first outfit in no rush to monetize.</> },
       { label: 'Moment · 2025/1/27', term: <>Nvidia <b>-17%</b></>, body: <>The Monday after R1 dropped, the DeepSeek app <b>topped the US App Store</b>, and Nvidia closed down ~17%, <b>shedding about $589B</b> — the largest single-day market-cap loss for one company in US history.</> },
       { label: 'Architecture · the root', term: <>671B / <b>37B active</b></>, body: <>V3 is a <b>Mixture-of-Experts (MoE)</b> model: 671B total parameters, but <b>only 37B activated</b> per token (~5.5%). Add MLA to shrink memory and FP8 low-precision training, all on <b>2048 H800s</b> (export-throttled chips).</> },
-      { label: 'Open · commercial', term: <>R1 <b>MIT license</b></>, body: <>R1 weights and code are released under the <b>MIT license</b>, free for commercial use, even explicitly allowing its outputs to be used to <b>distill</b> other models — the opposite stance from closed labs.</> },
+      { label: 'Open · commercial', term: <>R1 <b>MIT license</b></>, body: <>R1 weights and code are released under the <b>MIT license</b>, free for commercial use, even explicitly allowing its outputs to be used for <b>distillation</b> — using its answers as teaching material to train other models — the opposite stance from closed labs.</> },
     ],
     factsSourceNote: (
       <>
@@ -164,16 +194,19 @@ const C = {
     sys: [
       { n: '01', term: 'MoE: huge in parameters, but only a sliver used per step', tag: 'less compute',
         body: <>A traditional "dense" model uses <b>all</b> parameters to generate each character. MoE splits the network into many "experts," and each token is <b>routed to only a few</b>: V3 has <b>671B total parameters but activates only 37B</b> per token. Big capacity (total params) keeps it smart; small per-step compute (active params) keeps it cheap.</>,
-        analogy: <><b>Analogy:</b> a giant hospital with hundreds of specialists, but each patient only sees the two or three relevant departments, not the whole staff in consultation — broadly capable, yet cheap per visit.</> },
+        analogy: <><b>Analogy:</b> a giant hospital with hundreds of specialists, but each patient only sees the two or three relevant departments, not the whole staff in consultation — broadly capable, yet cheap per visit.</>,
+        dig: { t: 'Dig deeper: how does the "router" decide which experts to call?', body: <>The router is itself a small network: it <b>scores</b> each token against every expert and picks the top few (V3 has <b>256 routed experts</b>, <b>8 chosen</b> per token, plus 1 shared expert everyone passes through). The catch: during training it tends toward "the rich get richer" — popular experts overload while cold ones never learn. The standard fix adds an "auxiliary loss" punishing imbalance, but that interferes with the model's main objective; DeepSeek instead hangs a <b>dynamic bias</b> on each expert: whoever overloads gets its "selection odds" automatically dialed down, without touching the main loss at all — the "<b>auxiliary-loss-free load balancing</b>" the report keeps emphasizing.</> } },
       { n: '02', term: 'MLA: store the "working memory" compressed', tag: 'less memory',
         body: <>While generating, the model caches the Key/Value of every prior token (the KV cache), which blows up memory in long chats. DeepSeek's own <b>MLA (Multi-head Latent Attention)</b> <b>compresses the KV into a low-dimensional latent vector</b> before caching, slashing memory while matching standard attention's quality.</>,
-        analogy: <><b>Analogy:</b> taking notes not as full transcripts but as compressed key points, expanded when needed. Same notebook, but it holds a far longer meeting.</> },
+        analogy: <><b>Analogy:</b> taking notes not as full transcripts but as compressed key points, expanded when needed. Same notebook, but it holds a far longer meeting.</>,
+        dig: { t: 'Dig deeper: how does compressed KV get restored?', body: <>MLA works like "storing zip files": training learns two sets of transforms at once — one <b>compresses each token's KV into a low-dimensional latent vector</b> for the cache, the other <b>projects it back open</b> into the shapes each attention head needs. The elegance: the expansion matrices can be <b>merged</b> into the attention computation, costing almost no extra time. The price is learning an extra set of "compress/decompress" parameters; the payoff is a cache shrunk to a fraction — <b>trading a little compute for a lot of memory</b>, a bargain almost every time in an inference era where memory decides how many users you can serve at once.</> } },
       { n: '03', term: 'FP8 + DualPipe: squeeze the throttled GPUs dry', tag: 'wring hardware',
         body: <>Due to export controls, DeepSeek could only use performance-cut <b>H800s</b>. Its answer is low-level grit: do most math in <b>FP8 low precision</b> (shorter numbers, faster and cheaper), use in-house <b>DualPipe</b> to overlap compute and communication so GPUs never idle, and use "auxiliary-loss-free" load balancing so no expert sits idle.</>,
         analogy: <><b>Analogy:</b> given a horsepower-limited car you can't replace, you tune tire pressure, route, and shift timing to the optimum — a low hardware ceiling, pushed to that ceiling by engineering.</> },
       { n: '04', term: 'R1: learns to reason on its own, from "rewards" not teaching', tag: 'counterintuitive',
         body: <>The most striking one: R1's reasoning is mainly forced out by <b>reinforcement learning (RL)</b>. The experimental <b>R1-Zero does no supervised fine-tuning at all</b> — given only a "right answer earns reward" signal, the model <b>spontaneously develops</b> reflection, self-verification, and ever-longer chains of thought — the paper's famous "aha moment." This result even made the cover of <b>Nature</b>, peer-reviewed.</>,
-        analogy: <><b>Analogy:</b> no teacher drilling solution templates, just "candy for a correct answer." To win more candy, the student invents the habit of "check before committing" — strategy forced out by reward, not poured in.</> },
+        analogy: <><b>Analogy:</b> no teacher drilling solution templates, just "candy for a correct answer." To win more candy, the student invents the habit of "check before committing" — strategy forced out by reward, not poured in.</>,
+        dig: { t: 'Dig deeper: where does its GRPO save over the usual approach?', body: <>Conventional RLHF (from L14) mostly trains with PPO, which keeps a "<b>value model (critic)</b>" nearly as large as the main model running alongside to judge each step — roughly doubling memory and compute. DeepSeek's <b>GRPO (Group Relative Policy Optimization)</b> cuts that sparring partner: for each question it samples <b>a group</b> of answers at once (say 16), uses "the group's average score" as the baseline, and reinforces whichever beats the average — the baseline comes from sibling answers comparing against each other, <b>no separate value model needed</b>. Even the "how to do RL" layer gets the frugality treatment.</> } },
     ],
     sysSourceNote: (
       <>
@@ -200,6 +233,29 @@ const C = {
       gridNote: '(Illustrative: real V3 has 256 routed experts, 8 activated per token)',
       verdictDense: 'Dense: every character uses all 671B params — smart, but every step is expensive.',
       verdictMoe: 'MoE: capacity is still 671B, but each step activates only ~37B (5.5%) — just as smart, an order of magnitude cheaper per step.',
+    },
+    // ---- Interactive demo 2: cost scope ----
+    costSecTitle: '🎛️ Interactive Demo 2: how big is "$5.6M" in the whole ledger?',
+    costSecLead: 'Now feel the most famous misread. First look at "the headline\'s math" — one bar, $5.6M, genuinely stunning; then click "open the ledger" and see how much room that bar takes in DeepSeek\'s real spending. Every figure\'s scope is labeled in the chart.',
+    cost: {
+      title: '🎛️ Cost Scope · Comparison Demo',
+      hint: 'same company, two ways to count, ~280x apart',
+      modeNews: '📰 The headline\'s math',
+      modeLedger: '📒 Open the ledger',
+      newsBar: 'Compute of the final training run (self-reported)',
+      newsVerdict: 'Looking at this bar alone, "a top model for a few million dollars" is stunning — but its scope is: assume $2 per H800 GPU-hour × the final official run\'s GPU-hours. Nothing more.',
+      capexLabel: 'Server CapEx ≈ $1.6B (SemiAnalysis estimate, incl. the tens of thousands of stockpiled GPUs)',
+      runLabel: '▲ Final training run $5.6M, about 0.35% (enlarged to minimum visible width)',
+      hiddenTitle: 'Two more entries that can\'t be drawn into a bar chart:',
+      hiddenItems: [
+        { k: 'Prior research, ablations, failed trial-and-error', v: 'explicitly excluded by the report; amount undisclosed' },
+        { k: 'R&D team salaries', v: 'undisclosed' },
+      ],
+      statNews: 'The headline number',
+      statCapex: 'Server CapEx (estimate)',
+      statRatio: 'Former ÷ latter',
+      ledgerVerdict: 'With the ledger open, $5.6M is the smallest, narrowest-scoped entry in it — the number itself is real, but offsetting it against a big lab\'s "total R&D spend" is comparing one training run\'s electricity bill to someone\'s whole building.',
+      srcNote: '($5.576M per the V3 tech report\'s self-reported scope; $1.6B is SemiAnalysis\'s third-party estimate of server CapEx (2025-01), not an official figure — order of magnitude only.)',
     },
     // ---- Misconceptions ----
     pitfallsTitle: '⚠️ Common Misconceptions',
@@ -234,6 +290,10 @@ const C = {
       {
         q: '3. R1-Zero "develops reasoning purely from RL, with no supervised fine-tuning." Why is this counterintuitive, and why does it matter?',
         a: <>It's counterintuitive because we assume "reasoning" must be <b>taught hands-on</b> (fed massive annotated chains of thought). But R1-Zero shows that <b>given the right reward signal (correct answers earn reward), the model figures out</b> reflection, self-verification, and long chains of thought on its own — strategy that <b>emerges</b> rather than being instilled. It matters because it sharply cuts dependence on expensive human annotation and points to a scalable "let the model self-teach reasoning via RL" path; and this result passed Nature peer review, raising confidence.</>,
+      },
+      {
+        q: '4. Run the numbers: V3 activates only 37B/671B ≈ 5.5% of its parameters per token. If a dense model of equal capacity spends 1 unit of compute per token, how much does V3 spend? And for a 1000-token answer?',
+        a: <>V3 ≈ <b>0.055 units</b> per token; for a 1000-token answer: dense <b>1000 units</b> vs. V3 about <b>55 units</b> — same capacity, roughly an <b>18x</b> gap in per-answer compute. That's "large capacity for smarts, sparse activation for cheapness" showing up on the bill. (An idealized estimate: real inference adds attention, communication, and MoE's own routing and memory overhead, but the order of magnitude holds.)</>,
       },
     ],
     // ---- Closing ----
@@ -321,6 +381,78 @@ function MoeDemo({ c }) {
   )
 }
 
+// ---- 成本口径对比演示 ----
+const RUN_COST_M = 5.576 // $M,最后一次训练运行(官方自报)
+const CAPEX_M = 1600 // $M,服务器资本开支(SemiAnalysis 估算)
+
+function CostLedgerDemo({ c }) {
+  const d = c.cost
+  const [ledger, setLedger] = useState(false)
+  const ratioPct = (RUN_COST_M / CAPEX_M) * 100 // ≈ 0.35%
+
+  const statCard = (label, value, color) => (
+    <div style={{ border: '1px solid var(--hairline)', borderRadius: 12, background: 'var(--bg-inset)', padding: '16px 18px', minHeight: 88, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 8 }}>
+      <div style={{ fontSize: 12.5, color: 'var(--fg-2)', fontWeight: 600 }}>{label}</div>
+      <div style={{ fontSize: 23, fontWeight: 800, color: color || 'var(--fg-0)', lineHeight: 1 }}>{value}</div>
+    </div>
+  )
+
+  return (
+    <div className="card demo">
+      <div className="demo-head">
+        <span className="demo-title">{d.title}</span>
+        <span className="demo-hint">{d.hint}</span>
+      </div>
+      <div style={{ padding: '24px', display: 'grid', gap: 22 }}>
+        <div className="chips">
+          <button className={`chip${!ledger ? ' active' : ''}`} onClick={() => setLedger(false)}>{d.modeNews}</button>
+          <button className={`chip${ledger ? ' active' : ''}`} onClick={() => setLedger(true)}>{d.modeLedger}</button>
+        </div>
+
+        {!ledger ? (
+          <>
+            {/* 新闻口径:一格 560 万,占满全宽 */}
+            <div>
+              <div style={{ height: 44, borderRadius: 10, background: 'var(--sage-bg)', border: '1px solid var(--sage)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, fontWeight: 800, color: 'var(--fg-0)' }}>$5.6M</div>
+              <p className="footnote" style={{ marginTop: 6 }}>{d.newsBar}</p>
+            </div>
+            <p style={{ margin: 0, fontWeight: 600, lineHeight: 1.7, color: 'var(--fg-1)' }}>{d.newsVerdict}</p>
+          </>
+        ) : (
+          <>
+            {/* 完整账本:560 万缩成 16 亿里的一条细缝 */}
+            <div>
+              <p className="footnote" style={{ marginBottom: 6 }}>{d.capexLabel}</p>
+              <div style={{ position: 'relative', height: 44, borderRadius: 10, background: 'var(--terracotta-bg)', border: '1px solid var(--terracotta)', overflow: 'hidden' }}>
+                <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: `${ratioPct}%`, minWidth: 7, background: 'var(--sage)' }} />
+              </div>
+              <p className="footnote" style={{ marginTop: 6, color: 'var(--sage)', fontWeight: 700 }}>{d.runLabel}</p>
+            </div>
+            <div>
+              <p className="footnote" style={{ margin: '0 0 8px', fontWeight: 700 }}>{d.hiddenTitle}</p>
+              <div style={{ display: 'grid', gap: 8 }}>
+                {d.hiddenItems.map((h, i) => (
+                  <div key={i} style={{ display: 'flex', justifyContent: 'space-between', gap: 12, border: '1px dashed var(--hairline-strong)', borderRadius: 10, padding: '10px 14px', fontSize: 13.5 }}>
+                    <span style={{ fontWeight: 600 }}>{h.k}</span>
+                    <span style={{ color: 'var(--fg-2)', whiteSpace: 'nowrap' }}>{h.v}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="use-grid">
+              {statCard(d.statNews, '$5.6M', 'var(--sage)')}
+              {statCard(d.statCapex, '~$1.6B', 'var(--terracotta)')}
+              {statCard(d.statRatio, `≈ ${ratioPct.toFixed(2)}%`)}
+            </div>
+            <p style={{ margin: 0, fontWeight: 600, lineHeight: 1.7, color: 'var(--terracotta)' }}>{d.ledgerVerdict}</p>
+          </>
+        )}
+        <p className="footnote" style={{ margin: 0 }}>{d.srcNote}</p>
+      </div>
+    </div>
+  )
+}
+
 export default function L33() {
   const { lang } = useLang()
   const c = C[lang] || C.zh
@@ -366,6 +498,7 @@ export default function L33() {
               </div>
               <div className="zh" style={{ marginTop: 6 }}>{l.body}</div>
               <div className="zh" style={{ marginTop: 6, color: 'var(--fg-2)' }}>{l.analogy}</div>
+              {l.dig && <DeepDive title={l.dig.t}>{l.dig.body}</DeepDive>}
             </div>
           ))}
         </div>
@@ -374,6 +507,10 @@ export default function L33() {
 
       <Lsec title={c.demoSecTitle} lead={c.demoSecLead}>
         <MoeDemo c={c} />
+      </Lsec>
+
+      <Lsec title={c.costSecTitle} lead={c.costSecLead}>
+        <CostLedgerDemo c={c} />
       </Lsec>
 
       <Lsec title={c.pitfallsTitle}>
